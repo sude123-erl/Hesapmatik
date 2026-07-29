@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Etkinliği Düzenle</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh;">
+
+    <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px;">
+        <h2 style="color: #2c3e50; margin-top: 0; margin-bottom: 24px; font-size: 24px; text-align: center;">Etkinliği Düzenle</h2>
+        
+        <form action="/activity/edit/<%= activity.id %>" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: #475569; font-weight: 600; font-size: 14px;">Etkinlik Adı:</label>
+                <input type="text" name="activityName" value="<%= activity.activityName %>" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; color: #475569; font-weight: 600; font-size: 14px;">Şifre:</label>
+                <input type="text" name="activityPassword" value="<%= activity.activityPassword %>" required style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; box-sizing: border-box; outline: none;">
+            </div>
+            
+            <button type="submit" style="background: #f39c12; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px; margin-top: 10px;">Güncelle</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/panel" style="color: #64748b; text-decoration: none; font-size: 14px; font-weight: 500;">← Geri Dön</a>
+        </div>
+    </div>
+
+</body>
+</html>

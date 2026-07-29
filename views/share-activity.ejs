@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etkinliği Paylaş</title>
+    <link rel="stylesheet" href="/style.css"> <!-- Kendi stil dosya yoluna göre düzenleyebilirsin -->
+</head>
+<body style="background-color: #f8f9fa; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+
+    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 350px; text-align: center;">
+        
+        <!-- Üst Kısım: Etkinlik Adı -->
+        <div style="background: #f1f3f5; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; font-size: 18px;">
+            <%= activity.activityName %>
+        </div>
+
+        <h3 style="margin-bottom: 15px; color: #333;">Etkinliği Paylaş</h3>
+
+        <!-- QR Kod Alanı -->
+        <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #dee2e6; border-radius: 10px; display: inline-block;">
+            <img src="<%= qrCodeUrl %>" alt="QR Kod" style="width: 200px; height: 200px; display: block;">
+        </div>
+
+        <!-- Paylaş / Link Kopyala Butonu -->
+        <button onclick="navigator.clipboard.writeText('<%= inviteLink %>'); alert('Davet linki kopyalandı!');" style="width: 100%; padding: 12px; background-color: #343a40; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold;">
+            Linki Kopyala ve Paylaş
+        </button>
+        <a href="/activity/<%= activity.id %>" class="btn-back">← Etkinliğe Dön</a>
+
+        <section style="margin-top: 24px; text-align: left; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
+                <h3 style="margin: 0; color: #1e293b; font-size: 17px;">Katılımcılar</h3>
+                <span style="background: #eff6ff; color: #1d4ed8; border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 700;"><%= participants.length %> kişi</span>
+            </div>
+
+            <% if (participants.length) { %>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <% participants.forEach(participant => { %>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                            <div>
+                                <strong style="display: block; color: #1e293b; font-size: 14px;"><%= participant.fullname %></strong>
+                                <span style="color: #64748b; font-size: 12px;">@<%= participant.username %></span>
+                            </div>
+                            <% if (isOwner && !isLocked && participant.id !== activity.creatorId) { %>
+                                <form action="/activity/<%= activity.id %>/participants/<%= participant.id %>/remove" method="POST" style="margin: 0;">
+                                    <button type="submit" style="border: 0; background: #fee2e2; color: #b91c1c; border-radius: 7px; padding: 7px 9px; font-size: 12px; font-weight: 700; cursor: pointer;">Çıkar</button>
+                                </form>
+                            <% } else if (participant.id === activity.creatorId) { %>
+                                <span style="color: #64748b; font-size: 11px; font-weight: 700;">Etkinlik sahibi</span>
+                            <% } %>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p style="margin: 0; color: #64748b; font-size: 13px;">Henüz katılımcı bulunmuyor.</p>
+            <% } %>
+
+            <% if (isOwner && !isLocked) { %>
+                <form action="/activity/<%= activity.id %>/participants/add" method="POST" style="display: flex; gap: 8px; margin-top: 14px;">
+                    <select name="userId" required style="min-width: 0; flex: 1; border: 1px solid #cbd5e1; border-radius: 8px; padding: 9px; color: #334155;">
+                        <option value="" selected disabled>Katılımcı seçin</option>
+                        <% availableUsers.forEach(user => { %>
+                            <option value="<%= user.id %>"><%= user.fullname %> (@<%= user.username %>)</option>
+                        <% }) %>
+                    </select>
+                    <button type="submit" <%= availableUsers.length ? '' : 'disabled' %> style="border: 0; border-radius: 8px; padding: 9px 12px; background: #1e293b; color: white; font-weight: 700; cursor: pointer;">Ekle</button>
+                </form>
+            <% } else if (isOwner && isLocked) { %>
+                <p style="margin: 14px 0 0; padding: 10px; border-radius: 8px; background: #fff7ed; color: #9a3412; font-size: 12px; line-height: 1.4;">Harcama veya ödeme kaydı olduğu için katılımcı listesi kilitlendi.</p>
+            <% } %>
+        </section>
+    </div>
+
+</body>
+</html>

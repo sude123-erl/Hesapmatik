@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Harcama Düzenle - Hesapmatik</title>
+    <!-- Projendeki stil dosyası bağlantısı neyse onu kullanabilirsin -->
+    <link rel="stylesheet" href="/style.css"> 
+</head>
+<body>
+    <div class="content-area" style="max-width: 500px; margin: 50px auto; padding: 20px;">
+        <h2>Harcamayı Düzenle</h2>
+        
+        <!-- Form action kısmı güncellenen id'ye POST atacak -->
+       <form action="/edit-expense/<%= expense.id %>" method="POST">
+            <div style="margin-bottom: 15px;">
+                <label for="expenseName" style="display: block; margin-bottom: 5px; font-weight: 600;">Harcama Adı</label>
+                <input type="text" id="expenseName" name="expenseName" value="<%= expense.expenseName %>" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="amount" style="display: block; margin-bottom: 5px; font-weight: 600;">Tutar (TL)</label>
+                <input type="number" id="amount" name="amount" value="<%= expense.amount %>" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;">
+            </div>
+
+           <% if (expense.receipt) { %>
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Mevcut Fiş / Dekont</label><br>
+        
+        <!-- Küçük Resim -->
+        <img src="/uploads/<%= expense.receipt %>" alt="Fiş Görseli" onclick="openModal()" style="max-width: 200px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; transition: 0.2s;" title="Büyütmek için tıkla">
+        <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">(Büyütmek için resme tıklayın)</div>
+
+        <!-- Modal (Büyük Resim Penceresi) -->
+        <div id="receiptModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+            
+            <!-- Kapatma Çarpı Butonu -->
+            <span onclick="closeModal()" style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
+            
+            <!-- Büyük Resim -->
+            <img id="modalImg" style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+        </div>
+    </div>
+
+    <!-- Modal Kontrolü İçin JavaScript -->
+    <script>
+        function openModal() {
+            var modal = document.getElementById("receiptModal");
+            var modalImg = document.getElementById("modalImg");
+            var thumbImg = document.querySelector("img[alt='Fiş Görseli']");
+            
+            modal.style.display = "flex";
+            modalImg.src = thumbImg.src;
+        }
+
+        function closeModal() {
+            var modal = document.getElementById("receiptModal");
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            var modal = document.getElementById("receiptModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+<% } %>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" style="flex: 1; padding: 12px; background: #0f172a; color: #ffffff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    Değişiklikleri Kaydet
+                </button>
+                <a href="javascript:history.back()" style="flex: 1; padding: 12px; background: #e2e8f0; color: #334155; text-align: center; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    İptal
+                </a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

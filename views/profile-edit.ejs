@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil ve Kullanıcı Adı - Hesapmatik</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            padding: 20px;
+            padding-bottom: 90px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: #ffffff;
+            border: 2px solid #1e293b;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .back-btn {
+            text-decoration: none;
+            color: #1e293b;
+            font-size: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        /* PROFİL FOTOĞRAFI ALANI */
+        .avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .avatar-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #1e293b;
+            background-color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-placeholder {
+            font-size: 45px;
+            color: #64748b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+        .btn-action:hover {
+            background-color: #f1f5f9;
+        }
+        .btn-save {
+            background-color: #1e293b;
+            color: #ffffff;
+            border: none;
+        }
+        .btn-save:hover {
+            background-color: #0f172a;
+        }
+        .btn-delete {
+            background-color: transparent;
+            color: #ef4444;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 15px;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* HESABI SİL MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #ffffff;
+            border: 2px solid #ef4444;
+            border-radius: 16px;
+            padding: 24px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .modal-title {
+            color: #ef4444;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .btn-modal {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #ffffff;
+        }
+        .btn-modal-yes {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="/profile" class="back-btn">←</a>
+        <h2 class="title">Profil ve Kullanıcı adı</h2>
+
+        <!-- KAYDETME FORMU -->
+        <form action="/profile/edit" method="POST" enctype="multipart/form-data">
+            
+            <!-- PROFİL FOTOĞRAFI ALANI -->
+            <div class="avatar-container">
+                <div class="avatar-wrapper" onclick="triggerFileInput()">
+                    <span id="avatarPlaceholder" class="avatar-placeholder">👤</span>
+                    <img id="avatarImage" class="avatar-img" src="" alt="Profil Fotoğrafı" style="display: none;">
+                </div>
+                <!-- Gizli Dosya Yükleme Input'u -->
+                <input type="file" id="profileImageInput" name="avatar" accept="image/*" style="display: none;" onchange="previewImage(event)">
+            </div>
+
+            <div class="form-group">
+                <label>Kullanıcı adı</label>
+                <input type="text" name="username" value="Sude" placeholder="Kullanıcı adınız" required>
+            </div>
+
+            <!-- Fotoğraf Seç Butonu -->
+            <button type="button" class="btn-action" onclick="triggerFileInput()">Profil Fotoğrafı Seç</button>
+
+            <!-- Değişiklikleri Kaydet Butonu -->
+            <button type="submit" class="btn-action btn-save">Kaydet</button>
+
+        </form>
+
+        <button type="button" class="btn-delete" onclick="openModal()">Hesabı Sil</button>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box">
+            <p class="modal-title">Hesabı kalıcı olarak silmek istediğinizden emin misiniz?</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-modal-yes" onclick="deleteAccount()">evet</button>
+                <button class="btn-modal" onclick="closeModal()">hayır</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function triggerFileInput() {
+            document.getElementById('profileImageInput').click();
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('avatarImage');
+                    const placeholder = document.getElementById('avatarPlaceholder');
+                    
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function openModal() {
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function deleteAccount() {
+            alert('Hesap silme işlemi tetiklendi.');
+            closeModal();
+        }
+    </script>
+
+</body>
+</html>

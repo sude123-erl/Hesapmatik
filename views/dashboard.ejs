@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesapmatik - Hoş Geldiniz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .welcome-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            width: 100%;
+            animation: fadeInSlide 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInSlide {
+            0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .header-section {
+            margin-bottom: 25px;
+        }
+
+        .static-icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        /* Yan yana en fazla 3 kutucuk olacak şekilde grid düzeni */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            padding: 5px;
+        }
+
+        .activity-card {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 18px 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .activity-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .activity-title {
+            font-size: 15px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .no-activity {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .activity-date {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-container">
+        <!-- En Üstte Hoş Geldin Alanı -->
+        <div class="header-section">
+            <div class="static-icon">✨</div>
+            <h1>Hoş geldin, <%= user.username || "Sude" %>!</h1>
+        </div>
+        
+        <!-- Etkinlikler: Yan yana tam 3 sütun -->
+        <% if (activities && activities.length > 0) { %>
+            <div class="activities-grid">
+                <% activities.forEach(activity => { %>
+        <a href="/activity/<%= activity.id %>" class="activity-card">
+        <div class="activity-title"><%= activity.activityName %></div>
+        <div class="activity-date"><%= activity.activityDate %></div>
+       </a>
+       <% }) %>
+            </div>
+        <% } else { %>
+            <div class="no-activity">Henüz kayıtlı bir etkinliğin bulunmuyor.</div>
+        <% } %>
+
+        <!-- Butonlar -->
+        <div class="btn-group">
+            <a href="/panel" class="btn btn-secondary">Tüm Panele Git</a>
+        </div>
+    </div>
+
+    <div data-notification-host style="position: fixed; top: 20px; right: 20px;"></div>
+    <script src="/notifications.js"></script>
+</body>
+</html>
