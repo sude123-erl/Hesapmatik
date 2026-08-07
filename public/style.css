@@ -1,0 +1,269 @@
+/* Genel Sayfa ve Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+}
+
+/* Ana İki Sütunlu Konteyner */
+.login-split-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Sol Taraf: Mint Yeşili ve Krem Tonları */
+.login-left-panel {
+    flex: 3;
+    background: linear-gradient(135deg, #134e4a 0%, #065f46 100%); /* Derin, şık koyu mint/çam yeşili */
+    color: #fdfbf7; /* Krem/Fildişi metin rengi */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px;
+    position: relative;
+}
+
+/* Marka Başlığı */
+.brand-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 60px;
+}
+
+.logo-icon {
+    font-size: 2.5rem;
+    margin-right: 15px;
+}
+
+.brand-header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #6ee7b7; /* Canlı mint yeşili */
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* Büyük Hero Metni */
+.hero-text-wrapper {
+    line-height: 1.1;
+    margin-bottom: 30px;
+}
+
+.hero-line {
+    font-size: 4rem;
+    font-weight: 800;
+    color: #fdfbf7; /* Krem tonu */
+}
+
+.hero-line.highlight-green {
+    color: #34d399; /* Parlak mint vurgusu */
+}
+
+.hero-line.highlight-blue {
+    color: #a7f3d0; /* Yumuşak mint tonu */
+}
+
+.hero-subtext {
+    font-size: 1.2rem;
+    color: #a7f3d0;
+    max-width: 500px;
+    font-weight: 300;
+}
+
+/* Sağ Taraf: Login Kartı (Krem Arka Plan) */
+.login-right-panel {
+    flex: 2;
+    background-color: #f9f8f6; /* Çok yumuşak krem rengi arkaplan */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 450px;
+    background: #ffffff;
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(6, 95, 70, 0.08); /* Mint tonlarında hafif bir gölge */
+    border: 1px solid #f0ede6;
+}
+
+.login-card h2 {
+    text-align: center;
+    color: #065f46;
+    margin-bottom: 40px;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Giriş Formu Elemanları */
+.input-group {
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: #374151;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    background-color: #fcfbf9;
+}
+
+.input-group input:focus {
+    border-color: #059669;
+    background-color: #ffffff;
+}
+
+/* Giriş Butonu */
+.btn-login {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(45deg, #065f46, #047857); /* Mint/Yeşil tonlarında buton */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 15px;
+}
+
+.btn-login:hover {
+    opacity: 0.95;
+}
+
+.btn-login:active {
+    transform: scale(0.98);
+}
+
+/* Alt Linkler */
+.login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.login-links a {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-password {
+    color: #6b7280;
+}
+
+.forgot-password:hover {
+    color: #059669;
+}
+
+.register-link {
+    color: #059669;
+    font-weight: 700;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+/* Animasyon */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 992px) {
+    .login-split-container {
+        flex-direction: column;
+    }
+
+    .login-left-panel {
+        padding: 40px;
+        text-align: center;
+        align-items: center;
+        flex: none;
+        height: auto;
+    }
+
+    .brand-header {
+        margin-bottom: 20px;
+    }
+
+    .hero-line {
+        font-size: 2.5rem;
+    }
+
+    .login-right-panel {
+        flex: none;
+        height: auto;
+        padding: 20px;
+        background-color: #f9f8f6;
+    }
+    
+    .login-card {
+        box-shadow: none;
+        padding: 30px;
+    }
+}
+/* Ekran genişliği 768px veya daha küçük olan mobil cihazlar için */
+@media (max-width: 768px) {
+    body, html {
+        overflow: auto !important; /* Mobilde genel sayfa kaydırmasını açar */
+        height: auto !important;
+    }
+
+    .login-split-container {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh;
+        overflow-y: auto !important;
+    }
+
+    .login-left-panel {
+        width: 100% !important;
+        height: auto !important;
+        padding: 40px 20px !important;
+        flex: none !important;
+        box-sizing: border-box;
+    }
+
+    .login-right-panel {
+        width: 100% !important;
+        padding: 20px !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        flex: none !important;
+        height: auto !important;
+    }
+}

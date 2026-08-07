@@ -3,74 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etkinliği Paylaş</title>
-    <link rel="stylesheet" href="/style.css"> <!-- Kendi stil dosya yoluna göre düzenleyebilirsin -->
+    <title>Hesapmatik - Etkinliği Paylaş</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #e8e7e1 !important;
+            color: #0f382c !important;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: #f4f3ef;
+            padding: 28px 24px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 25px rgba(15, 56, 44, 0.06);
+            border: 1px solid rgba(15, 56, 44, 0.12);
+            text-align: center;
+        }
+
+        /* En Üstteki Etkinlik Adı Kutusu */
+        .activity-header-box {
+            background: rgba(15, 56, 44, 0.08);
+            color: #0f382c;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f382c;
+            margin-bottom: 16px;
+        }
+
+        /* QR Kod Kutusu */
+        .qr-container {
+            background: #ffffff;
+            border: 1.5px solid rgba(15, 56, 44, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .qr-container img {
+            max-width: 180px;
+            height: auto;
+            display: block;
+        }
+
+        /* Paylaş Butonu */
+        .btn-share {
+            width: 100%;
+            padding: 12px;
+            background: #0f382c;
+            color: #f4f3ef;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-share:hover {
+            background: #175241;
+        }
+
+        /* Geri Dön Linki */
+        .back-link {
+            display: inline-block;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            color: #0f382c;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(15, 56, 44, 0.12);
+            margin-bottom: 20px;
+        }
+
+        /* Katılımcılar Başlığı ve Rozeti */
+        .participants-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .participants-header span {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f382c;
+        }
+
+        .badge-count {
+            background: rgba(15, 56, 44, 0.1);
+            color: #0f382c;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        /* Katılımcı Satırı */
+        .participant-box {
+            background: #ffffff;
+            border: 1px solid rgba(15, 56, 44, 0.15);
+            padding: 10px 14px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 12px;
+            color: #0f382c;
+        }
+
+        .participant-role {
+            font-size: 12px;
+            color: #537066;
+        }
+
+        /* Katılımcı Ekle Formu */
+        .add-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .select-participant {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1.5px solid rgba(15, 56, 44, 0.2);
+            border-radius: 10px;
+            font-size: 13px;
+            color: #0f382c;
+            background: #ffffff;
+            outline: none;
+        }
+
+        .btn-add {
+            padding: 10px 16px;
+            background: #0f382c;
+            color: #f4f3ef;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-remind {
+            background: #0f382c;
+            color: #f4f3ef;
+            border: none;
+            border-radius: 8px;
+            padding: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .btn-remind:hover {
+            background: #175241;
+        }
+
+        .btn-remove {
+            background: #fee2e2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .btn-remove:hover {
+            background: #fca5a5;
+            color: #b91c1c;
+        }
+    </style>
 </head>
-<body style="background-color: #f8f9fa; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+<body>
 
-    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 350px; text-align: center;">
-        
-        <!-- Üst Kısım: Etkinlik Adı -->
-        <div style="background: #f1f3f5; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; font-size: 18px;">
-            <%= activity.activityName %>
+    <div class="card">
+        <!-- Etkinlik Adı Kutusu -->
+        <div class="activity-header-box">
+            <%= typeof activity !== 'undefined' ? activity.name : 'Ankara' %>
         </div>
 
-        <h3 style="margin-bottom: 15px; color: #333;">Etkinliği Paylaş</h3>
+        <h2>Etkinliği Paylaş</h2>
 
-        <!-- QR Kod Alanı -->
-        <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #dee2e6; border-radius: 10px; display: inline-block;">
-            <img src="<%= qrCodeUrl %>" alt="QR Kod" style="width: 200px; height: 200px; display: block;">
-        </div>
-
-        <!-- Paylaş / Link Kopyala Butonu -->
-        <button onclick="navigator.clipboard.writeText('<%= inviteLink %>'); alert('Davet linki kopyalandı!');" style="width: 100%; padding: 12px; background-color: #343a40; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: bold;">
-            Linki Kopyala ve Paylaş
-        </button>
-        <a href="/activity/<%= activity.id %>" class="btn-back">← Etkinliğe Dön</a>
-
-        <section style="margin-top: 24px; text-align: left; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
-                <h3 style="margin: 0; color: #1e293b; font-size: 17px;">Katılımcılar</h3>
-                <span style="background: #eff6ff; color: #1d4ed8; border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 700;"><%= participants.length %> kişi</span>
+        <% if (isOwner) { %>
+            <!-- QR Kod -->
+            <div class="qr-container">
+                <img src="<%= typeof qrCodeUrl !== 'undefined' ? qrCodeUrl : '/path-to-qr.png' %>" alt="QR Kod">
             </div>
 
-            <% if (participants.length) { %>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <% participants.forEach(participant => { %>
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-                            <div>
-                                <strong style="display: block; color: #1e293b; font-size: 14px;"><%= participant.fullname %></strong>
-                                <span style="color: #64748b; font-size: 12px;">@<%= participant.username %></span>
-                            </div>
-                            <% if (isOwner && !isLocked && participant.id !== activity.creatorId) { %>
-                                <form action="/activity/<%= activity.id %>/participants/<%= participant.id %>/remove" method="POST" style="margin: 0;">
-                                    <button type="submit" style="border: 0; background: #fee2e2; color: #b91c1c; border-radius: 7px; padding: 7px 9px; font-size: 12px; font-weight: 700; cursor: pointer;">Çıkar</button>
-                                </form>
-                            <% } else if (participant.id === activity.creatorId) { %>
-                                <span style="color: #64748b; font-size: 11px; font-weight: 700;">Etkinlik sahibi</span>
-                            <% } %>
-                        </div>
-                    <% }) %>
-                </div>
-            <% } else { %>
-                <p style="margin: 0; color: #64748b; font-size: 13px;">Henüz katılımcı bulunmuyor.</p>
-            <% } %>
+            <!-- Paylaşım Butonu -->
+            <button class="btn-share" onclick="copyShareLink()">Linki Kopyala ve Paylaş</button>
+        <% } else { %>
+            <div style="background: rgba(15, 56, 44, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; color: #537066;">
+                Yalnızca etkinlik sahibi yeni kişileri davet edebilir.
+            </div>
+        <% } %>
 
-            <% if (isOwner && !isLocked) { %>
-                <form action="/activity/<%= activity.id %>/participants/add" method="POST" style="display: flex; gap: 8px; margin-top: 14px;">
-                    <select name="userId" required style="min-width: 0; flex: 1; border: 1px solid #cbd5e1; border-radius: 8px; padding: 9px; color: #334155;">
-                        <option value="" selected disabled>Katılımcı seçin</option>
-                        <% availableUsers.forEach(user => { %>
-                            <option value="<%= user.id %>"><%= user.fullname %> (@<%= user.username %>)</option>
+        <div>
+            <a href="javascript:history.back()" class="back-link">← Etkinliğe Dön</a>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Katılımcılar Alanı -->
+        <div class="participants-header">
+            <span>Katılımcılar</span>
+            <span class="badge-count"><%= participants ? participants.length : 0 %> kişi</span>
+        </div>
+
+        <% if (participants && participants.length > 0) { %>
+            <% participants.forEach(p => { %>
+                <div class="participant-box">
+                    <div>
+                        <span style="font-weight: 600;"><%= p.fullname || p.username %></span>
+                        <% if (String(activity.creatorId) === String(p.id)) { %>
+                            <span class="participant-role" style="display:block;">Etkinlik sahibi</span>
+                        <% } %>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <% if (typeof currentUserId !== 'undefined' && currentUserId && String(currentUserId) !== String(p.id)) { %>
+                            <!-- Hatırlat Butonu -->
+                            <form action="/notify-debt" method="POST" style="margin: 0;" onsubmit="sendReminder(event, this)">
+                                <input type="hidden" name="targetUserId" value="<%= p.id %>">
+                                <input type="hidden" name="activityName" value="<%= activity.activityName %>">
+                                <input type="hidden" name="activityId" value="<%= activity.id %>">
+                                <button type="submit" title="Hatırlat" class="btn-remind">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                                </button>
+                            </form>
+                        <% } %>
+                        
+                        <% if (String(activity.creatorId) !== String(p.id) && isOwner && !isLocked) { %>
+                            <!-- Çıkar Butonu -->
+                            <form action="/activity/<%= activity.id %>/participants/<%= p.id %>/remove" method="POST" style="margin: 0;" onsubmit="customConfirm(event, this, 'Bu kişiyi çıkarmak istediğinize emin misiniz?');">
+                                <button type="submit" title="Çıkar" class="btn-remove">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                </button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+
+        <% if (isOwner && !isLocked) { %>
+            <!-- Katılımcı Seçme ve Ekleme -->
+            <form action="/activity/<%= activity.id %>/participants/add" method="POST" class="add-form">
+                <select name="userId" class="select-participant" required>
+                    <option value="" disabled selected>Katılımcı seçin</option>
+                    <% if (availableUsers && availableUsers.length > 0) { %>
+                        <% availableUsers.forEach(u => { %>
+                            <option value="<%= u.id %>"><%= u.fullname || u.username %></option>
                         <% }) %>
-                    </select>
-                    <button type="submit" <%= availableUsers.length ? '' : 'disabled' %> style="border: 0; border-radius: 8px; padding: 9px 12px; background: #1e293b; color: white; font-weight: 700; cursor: pointer;">Ekle</button>
-                </form>
-            <% } else if (isOwner && isLocked) { %>
-                <p style="margin: 14px 0 0; padding: 10px; border-radius: 8px; background: #fff7ed; color: #9a3412; font-size: 12px; line-height: 1.4;">Harcama veya ödeme kaydı olduğu için katılımcı listesi kilitlendi.</p>
-            <% } %>
-        </section>
+                    <% } %>
+                </select>
+                <button type="submit" class="btn-add">Ekle</button>
+            </form>
+        <% } %>
     </div>
 
+    <script>
+        function copyShareLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Paylaşım linki kopyalandı!');
+            });
+        }
+
+        function sendReminder(event, form) {
+            event.preventDefault();
+            const btn = form.querySelector('.btn-remind');
+            const originalContent = btn.innerHTML;
+            const originalBackground = btn.style.background || '';
+            const formData = new URLSearchParams(new FormData(form));
+
+            btn.style.background = '#22c55e';
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+            fetch('/notify-debt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            }).then(() => {
+                setTimeout(() => {
+                    btn.style.background = originalBackground;
+                    btn.innerHTML = originalContent;
+                }, 3000);
+            }).catch(err => {
+                console.error(err);
+                setTimeout(() => {
+                    btn.style.background = originalBackground;
+                    btn.innerHTML = originalContent;
+                }, 3000);
+            });
+        }
+    </script>
+    <script src="/custom-confirm.js"></script>
 </body>
 </html>

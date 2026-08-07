@@ -3,117 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hesapmatik - Kayıt Ol</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px 0;
-        }
-        .card {
-            background: #ffffff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            width: 100%;
-            max-width: 420px;
-        }
-        h2 {
-            margin-bottom: 24px;
-            color: #2c3e50;
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #475569;
-            font-size: 14px;
-        }
-        input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-            transition: 0.2s;
-        }
-        input:focus {
-            border-color: #2c3e50;
-        }
-        .btn-submit {
-            width: 100%;
-            background: #2c3e50;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 10px;
-        }
-        .btn-submit:hover {
-            background: #34495e;
-        }
-        .links {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-        .links a {
-            color: #2c3e50;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .links a:hover {
-            text-decoration: underline;
-        }
+    <title>Hesapmatik'e Kayıt Ol</title>
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* Genel Sayfa ve Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+}
+
+.login-split-container {
+    display: flex;
+    width: 100vw;
+    min-height: 100vh; /* Sabit yükseklik yerine esnek min-height */
+}
+
+/* Sol Taraf: Mint Yeşili ve Krem Tonları */
+.login-left-panel {
+    flex: none;
+    width: 60%;
+    background: linear-gradient(135deg, #134e4a 0%, #065f46 100%);
+    color: #fdfbf7;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.left-panel-content {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px;
+    box-sizing: border-box;
+}
+/* Marka Başlığı */
+.brand-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 60px;
+}
+
+.logo-icon {
+    font-size: 2.5rem;
+    margin-right: 15px;
+}
+
+.brand-header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #6ee7b7;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* Büyük Hero Metni */
+.hero-text-wrapper {
+    line-height: 1.1;
+    margin-bottom: 30px;
+}
+
+.hero-line {
+    font-size: 4rem;
+    font-weight: 800;
+    color: #fdfbf7;
+}
+
+.hero-line.highlight-green {
+    color: #34d399;
+}
+
+.hero-line.highlight-blue {
+    color: #a7f3d0;
+}
+
+.hero-subtext {
+    font-size: 1.2rem;
+    color: #a7f3d0;
+    max-width: 500px;
+    font-weight: 300;
+}
+
+/* Sağ Taraf: Login/Register Kartı (Krem Arka Plan) */
+.login-right-panel {
+    flex: none;
+    width: 40%;
+    background-color: #f9f8f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 450px;
+    background: #ffffff;
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(6, 95, 70, 0.08);
+    border: 1px solid #f0ede6;
+    animation: slideUpFade 0.4s ease-out forwards; /* Bu satırı ekliyoruz */
+}
+
+.login-card h2 {
+    text-align: center;
+    color: #065f46;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Giriş Formu Elemanları */
+.input-group {
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #374151;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    background-color: #fcfbf9;
+}
+
+.input-group input:focus {
+    border-color: #059669;
+    background-color: #ffffff;
+}
+
+/* Buton */
+.btn-login {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(45deg, #065f46, #047857);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 10px;
+}
+
+.btn-login:hover {
+    opacity: 0.95;
+}
+
+.btn-login:active {
+    transform: scale(0.98);
+}
+
+/* Alt Linkler */
+.login-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.login-links a {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link {
+    color: #059669;
+    font-weight: 700;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+/* Mobil Uyumluluk */
+/* Mobil ve Tablet Uyumluluğu */
+@media (max-width: 992px) {
+    body, html {
+        height: auto !important;
+        overflow: auto !important; /* Telefonda sayfanın aşağı kaydırılabilmesini sağlar */
+    }
+
+    .login-split-container {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 100vh;
+        overflow-y: auto !important;
+    }
+
+    .login-left-panel {
+        flex: none !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    .left-panel-content {
+        position: static;
+        height: auto;
+        padding: 40px 20px !important;
+        text-align: center;
+        align-items: center;
+    }
+
+    .brand-header {
+        margin-bottom: 20px;
+    }
+
+    .hero-line {
+        font-size: 2.2rem;
+    }
+
+    .login-right-panel {
+        flex: none !important;
+        width: 100% !important;
+        padding: 20px !important;
+        background-color: #f9f8f6;
+        height: auto !important;
+    }
+    
+    .login-card {
+        box-shadow: none;
+        padding: 25px;
+        margin-bottom: 30px; /* Altta boşluk bırakarak butonun rahat görünmesini sağlar */
+    }
+}
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Kayıt Ol</h2>
-        <form action="/register" method="POST">
-            <div class="form-group">
-                <label>Ad Soyad</label>
-                <input type="text" name="fullname" required placeholder="Adınızı ve soyadınızı girin">
+    <div class="login-split-container">
+        <!-- Sol Taraf: Giriş Sayfasıyla Birebir Aynı Tasarım -->
+        <div class="login-left-panel">
+            <div class="left-panel-content">
+                <div class="brand-header">
+                    <div class="logo-icon">✨</div>
+                    <h1>HESAPMATİK</h1>
+                </div>
+                <div class="hero-text-wrapper">
+                    <p class="hero-line">Alacak</p>
+                    <p class="hero-line highlight-green">verecek</p>
+                    <p class="hero-line">takibinin</p>
+                    <p class="hero-line highlight-blue">en akıllı yolu</p>
+                </div>
+                <p class="hero-subtext">Finansal dengenizi saniyeler içinde kontrol altına alın.</p>
             </div>
-            <div class="form-group">
-                <label>Kullanıcı Adı</label>
-                <input type="text" name="username" required placeholder="Bir kullanıcı adı belirleyin">
+        </div>
+
+        <!-- Sağ Taraf: Kayıt Ol Formu -->
+        <div class="login-right-panel">
+            <div class="login-card">
+                <h2>Hesap Oluştur</h2>
+
+                <form action="/register" method="POST">
+                    <div class="input-group">
+                        <label>Ad Soyad</label>
+                        <input type="text" name="fullname" placeholder="Adınızı ve soyadınızı girin" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" name="username" placeholder="Kullanıcı adınızı belirleyin" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>E-posta Adresi</label>
+                        <input type="email" name="email" placeholder="E-posta adresinizi girin" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Telefon Numarası</label>
+                        <input type="tel" name="phone" placeholder="05XX XXX XX XX" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Şifre</label>
+                        <input type="password" name="password" placeholder="Şifrenizi girin" required>
+                    </div>
+
+                    <button type="submit" class="btn-login">Kayıt Ol</button>
+                </form>
+
+                <div class="login-links">
+                    <span style="color: #6b7280;">Zaten hesabın var mı?</span>
+                    <a href="/login" class="register-link">Giriş Yap</a>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Telefon</label>
-                <input type="text" name="phone" placeholder="Telefon numaranız">
-            </div>
-            <div class="form-group">
-                <label>E-posta</label>
-                <input type="email" name="email" required placeholder="E-posta adresiniz">
-            </div>
-            <div class="form-group">
-                <label>Şifre</label>
-                <input type="password" name="password" required placeholder="Şifrenizi belirleyin">
-            </div>
-            <button type="submit" class="btn-submit">Kayıt Ol</button>
-        </form>
-        <div class="links">
-            Zaten hesabın var mı? <a href="/login">Giriş Yap</a>
         </div>
     </div>
 

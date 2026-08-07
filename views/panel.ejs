@@ -2,161 +2,61 @@
 <html lang="tr">
 
 <head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hesapmatik - Panel</title>
     <style>
-        /* Kayan Sekme (Slider) Konteynerı */
-        .sliding-tabs-container {
-            display: flex;
-            background: #e2e8f0;
-            border-radius: 30px;
-            padding: 4px;
-            position: relative;
-            width: fit-content;
-            margin: 20px 0;
-        }
-
-        .sliding-tab-btn {
-            background: none;
-            border: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #64748b;
-            cursor: pointer;
-            z-index: 2;
-            transition: color 0.3s ease;
-        }
-
-        .sliding-tab-btn.active {
-            color: #ffffff;
-        }
-
-        /* Kayan Arka Plan Efekti */
-        .tab-slider-bg {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 50%;
-            height: calc(100% - 8px);
-            background: #2c3e50;
-            border-radius: 24px;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1;
-        }
-
-        /* Geçişlerde sağa kaydırma sınıfı */
-        .sliding-tabs-container.right-active .tab-slider-bg {
-            transform: translateX(100%);
-        }
-
-        /* İçeriklerin Kayma/Solarak Açılma Efekti */
-        .tab-content {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-            opacity: 1;
-        }
-
-        /* Alt Navigasyon Çubuğu */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #ffffff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 12px 0;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-            border-top: 1px solid #e2e8f0;
-            z-index: 1000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #64748b;
-            font-size: 12px;
-            font-weight: 500;
-            transition: 0.2s;
-        }
-
-        .nav-item:hover,
-        .nav-item.active {
-            color: #2c3e50;
-        }
-
-        .nav-item svg {
-            width: 24px;
-            height: 24px;
-            margin-bottom: 4px;
-            fill: currentColor;
-        }
-
-        .profile-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #2c3e50;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
+        /* Sayfa Geneli: Mat Nötr Taş/Keten Tonu */
         body {
-            background-color: #f4f6f9;
-            color: #333;
+            background-color: #e8e7e1 !important;
+            color: #0f382c !important;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
-        /* Üst Header (Navbar) */
+        /* Üst Header / Navbar */
         .navbar {
-            background: #ffffff;
-            padding: 15px 40px;
+            background: #f4f3ef !important;
+            padding: 16px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(15, 56, 44, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .avatar-box {
-            width: 45px;
-            height: 45px;
-            background: #2c3e50;
+            width: 40px;
+            height: 40px;
+            background: #23745e;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
-            font-size: 20px;
+            color: #f4f3ef;
+            font-size: 18px;
         }
 
         .username {
-            font-weight: 600;
-            font-size: 18px;
-            color: #2c3e50;
+            font-weight: 700;
+            font-size: 17px;
+            color: #0f382c !important;
         }
 
         .nav-right {
@@ -166,38 +66,56 @@
         }
 
         .notification-box {
-            position: relative;
-            background: #f1f2f6;
-            padding: 10px 12px;
-            border-radius: 50%;
+            background: rgba(15, 56, 44, 0.06);
+            border: 1px solid rgba(15, 56, 44, 0.12);
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            padding: 8px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.2s ease;
         }
 
-        .badge {
+        .notification-box:hover {
+            background: rgba(15, 56, 44, 0.12);
+        }
+
+        .notification-box svg {
+            width: 20px;
+            height: 20px;
+            fill: #0f382c;
+        }
+
+        .notification-badge {
             position: absolute;
-            top: 0;
-            right: 0;
-            background: #ff4757;
+            top: -4px;
+            right: -4px;
+            background: #e74c3c;
             color: white;
             font-size: 10px;
+            font-weight: bold;
             padding: 2px 6px;
             border-radius: 50%;
         }
 
-        /* Bildirimler Dropdown Kutusu */
+        /* Bildirim Dropdown */
         .notification-dropdown {
             position: absolute;
-            top: 48px;
+            top: 50px;
             right: 0;
             width: 320px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: #f4f3ef;
+            border: 1px solid rgba(15, 56, 44, 0.1);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             display: none;
             flex-direction: column;
             z-index: 1001;
-            cursor: default;
+            color: #0f382c;
         }
 
         .notification-dropdown.active {
@@ -209,12 +127,12 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 16px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid rgba(15, 56, 44, 0.08);
         }
 
         .dropdown-header h4 {
             margin: 0;
-            color: #1e293b;
+            color: #0f382c;
             font-size: 15px;
             font-weight: 600;
         }
@@ -222,15 +140,10 @@
         .dropdown-header button {
             background: none;
             border: none;
-            color: #64748b;
+            color: #23745e;
             font-size: 12px;
             cursor: pointer;
-            font-weight: 500;
-        }
-
-        .dropdown-header button:hover {
-            color: #1e293b;
-            text-decoration: underline;
+            font-weight: 600;
         }
 
         .dropdown-body {
@@ -242,75 +155,30 @@
             display: flex;
             gap: 12px;
             padding: 12px 16px;
-            border-bottom: 1px solid #f1f5f9;
-            transition: background-color 0.2s;
-            text-align: left;
+            border-bottom: 1px solid rgba(15, 56, 44, 0.05);
         }
 
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f8fafc;
-        }
-
-        .item-icon {
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .item-content p {
-            margin: 0;
+        .dropdown-item p {
             font-size: 13px;
-            color: #334155;
-            line-height: 1.4;
+            color: #0f382c;
         }
 
-        .item-time {
+        .dropdown-item .item-time {
             font-size: 11px;
-            color: #94a3b8;
-            margin-top: 4px;
-            display: inline-block;
-        }
-
-        .dropdown-empty {
-            padding: 24px;
-            text-align: center;
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        .logout-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-
-        .logout-btn:hover {
-            background: #ff6b81;
+            color: #537066;
         }
 
         /* Ana İçerik Alanı */
         .main-container {
-            max-width: 1000px;
+            max-width: 860px;
             width: 100%;
-            margin: 40px auto;
-            padding: 0 10px;
+            margin: 35px auto 90px auto;
+            padding: 0 20px;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
 
-        /* Sekmeler ve Buton Alanı */
         .action-bar {
             display: flex;
             justify-content: space-between;
@@ -318,102 +186,242 @@
             margin-bottom: 25px;
         }
 
-        .nav-tabs {
+        /* Sekme Butonları ve Eski Canlı Yeşil Kaydırak */
+        .sliding-tabs-container {
             display: flex;
-            background: #e2e8f0;
-            border-radius: 10px;
+            background: #dcdad2;
+            border-radius: 30px;
             padding: 4px;
+            position: relative;
+            width: fit-content;
         }
 
-        .tab {
-            padding: 10px 24px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.2s;
-        }
-
-        .tab.active {
-            background: #ffffff;
-            color: #2c3e50;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-
-        .tab.inactive {
-            color: #64748b;
-        }
-
-        .btn-create {
-            background: #2c3e50;
-            color: white;
+        .sliding-tab-btn {
+            background: none;
             border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #537066;
+            cursor: pointer;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        .sliding-tab-btn.active {
+            color: #f4f3ef;
+        }
+
+        .tab-slider-bg {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: #0f382c !important; /* Eski orijinal koyu/canlı yeşil */
+            border-radius: 24px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+            box-shadow: 0 2px 8px rgba(15, 56, 44, 0.2);
+        }
+
+        .sliding-tabs-container.right-active .tab-slider-bg {
+            transform: translateX(100%);
+        }
+
+        /* + Yeni Oluştur Butonu (Eski Yeşil Tonunda) */
+        .btn-create {
+            background: #0f382c !important;
+            color: #f4f3ef !important;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15);
         }
 
         .btn-create:hover {
-            background: #34495e;
+            background: #175241 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(15, 56, 44, 0.25);
         }
 
-        /*ekran boşluğu*/
-        .empty-state {
-            flex: 1;
+        /* Etkinlik Kartı */
+        .event-card {
+            background: #f4f3ef !important;
+            color: #0f382c !important;
+            border-radius: 16px;
+            padding: 22px 26px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            border: none;
-            background: transparent;
-            padding: 20px;
+            border: 1px solid rgba(15, 56, 44, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .empty-box-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(15, 56, 44, 0.08);
+            border-color: rgba(15, 56, 44, 0.18);
         }
 
-        .empty-text {
-            color: #64748b;
-            font-size: 16px;
-            font-weight: 500;
+        .event-card h3 {
+            color: #0f382c !important;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
 
-        /* Etkinlik Sekmeleri */
-        .activity-tabs {
+        .event-card p {
+            color: #537066 !important;
+            font-size: 14px;
+        }
+
+        /* Görünüm Toggle */
+        .layout-toggle {
             display: flex;
-            gap: 15px;
-            margin: 20px 0;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
+            background: #dcdad2;
+            border-radius: 20px;
+            padding: 4px;
         }
-
-        .tab-btn {
+        .layout-btn {
             background: none;
             border: none;
-            font-size: 16px;
-            font-weight: 600;
-            color: #64748b;
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #537066;
             cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: 0.2s;
+            transition: all 0.2s;
+        }
+        .layout-btn.active {
+            background: #f4f3ef;
+            color: #0f382c;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        .tab-btn.active {
-            background: #2c3e50;
-            color: #ffffff;
+        /* Grid View (Yan Yana) İçin Kapsayıcı */
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+        
+        .cards-container.grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        
+        @media (min-width: 900px) {
+            .cards-container.grid-view {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
-        .tab-btn:hover:not(.active) {
-            background: #f1f5f9;
-            color: #1e293b;
+        /* Grid View Aktifken Kart Tasarımı */
+        .cards-container.grid-view .event-card {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 16px;
         }
 
-        /* Sekme İçerik Alanları */
+        .cards-container.grid-view .event-card .card-content-wrapper {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .cards-container.grid-view .event-card .card-image {
+            width: 100% !important;
+            height: 140px !important;
+            border-radius: 12px !important;
+            font-size: 40px !important;
+        }
+
+        .cards-container.grid-view .event-card .card-actions {
+            margin-top: 15px;
+            width: 100%;
+            justify-content: flex-end;
+            border-top: 1px solid rgba(15, 56, 44, 0.08);
+            padding-top: 12px;
+        }
+
+        /* Aksiyon Butonları (Düzenle / Sil) */
+        .action-btn {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            text-decoration: none;
+            background: rgba(15, 56, 44, 0.06);
+            color: #0f382c;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(15, 56, 44, 0.14);
+            color: #0f382c;
+        }
+
+        .action-btn.btn-delete-item:hover {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        /* Alt Navigasyon Barı */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #f4f3ef !important;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.03);
+            border-top: 1px solid rgba(15, 56, 44, 0.08);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #7b948a !important;
+            font-size: 12px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: #0f382c !important;
+        }
+
+        i, .fa, .fas, .far {
+            max-width: 24px;
+            max-height: 24px;
+            font-size: 20px;
+        }
+
         .tab-content {
             display: none;
         }
@@ -422,215 +430,208 @@
             display: block;
         }
 
-        /* Monoton Aksiyon Butonları */
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            text-decoration: none;
-            background: #f1f5f9;
-            color: #64748b;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .empty-state {
+            background: #f4f3ef;
+            border-radius: 16px;
+            border: 1px dashed rgba(15, 56, 44, 0.18);
+            padding: 50px 20px;
+            text-align: center;
         }
-        .action-btn:hover {
-            background: #e2e8f0;
-            color: #1e293b;
+
+        .empty-box-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
         }
-        .action-btn.btn-delete-item:hover {
-            background: #fee2e2;
-            color: #ef4444;
+
+        .empty-text {
+            color: #537066;
+            font-size: 15px;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Üst Navbar (Web Standartlarına Uygun) -->
+    <!-- Üst Navbar -->
     <div class="navbar">
         <div class="user-info">
-            <div class="avatar-box"
-                style="overflow: hidden; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%;">
+            <div class="avatar-box">
                 <% if (user && user.avatar) { %>
-                    <img src="<%= user.avatar %>" alt="Profil"
-                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-                    <% } else { %>
-                        👤
-                        <% } %>
+                    <img src="<%= user.avatar %>" alt="Profil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                <% } else { %>
+                    👤
+                <% } %>
             </div>
-            <div class="username">Merhaba <%= fullname %>
-            </div>
+            <div class="username"><%= fullname %></div>
         </div>
+
         <div class="nav-right">
-            <div data-notification-host>
-                🔔
-                <span class="badge" id="notificationBadge">2</span>
-                
-                <!-- Bildirimler Dropdown Kutusu -->
-                <div class="notification-dropdown" id="notificationDropdown" onclick="event.stopPropagation()">
-                    <div class="dropdown-header">
-                        <h4>Bildirimler</h4>
-                        <button onclick="clearNotifications(event)">Temizle</button>
-                    </div>
-                    <div class="dropdown-body">
-                        <div class="dropdown-item">
-                            <div class="item-icon">💰</div>
-                            <div class="item-content">
-                                <p><strong>Sude</strong> yeni bir harcama ekledi: "Market Alışverişi"</p>
-                                <span class="item-time">5 dakika önce</span>
-                            </div>
-                        </div>
-                        <div class="dropdown-item">
-                            <div class="item-icon">🎉</div>
-                            <div class="item-content">
-                                <p><strong>Ankara Gezisi</strong> etkinliği başarıyla oluşturuldu.</p>
-                                <span class="item-time">2 saat önce</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <button data-notification-host type="button" title="Bildirimler" class="icon-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <span class="notification-badge" id="notificationBadge"></span>
+            </button>
         </div>
     </div>
 
-    <!-- Web Ana İçerik Alanı -->
+    <!-- Ana İçerik -->
     <div class="main-container">
 
-        <!-- Üst Kısım: Kayan Butonlar ve Sağda Yeni Oluştur -->
+        <!-- Aksiyon Barı -->
         <div class="action-bar">
-            <!-- Kayan Sekme Butonları -->
             <div class="sliding-tabs-container" id="tabContainer">
                 <div class="tab-slider-bg"></div>
                 <button class="sliding-tab-btn active" onclick="slideTab('active')">Mevcut / Aktif</button>
                 <button class="sliding-tab-btn" onclick="slideTab('history')">Geçmiş / Eski</button>
             </div>
 
-            <a href="/create-activity" class="btn-create"
-                style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">+
-                Yeni Oluştur</a>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div class="layout-toggle">
+                    <button id="btnListView" class="layout-btn active" onclick="setLayout('list')" title="Alt Alta Görünüm"><i class="fas fa-list"></i></button>
+                    <button id="btnGridView" class="layout-btn" onclick="setLayout('grid')" title="Yan Yana Görünüm"><i class="fas fa-th-large"></i></button>
+                </div>
+                <a href="/create-activity" class="btn-create">+ Yeni Oluştur</a>
+            </div>
         </div>
 
-        <!-- Tek ve Ortak Kutumuz (İçerik buranın içinde değişecek) -->
-        <div class="empty-state">
+        <!-- Başarı Toast Mesajı -->
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div id="successToast" style="position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #0f382c; color: #f4f3ef; padding: 14px 24px; border-radius: 12px; font-weight: 600; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.12); z-index: 9999;">
+                ✅ Etkinliğiniz başarıyla oluşturulmuştur!
+            </div>
+            <script>
+                setTimeout(() => {
+                    const toast = document.getElementById('successToast');
+                    if (toast) {
+                        toast.style.opacity = '0';
+                        setTimeout(() => toast.remove(), 500);
+                    }
+                    if (window.history.replaceState) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                }, 3000);
+            </script>
+        <% } %>
 
-            <!-- Ekranın Ortasında Beliren Mini Bildirim Kartı -->
-            <% if (typeof success !=='undefined' && success) { %>
-                <div id="successToast"
-                    style="position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #27ae60; color: white; padding: 14px 24px; border-radius: 12px; font-weight: 500; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 9999; display: flex; align-items: center; gap: 10px; opacity: 1; transition: opacity 0.5s ease, transform 0.5s ease;">
-                    <span>✅ Etkinliğiniz başarıyla oluşturulmuştur!</span>
-                </div>
-
-                <script>
-                    setTimeout(() => {
-                        const toast = document.getElementById('successToast');
-                        if (toast) {
-                            toast.style.opacity = '0';
-                            toast.style.transform = 'translate(-50%, -10px)';
-                            setTimeout(() => toast.remove(), 500);
-                        }
-
-                        // URL'yi temizle //
-                        if (window.history.replaceState) {
-                            window.history.replaceState({}, document.title, window.location.pathname);
-                        }
-                    }, 3000);
-                </script>
-                <% } %>
-
-
-                    <!-- Mevcut / Aktif Etkinlikler İçeriği -->
-                    <div id="active-tab" class="tab-content active" style="width: 100%;">
-                        <% if (activities && activities.length> 0) { %>
-                            <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
-                                <% activities.forEach(activity=> { %>
-                                    <div onclick="window.location.href='/activity/<%= activity.id %>'"
-                                        style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); cursor: pointer;">
-                                        <div>
-                                            <h3 style="color: #2c3e50; margin-bottom: 5px; font-size: 18px;">
-                                                <%= activity.activityName %>
-                                            </h3>
-                                            <p style="color: #64748b; font-size: 14px;">Tarih: <%= activity.activityDate
-                                                    %>
-                                            </p>
-                                        </div>
-                                        <div style="display: flex; gap: 10px;" onclick="event.stopPropagation()">
-                                            <a href="/activity/edit/<%= activity.id %>" title="Düzenle" class="action-btn">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path d="M12 20h9" />
-                                                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                                                </svg>
-                                            </a>
-                                            <form action="/activity/delete/<%= activity.id %>" method="POST"
-                                                style="margin: 0;">
-                                                <button type="submit" title="Sil" class="action-btn btn-delete-item"
-                                                    onclick="openDeleteModal(event, this.form)">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M3 6h18" />
-                                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                                        <line x1="10" x2="10" y1="11" y2="17" />
-                                                        <line x1="14" x2="14" y1="11" y2="17" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <% }) %>
-                            </div>
-                            <% } else { %>
-                                <div
-                                    style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
-                                    <div class="empty-box-icon" style="font-size: 48px; margin-bottom: 10px;">📁</div>
-                                    <div class="empty-text" style="color: #64748b; font-size: 16px;">Henüz oluşturulmuş
-                                        bir etkinlik bulunmuyor.</div>
-                                </div>
+        <!-- Aktif Sekmesi -->
+        <div id="active-tab" class="tab-content active">
+            <% if (activities && activities.length > 0) { %>
+                <div class="cards-container" id="activeCardsContainer">
+                    <% activities.forEach(activity => { %>
+                        <div class="event-card" onclick="window.location.href='/activity/<%= activity.id %>'">
+                            <div class="card-content-wrapper" style="display: flex; align-items: center; gap: 15px;">
+                                <% if (activity.coverImage) { %>
+                                    <img src="<%= activity.coverImage %>" alt="<%= activity.activityName %>" class="card-image" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <% } else { %>
+                                    <div class="card-image" style="width: 50px; height: 50px; border-radius: 10px; background: rgba(15, 56, 44, 0.08); display: flex; align-items: center; justify-content: center; font-size: 20px;">📁</div>
                                 <% } %>
-                    </div>
-                    <!-- Geçmiş / Eski Etkinlikler İçeriği -->
-                    <div id="history-tab" class="tab-content" style="width: 100%;">
-                        <div class="empty-box-icon">📁</div>
-                        <div class="empty-text">Henüz geçmiş etkinliğiniz bulunmuyor.</div>
-                    </div>
+                                <div>
+                                    <h3><%= activity.activityName %></h3>
+                                    <p>Tarih: <%= activity.activityDate %></p>
+                                </div>
+                            </div>
+                            <div class="card-actions" style="display: flex; gap: 10px;" onclick="event.stopPropagation()">
+                                <a href="/activity/edit/<%= activity.id %>" title="Düzenle" class="action-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 20h9" />
+                                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                    </svg>
+                                </a>
+                                <form action="/activity/delete/<%= activity.id %>" method="POST" style="margin: 0;">
+                                    <button type="submit" title="Sil" class="action-btn btn-delete-item" onclick="openDeleteModal(event, this.form)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 6h18" />
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                            <line x1="10" x2="10" y1="11" y2="17" />
+                                            <line x1="14" x2="14" y1="11" y2="17" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <div class="empty-box-icon">📁</div>
+                    <div class="empty-text">Henüz oluşturulmuş bir etkinlik bulunmuyor.</div>
+                </div>
+            <% } %>
+        </div>
 
+        <!-- Geçmiş Sekmesi -->
+        <div id="history-tab" class="tab-content">
+            <% if (typeof closedActivities !== 'undefined' && closedActivities.length > 0) { %>
+                <div class="cards-container" id="historyCardsContainer">
+                    <% closedActivities.forEach(activity => { %>
+                        <div class="event-card" onclick="window.location.href='/activity/<%= activity.id %>'">
+                            <div class="card-content-wrapper" style="display: flex; align-items: center; gap: 15px;">
+                                <% if (activity.coverImage) { %>
+                                    <img src="<%= activity.coverImage %>" alt="<%= activity.activityName %>" class="card-image" style="width: 50px; height: 50px; border-radius: 10px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <% } else { %>
+                                    <div class="card-image" style="width: 50px; height: 50px; border-radius: 10px; background: rgba(15, 56, 44, 0.08); display: flex; align-items: center; justify-content: center; font-size: 20px;">📁</div>
+                                <% } %>
+                                <div>
+                                    <h3><%= activity.activityName %></h3>
+                                    <p>Tarih: <%= activity.activityDate %></p>
+                                </div>
+                            </div>
+                            <div class="card-actions" style="display: flex; gap: 10px;" onclick="event.stopPropagation()">
+                                <a href="/activity/edit/<%= activity.id %>" title="Düzenle" class="action-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 20h9" />
+                                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                    </svg>
+                                </a>
+                                <form action="/activity/delete/<%= activity.id %>" method="POST" style="margin: 0;">
+                                    <button type="submit" title="Sil" class="action-btn btn-delete-item" onclick="openDeleteModal(event, this.form)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 6h18" />
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                            <line x1="10" x2="10" y1="11" y2="17" />
+                                            <line x1="14" x2="14" y1="11" y2="17" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <div class="empty-box-icon">📁</div>
+                    <div class="empty-text">Henüz geçmiş etkinliğiniz bulunmuyor.</div>
+                </div>
+            <% } %>
         </div>
 
     </div>
 
-    <nav class="bottom-nav">
-        <!-- Ana Sayfa Butonu -->
-        <a href="/dashboard" class="nav-item active">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-            </svg>
-            Ana Sayfa
-        </a>
+ <nav class="bottom-nav">
 
-        <!-- Etkinlikler Butonu -->
-        <a href="/panel" class="nav-item">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path
-                    d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z" />
-            </svg>
-            Etkinlikler
-        </a>
+    <a href="/panel" class="nav-item active">
+        <i class="fas fa-folder-open"></i>
+        <span>Etkinlikler</span>
+    </a>
+    <a href="/profile" class="nav-item">
+        <i class="fas fa-user"></i>
+        <span>Profil</span>
+    </a>
+</nav>
 
-        <!-- Profil İkonu (Şimdilik varsayılan ikon veya baş harf/görsel) -->
-        <a href="/profile" class="nav-item">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path
-                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-            Profil
-        </a>
-    </nav>
+    <!-- Silme Onay Modalı -->
+    <div id="deleteModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #f4f3ef; color: #0f382c; padding: 28px; border-radius: 16px; text-align: center; width: 340px; box-shadow: 0 10px 30px rgba(0,0,0,0.12);">
+            <h3 style="margin-bottom: 8px; font-size: 20px;">Emin misin?</h3>
+            <p style="color: #537066; font-size: 14px; margin-bottom: 20px;">Bu etkinliği silmek istediğine emin misin? Bu işlem geri alınamaz.</p>
+            <div style="display: flex; justify-content: center; gap: 10px;">
+                <button id="cancelDelete" style="background: rgba(15, 56, 44, 0.08); color: #0f382c; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">İptal</button>
+                <button id="confirmDelete" style="background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">Evet, Sil</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function slideTab(tabName) {
             const container = document.getElementById('tabContainer');
@@ -651,32 +652,45 @@
             }
         }
 
+        function setLayout(mode) {
+            const activeContainer = document.getElementById('activeCardsContainer');
+            const historyContainer = document.getElementById('historyCardsContainer');
+            const btnList = document.getElementById('btnListView');
+            const btnGrid = document.getElementById('btnGridView');
 
-    </script>
-    <script src="/notifications.js"></script>
-    <!-- Özel Onay Kutusu (Modal) -->
-    <div id="deleteModal"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
-        <div
-            style="background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-            <h3 style="color: #2c3e50; margin-bottom: 10px; font-size: 20px;">Emin misin?</h3>
-            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Bu etkinliği silmek istediğine emin misin?
-                Bu işlem geri alınamaz.</p>
-            <div style="display: flex; justify-content: center; gap: 10px;">
-                <button id="cancelDelete"
-                    style="background: #e2e8f0; color: #475569; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">İptal</button>
-                <button id="confirmDelete"
-                    style="background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">Evet,
-                    Sil</button>
-            </div>
-        </div>
-    </div>
+            if (mode === 'grid') {
+                if(activeContainer) activeContainer.classList.add('grid-view');
+                if(historyContainer) historyContainer.classList.add('grid-view');
+                btnList.classList.remove('active');
+                btnGrid.classList.add('active');
+                localStorage.setItem('panelLayout', 'grid');
+            } else {
+                if(activeContainer) activeContainer.classList.remove('grid-view');
+                if(historyContainer) historyContainer.classList.remove('grid-view');
+                btnGrid.classList.remove('active');
+                btnList.classList.add('active');
+                localStorage.setItem('panelLayout', 'list');
+            }
 
-    <script>
+            // Arka planda sunucuya (veritabanına) tercih kaydediliyor
+            fetch('/update-layout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ layout: mode })
+            }).catch(e => console.log('Layout kaydedilemedi', e));
+        }
+
+        // Initialize layout
+        document.addEventListener('DOMContentLoaded', () => {
+            // Veritabanından gelen değeri veya localStorage değerini kullan
+            const savedLayout = '<%= panelLayout %>' || localStorage.getItem('panelLayout') || 'list';
+            setLayout(savedLayout);
+        });
+
         let currentForm = null;
 
         function openDeleteModal(event, formElement) {
-            event.preventDefault(); // Formun direkt gönderilmesini engelle
+            event.preventDefault();
             currentForm = formElement;
             document.getElementById('deleteModal').style.display = 'flex';
         }
@@ -688,40 +702,11 @@
 
         document.getElementById('confirmDelete').addEventListener('click', () => {
             if (currentForm) {
-                currentForm.submit(); // Onay verilirse formu gönder
-            }
-        });
-
-        // Bildirim Dropdown Fonksiyonları
-        function toggleNotifications(event) {
-            event.stopPropagation();
-            const dropdown = document.getElementById('notificationDropdown');
-            if (dropdown) {
-                dropdown.classList.toggle('active');
-            }
-        }
-
-        function clearNotifications(event) {
-            event.stopPropagation();
-            const badge = document.getElementById('notificationBadge');
-            if (badge) {
-                badge.style.display = 'none';
-            }
-            
-            const dropdownBody = document.querySelector('.dropdown-body');
-            if (dropdownBody) {
-                dropdownBody.innerHTML = '<div class="dropdown-empty">Henüz yeni bir bildirim yok.</div>';
-            }
-        }
-
-        // Dışarı tıklanınca dropdown menüyü kapat
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('notificationDropdown');
-            if (dropdown && dropdown.classList.contains('active')) {
-                dropdown.classList.remove('active');
+                currentForm.submit();
             }
         });
     </script>
+    <script src="/notifications.js"></script>
 </body>
 
 </html>

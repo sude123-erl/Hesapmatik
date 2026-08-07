@@ -1,88 +1,188 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yeni Etkinlik Oluştur - Hesapmatik</title>
-    <link rel="stylesheet" href="/style.css"> <!-- Kendi stil dosyanın yolu -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+
     <style>
-        /* Bu sayfaya özel ek tasarımlar */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Sayfa Geneli: Yeşil & Mat Taş Konsepti */
+        html {
+            overflow-y: auto !important;
+            height: auto !important;
+        }
+        
+        body {
+            background-color: #e8e7e1 !important;
+            color: #0f382c !important;
+            padding-bottom: 110px;
+            /* Alt menünün altına girmesini önler */
+            min-height: 100vh;
+            height: auto !important;
+            overflow-y: auto !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .create-container {
-            max-width: 750px; /* Genişliği artırdık */
-            margin: 40px auto;
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
             background: #ffffff;
-            border: 2px solid #e2e8f0;
+            border: 1px solid rgba(15, 56, 44, 0.15);
             border-radius: 20px;
-            padding: 40px; /* İç boşluğu büyüttük */
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
+
         .page-title {
-            font-size: 24px; /* Başlığı büyüttük */
+            font-size: 22px;
             font-weight: 700;
-            color: #1e293b;
+            color: #0f382c;
             margin-bottom: 25px;
+            text-align: left;
         }
+
         .cover-upload-box {
             width: 100%;
-            height: 250px; /* Kapak görseli yüksekliğini artırdık */
-            border: 2px dashed #c084fc;
+            height: 180px;
+            border: 2px dashed #0f382c;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #c084fc;
+            color: #0f382c;
             font-weight: 600;
-            font-size: 18px;
-            background: #faf5ff;
+            font-size: 16px;
+            background: #f4f3ef;
             cursor: pointer;
-            margin-bottom: 25px;
-            transition: background 0.3s;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
+
+        .cover-upload-box:hover {
+            background: #eae8e1;
+        }
+
         .form-input {
             width: 100%;
-            padding: 16px 20px; /* İnputları daha dolgun yaptık */
-            border: 2px solid #e2e8f0;
+            padding: 14px 18px;
+            border: 1px solid #dcdbd5;
             border-radius: 12px;
-            font-size: 16px;
-            margin-bottom: 20px;
+            font-size: 15px;
+            margin-bottom: 16px;
             outline: none;
+            background-color: #fafaf8;
+            color: #0f382c;
             transition: border-color 0.3s;
         }
+
+        .form-input:focus {
+            border-color: #0f382c;
+            background-color: #ffffff;
+        }
+
         .btn-submit-activity {
             width: 100%;
-            padding: 16px; /* Butonu büyüttük */
-            background: #e2e8f0;
+            padding: 15px;
+            background: #0f382c;
             border: none;
             border-radius: 12px;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 600;
-            color: #334155;
+            color: #ffffff;
             cursor: pointer;
             transition: background 0.3s;
             margin-top: 10px;
         }
+
         .btn-submit-activity:hover {
-            background: #cbd5e1;
+            background: #164e3e;
+        }
+
+        i,
+        .fa,
+        .fas,
+        .far {
+            max-width: 24px;
+            max-height: 24px;
+            font-size: 20px;
+        }
+
+        /* Alt Navigasyon Menüsü Stilleri */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #f4f3ef !important;
+            border-top: 1px solid rgba(15, 56, 44, 0.08);
+            padding: 12px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #7b948a !important;
+            font-size: 12px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active,
+        .nav-item:hover {
+            color: #0f382c !important;
         }
     </style>
-
 </head>
+
 <body>
 
     <div class="create-container">
         <div class="page-title">Yeni Etkinlik Oluştur</div>
 
-        <form action="/create-activity" method="POST">
+        <form id="activityForm" action="/create-activity" method="POST" enctype="multipart/form-data">
             <!-- Kapak Görseli Alanı -->
-            <div class="cover-upload-box">
-                Kapak Görseli
+            <label id="uploadLabel" for="coverImage" class="cover-upload-box" style="cursor: pointer;">
+                <i class="fa-solid fa-image" style="margin-right: 8px; font-size: 20px;"></i> Kapak Görseli Seç
+                <input type="file" id="coverImage" name="coverImage" accept="image/*" style="display: none;"
+                    onchange="previewImage(this)">
+            </label>
+            <div id="imagePreviewContainer"
+                style="display: none; text-align: center; margin-bottom: 15px; position: relative; width: 100%;">
+                <div style="max-height: 300px; width: 100%; overflow: hidden;">
+                    <img id="imagePreview" src="" alt="Görsel Önizleme" style="display: block; max-width: 100%;">
+                </div>
+                <button type="button" onclick="confirmCrop()"
+                    style="position: absolute; top: 10px; right: 50px; background: rgba(15, 56, 44, 0.8); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; backdrop-filter: blur(4px); z-index: 10;" title="Kırpmayı Onayla">✓</button>
+                <button type="button" onclick="clearImage()"
+                    style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; backdrop-filter: blur(4px); z-index: 10;" title="İptal">✕</button>
             </div>
 
             <!-- Etkinlik Adı -->
             <input type="text" name="activityName" class="form-input" placeholder="Etkinlik Adı" required>
 
             <!-- Etkinlik Şifresi -->
-            <input type="password" name="activityPassword" class="form-input" placeholder="Etkinlik Şifresi" required>
+            <input type="password" name="activityPassword" class="form-input" placeholder="Etkinlik Şifresi">
 
             <!-- Etkinlik Tarihi -->
             <input type="date" name="activityDate" class="form-input" required>
@@ -94,68 +194,112 @@
 
     <!-- Alt Navigasyon Menüsü -->
     <nav class="bottom-nav">
-        <a href="/dashboard" class="nav-item">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            Ana Sayfa
-        </a>
-        <a href="/activities" class="nav-item active">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
-            Etkinlikler
-        </a>
-        <a href="/profile" class="nav-item">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            Profil
-        </a>
-    </nav>
-     <!-- Alt Navigasyon Menüsü ve Stilleri -->
-    <style>
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background: #ffffff;
-            border-top: 2px solid #e2e8f0;
-            padding: 12px 0;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-         
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #64748b; /* Aktif olmayanların rengi (gri tonu) */
-            font-size: 13px;
-            font-weight: 500;
-        }
-        .nav-item svg {
-            width: 24px !important;
-            height: 24px !important;
-            fill: currentColor;
-            margin-bottom: 4px;
-        }
-        .nav-item.active {
-            color: #1e2b3e; /* Aktif olan da diğerleriyle aynı gri/mavi tonunda olsun istersen */
-        }
-    </style>
 
-    <nav class="bottom-nav">
-        <a href="/dashboard" class="nav-item">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            Ana Sayfa
-        </a>
-        <a href="/create-activity" class="nav-item active">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
-            Etkinlikler
+        <a href="/panel" class="nav-item active">
+            <i class="fas fa-folder-open"></i>
+            <span>Etkinlikler</span>
         </a>
         <a href="/profile" class="nav-item">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            Profil
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
         </a>
     </nav>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script>
+        let cropper;
+
+        function previewImage(input) {
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImage = document.getElementById('imagePreview');
+            const uploadLabel = document.getElementById('uploadLabel');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    uploadLabel.style.display = 'none';
+
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+
+                    cropper = new Cropper(previewImage, {
+                        aspectRatio: 16 / 9,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                    });
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                clearImage();
+            }
+        }
+
+        function confirmCrop() {
+            if (cropper) {
+                const btnConfirm = event.currentTarget;
+                const btnCancel = btnConfirm.nextElementSibling;
+                
+                cropper.getCroppedCanvas({
+                    width: 800,
+                    height: 450
+                }).toBlob(function (blob) {
+                    const file = new File([blob], "cover.jpg", { type: "image/jpeg" });
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    document.getElementById('coverImage').files = dt.files;
+                    
+                    const previewImage = document.getElementById('imagePreview');
+                    previewImage.src = URL.createObjectURL(blob);
+                    
+                    cropper.destroy();
+                    cropper = null;
+                    
+                    btnConfirm.style.display = 'none';
+                    btnCancel.style.display = 'none';
+                }, 'image/jpeg', 0.8);
+            }
+        }
+
+        function clearImage() {
+            const input = document.getElementById('coverImage');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImage = document.getElementById('imagePreview');
+            const uploadLabel = document.getElementById('uploadLabel');
+
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+
+            input.value = "";
+            previewImage.src = "";
+            previewContainer.style.display = 'none';
+            uploadLabel.style.display = 'flex';
+        }
+
+        document.getElementById('activityForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = this;
+
+            if (cropper) {
+                cropper.getCroppedCanvas({
+                    width: 800,
+                    height: 450
+                }).toBlob(function (blob) {
+                    const file = new File([blob], "cover.jpg", { type: "image/jpeg" });
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    document.getElementById('coverImage').files = dt.files;
+                    form.submit();
+                }, 'image/jpeg', 0.8);
+            } else {
+                form.submit();
+            }
+        });
+    </script>
 </body>
+
 </html>
