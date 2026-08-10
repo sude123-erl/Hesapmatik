@@ -2,8 +2,12 @@
 <html lang="tr">
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <title>Profil ve Kullanıcı Adı</title>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js"></script>
+
     <style>
         /* Mevcut Hesabı Sil yazısını buton gibi göstermek için */
         .delete-link-btn {
@@ -210,19 +214,7 @@
             font-size: 14px;
         }
 
-        /* ONAY KODU POPUP (MODAL) STİLLERİ */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+
 
         .modal-content {
             background: #ffffff;
@@ -270,7 +262,70 @@
         .main-delete-btn:hover {
             background-color: rgba(220, 38, 38, 0.15);
         }
-    </style>
+    
+    /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
+    @media (max-width: 768px) {
+        /* Konteynerlar */
+        .container, .main-container, .panel-container, .content-container, .form-container, .card, .profile-container, .settings-container {
+            width: 95% !important;
+            max-width: 100% !important;
+            padding: 15px !important;
+            margin: 10px auto !important;
+            box-sizing: border-box !important;
+            box-shadow: none !important;
+        }
+
+        /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
+        .flex-row, .activities-grid, .list-item, .expense-item, .payment-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            width: 100% !important;
+            height: auto !important;
+        }
+
+        
+
+        /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
+        input, select, textarea, .btn, .btn-primary, .btn-danger, .btn-secondary {
+            width: 100% !important;
+            font-size: 16px !important; 
+            margin-top: 5px !important;
+            margin-bottom: 5px !important;
+            box-sizing: border-box !important;
+            
+        }
+
+        /* Modallar (Acilir Pencereler) */
+        .modal-content, #expenseModal > div, #editExpenseModal > div {
+            width: 95% !important;
+            margin: 20px auto !important;
+            padding: 20px !important;
+            height: auto !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+        }
+
+        /* Baslik Boyutlari */
+        h1, h2 {
+            font-size: 1.4rem !important;
+            text-align: center !important;
+        }
+        h3 {
+            font-size: 1.2rem !important;
+        }
+
+        /* Tablolar (Tasan tablolari kaydirilabilir yap) */
+        table {
+            display: block !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            width: 100% !important;
+        }
+    }
+
+</style>
 </head>
 
 <body>
@@ -313,7 +368,8 @@
 
             <div class="form-group">
                 <label for="phone">Telefon Numarası</label>
-                <input type="text" id="phone" name="phone" value="<%= user.phone || '' %>" placeholder="05XX XXX XX XX">
+                <input type="text" id="phone" name="phone" value="<%= user.phone || '' %>" placeholder="05XX XXX XX XX" maxlength="11" pattern="^0[0-9]{10}$" title="Telefon numarası 0 ile başlamalı ve 11 hane olmalıdır" oninput="validatePhone(this)">
+                <div id="phoneWarning" style="color: #d9534f; font-size: 12px; margin-top: 5px; display: none;"></div>
             </div>
 
             <button type="submit" class="btn-submit">Kaydet</button>
@@ -324,11 +380,11 @@
 
     <!-- ONAY KODU POPUP (Sadece E-posta veya Telefon değiştiğinde ekrana gelir) -->
     <% if (typeof showOtpModal !=='undefined' && showOtpModal) { %>
-        <div class="modal-overlay">
+        <div class="modal-overlay active">
             <div class="modal-content">
                 <h3>Güvenlik Doğrulaması</h3>
                 <p style="font-size: 13px; color: #555; margin-bottom: 15px;">
-                    E-posta veya telefon değişikliğini tamamlamak için terminal ekranındaki 6 haneli onay kodunu
+                    E-posta veya telefon değişikliğini tamamlamak için e-postanıza gelen 6 haneli onay kodunu
                     giriniz.
                 </p>
 
@@ -395,6 +451,37 @@
         if (modal) {
             modal.style.display = 'none';
             modal.classList.remove('active');
+        }
+    }
+
+    function validatePhone(input) {
+        const warning = document.getElementById('phoneWarning');
+        const val = input.value;
+        let warningText = "";
+
+        if (/[^0-9]/.test(val)) {
+            warningText = "Sadece rakam girebilirsiniz.";
+        } else if (val.length > 0 && val[0] !== '0') {
+            warningText = "Telefon numarası 0 ile başlamalıdır.";
+        } else if (val.length === 11 && !/^0[0-9]{10}$/.test(val)) {
+            warningText = "Telefon numarası geçerli değil.";
+        }
+
+        if (warningText) {
+            warning.style.display = 'block';
+            warning.textContent = warningText;
+        } else {
+            warning.style.display = 'none';
+        }
+    }
+
+    function checkPhoneLength(e) {
+        if (e.target.value.length >= 11) {
+            const warning = document.getElementById('phoneWarning');
+            warning.style.display = 'block';
+            warning.textContent = "En fazla 11 hane girebilirsiniz.";
+            clearTimeout(window.phoneWarningTimeout);
+            window.phoneWarningTimeout = setTimeout(() => { warning.style.display = 'none'; }, 3000);
         }
     }
 

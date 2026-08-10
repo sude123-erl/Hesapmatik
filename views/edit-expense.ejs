@@ -1,29 +1,193 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harcama Düzenle - Hesapmatik</title>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js"></script>
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: #e8e7e1 !important; color: #0f382c !important; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .card { background: #f4f3ef; padding: 32px 28px; border-radius: 20px; width: 100%; max-width: 440px; box-shadow: 0 10px 25px rgba(15, 56, 44, 0.06); border: 1px solid rgba(15, 56, 44, 0.12); }
-        h2 { font-size: 22px; font-weight: 800; color: #0f382c; margin-bottom: 24px; text-align: left; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #0f382c; font-size: 14px; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 12px 16px; border: 1.5px solid rgba(15, 56, 44, 0.2); border-radius: 12px; font-size: 14px; font-weight: 600; outline: none; color: #0f382c; background: #ffffff; transition: border-color 0.2s ease; }
-        input[type="text"]:focus, input[type="number"]:focus { border-color: #0f382c; }
-        .btn-submit { flex: 1; background: #0f382c; color: #f4f3ef; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); display: flex; justify-content: center; align-items: center;}
-        .btn-submit:hover { background: #175241; }
-        .btn-cancel { flex: 1; background: #e8e7e1; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.15); padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; text-align: center; text-decoration: none; cursor: pointer; transition: background 0.2s ease; display: flex; justify-content: center; align-items: center;}
-        .btn-cancel:hover { background: #e0ded7; }
-    </style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #e8e7e1 !important;
+            color: #0f382c !important;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: #f4f3ef;
+            padding: 32px 28px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 10px 25px rgba(15, 56, 44, 0.06);
+            border: 1px solid rgba(15, 56, 44, 0.12);
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f382c;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #0f382c;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid rgba(15, 56, 44, 0.2);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            outline: none;
+            color: #0f382c;
+            background: #ffffff;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #0f382c;
+        }
+
+        .btn-submit {
+            flex: 1;
+            background: #0f382c;
+            color: #f4f3ef;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-submit:hover {
+            background: #175241;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: #e8e7e1;
+            color: #0f382c;
+            border: 1px solid rgba(15, 56, 44, 0.15);
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-cancel:hover {
+            background: #e0ded7;
+        }
+    
+    /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
+    @media (max-width: 768px) {
+        /* Konteynerlar */
+        .container, .main-container, .panel-container, .content-container, .form-container, .card, .profile-container, .settings-container {
+            width: 95% !important;
+            max-width: 100% !important;
+            padding: 15px !important;
+            margin: 10px auto !important;
+            box-sizing: border-box !important;
+            box-shadow: none !important;
+        }
+
+        /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
+        .flex-row, .activities-grid, .list-item, .expense-item, .payment-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            width: 100% !important;
+            height: auto !important;
+        }
+
+        
+
+        /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
+        input, select, textarea, .btn, .btn-primary, .btn-danger, .btn-secondary {
+            width: 100% !important;
+            font-size: 16px !important; 
+            margin-top: 5px !important;
+            margin-bottom: 5px !important;
+            box-sizing: border-box !important;
+            
+        }
+
+        /* Modallar (Acilir Pencereler) */
+        .modal-content, #expenseModal > div, #editExpenseModal > div {
+            width: 95% !important;
+            margin: 20px auto !important;
+            padding: 20px !important;
+            height: auto !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+        }
+
+        /* Baslik Boyutlari */
+        h1, h2 {
+            font-size: 1.4rem !important;
+            text-align: center !important;
+        }
+        h3 {
+            font-size: 1.2rem !important;
+        }
+
+        /* Tablolar (Tasan tablolari kaydirilabilir yap) */
+        table {
+            display: block !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            width: 100% !important;
+        }
+    }
+
+</style>
 </head>
+
 <body>
     <div class="card">
         <h2>Harcamayı Düzenle</h2>
-        
-       <form action="/edit-expense/<%= expense.id %>" method="POST">
+
+        <form action="/edit-expense/<%= expense.id %>" method="POST">
             <div class="form-group">
                 <label for="expenseName">Harcama Adı</label>
                 <input type="text" id="expenseName" name="expenseName" value="<%= expense.expenseName %>" required>
@@ -34,59 +198,66 @@
                 <input type="number" id="amount" name="amount" value="<%= expense.amount %>" required>
             </div>
 
-           <% if (expense.receipt) { %>
-    <div class="form-group">
-        <label>Mevcut Fiş / Dekont</label>
-        
-        <!-- Küçük Resim -->
-        <img src="/uploads/<%= expense.receipt %>" alt="Fiş Görseli" onclick="openModal()" style="max-width: 100%; max-height: 150px; object-fit: contain; border-radius: 12px; border: 1.5px solid rgba(15, 56, 44, 0.2); cursor: pointer; transition: 0.2s;" title="Büyütmek için tıkla">
-        <div style="font-size: 0.8rem; color: #537066; margin-top: 5px;">(Büyütmek için resme tıklayın)</div>
+            <% if (expense.receipt) { %>
+                <div class="form-group">
+                    <label>Mevcut Fiş / Dekont</label>
 
-        <!-- Modal (Büyük Resim Penceresi) -->
-        <div id="receiptModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
-            
-            <!-- Kapatma Çarpı Butonu -->
-            <span onclick="closeModal()" style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
-            
-            <!-- Büyük Resim -->
-            <img id="modalImg" style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
-        </div>
-    </div>
+                    <!-- Küçük Resim -->
+                    <img src="/uploads/<%= expense.receipt %>" alt="Fiş Görseli" onclick="openModal()"
+                        style="max-width: 100%; max-height: 150px; object-fit: contain; border-radius: 12px; border: 1.5px solid rgba(15, 56, 44, 0.2); cursor: pointer; transition: 0.2s;"
+                        title="Büyütmek için tıkla">
+                    <div style="font-size: 0.8rem; color: #537066; margin-top: 5px;">(Büyütmek için resme tıklayın)
+                    </div>
 
-    <!-- Modal Kontrolü İçin JavaScript -->
-    <script>
-        function openModal() {
-            var modal = document.getElementById("receiptModal");
-            var modalImg = document.getElementById("modalImg");
-            var thumbImg = document.querySelector("img[alt='Fiş Görseli']");
-            
-            modal.style.display = "flex";
-            modalImg.src = thumbImg.src;
-        }
+                    <!-- Modal (Büyük Resim Penceresi) -->
+                    <div id="receiptModal"
+                        style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
 
-        function closeModal() {
-            var modal = document.getElementById("receiptModal");
-            modal.style.display = "none";
-        }
+                        <!-- Kapatma Çarpı Butonu -->
+                        <span onclick="closeModal()"
+                            style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
 
-        window.onclick = function(event) {
-            var modal = document.getElementById("receiptModal");
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    </script>
-<% } %>
+                        <!-- Büyük Resim -->
+                        <img id="modalImg"
+                            style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+                    </div>
+                </div>
 
-            <div style="display: flex; gap: 12px; margin-top: 24px;">
-                <a href="javascript:history.back()" class="btn-cancel">
-                    İptal
-                </a>
-                <button type="submit" class="btn-submit">
-                    Kaydet
-                </button>
-            </div>
+                <!-- Modal Kontrolü İçin JavaScript -->
+                <script>
+                    function openModal() {
+                        var modal = document.getElementById("receiptModal");
+                        var modalImg = document.getElementById("modalImg");
+                        var thumbImg = document.querySelector("img[alt='Fiş Görseli']");
+
+                        modal.style.display = "flex";
+                        modalImg.src = thumbImg.src;
+                    }
+
+                    function closeModal() {
+                        var modal = document.getElementById("receiptModal");
+                        modal.style.display = "none";
+                    }
+
+                    window.onclick = function (event) {
+                        var modal = document.getElementById("receiptModal");
+                        if (event.target == modal) {
+                            modal.style.display = "none";
+                        }
+                    }
+                </script>
+                <% } %>
+
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <a href="javascript:history.back()" class="btn-cancel">
+                            İptal
+                        </a>
+                        <button type="submit" class="btn-submit">
+                            Kaydet
+                        </button>
+                    </div>
         </form>
     </div>
 </body>
+
 </html>

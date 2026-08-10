@@ -518,6 +518,67 @@ app.get('/activity/:id', (req, res) => {
     });
 });
 
+// Mahsuplasma Route
+app.get('/settlement/:id', (req, res) => {
+    const activityId = req.params.id;
+    const currentUserId = req.session.userId;
+
+    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
+        if (err || !activity) {
+            return res.status(404).send("Etkinlik bulunamadı.");
+        }
+
+        db.all(`SELECT * FROM expenses WHERE activityId = ? AND userId = ?`, [activityId, currentUserId], (err, expenses) => {
+            if (err) expenses = [];
+
+            const paymentsQuery = `
+                SELECT payments.*, 
+                       sender.fullname AS senderName, sender.username AS senderUsername,
+                       receiver.fullname AS receiverName, receiver.username AS receiverUsername
+                FROM payments
+                JOIN users sender ON payments.senderId = sender.id
+                JOIN users receiver ON payments.receiverId = receiver.id
+                WHERE payments.activityId = ?
+                ORDER BY payments.id DESC
+            `;
+            db.all(paymentsQuery, [activityId], (err, payments) => {
+                if (err) payments = [];
+
+                const participantsQuery = `
+                    SELECT users.id, users.fullname, users.username
+                    FROM activity_participants
+                    JOIN users ON activity_participants.userId = users.id
+                    WHERE activity_participants.activityId = ?
+                    UNION
+                    SELECT users.id, users.fullname, users.username
+                    FROM activities
+                    JOIN users ON activities.creatorId = users.id
+                    WHERE activities.id = ?
+                `;
+                db.all(participantsQuery, [activityId, activityId], (err, participants) => {
+                    if (err) participants = [];
+
+                    db.all(`SELECT * FROM expenses WHERE activityId = ?`, [activityId], (allExpenseErr, allExpenses) => {
+                        if (allExpenseErr) allExpenses = [];
+
+                        res.render('settlement', {
+                            activity: activity,
+                            activityName: activity.activityName,
+                            expenses: expenses,
+                            allExpenses: allExpenses,
+                            payments: payments,
+                            participants: participants,
+                            currentUser: req.session.user || null,
+                            currentUserId: currentUserId
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
+
 // Etkinlik Görselini Güncelleme İşlemi
 app.post('/activity/:id/upload-image', upload.single('coverImage'), (req, res) => {
     const activityId = req.params.id;
@@ -603,7 +664,12 @@ app.post('/add-payment', (req, res) => {
                         console.error("Ödeme eklenirken hata oluştu:", insertErr.message);
                         return res.status(500).send("Ödeme kaydedilirken bir hata oluştu.");
                     }
-                    res.redirect(`/activity/${activityId}`);
+                    const referer = req.get('Referrer');
+                    if (referer && referer.includes('/settlement/')) {
+                        res.redirect(`/settlement/${activityId}`);
+                    } else {
+                        res.redirect(`/activity/${activityId}`);
+                    }
                 });
             });
         });
@@ -641,7 +707,12 @@ app.post('/approve-payment/:id', (req, res) => {
                 `INSERT INTO notifications (userId, message, isRead, createdAt) VALUES (?, ?, 0, datetime('now'))`,
                 [targetUserId, notificationMessage],
                 () => {
-                    res.redirect(req.body.returnTo === '/dashboard' ? '/dashboard' : `/activity/${payment.activityId}`);
+                    let redirectUrl = req.body.returnTo === '/dashboard' ? '/dashboard' : `/activity/${payment.activityId}`;
+                    const referer = req.get('Referrer');
+                    if (req.body.returnTo !== '/dashboard' && referer && referer.includes('/settlement/')) {
+                        redirectUrl = `/settlement/${payment.activityId}`;
+                    }
+                    res.redirect(redirectUrl);
                 }
             );
         });
@@ -670,7 +741,12 @@ app.post('/delete-payment/:id', (req, res) => {
             if (err) {
                 return res.status(500).send("Silme işleminde hata oluştu.");
             }
-            res.redirect(`/activity/${payment.activityId}`);
+            const referer = req.get('Referrer');
+            if (referer && referer.includes('/settlement/')) {
+                res.redirect(`/settlement/${payment.activityId}`);
+            } else {
+                res.redirect(`/activity/${payment.activityId}`);
+            }
         });
     });
 });

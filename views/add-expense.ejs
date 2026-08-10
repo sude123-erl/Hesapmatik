@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hesapmatik - Harcama Ekle</title>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js"></script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -63,7 +67,8 @@
             margin-bottom: 16px;
         }
 
-        input[type="text"], input[type="file"] {
+        input[type="text"],
+        input[type="file"] {
             width: 100%;
             padding: 12px 16px;
             border: 1.5px solid rgba(15, 56, 44, 0.2);
@@ -184,148 +189,214 @@
         .btn-submit.active:hover {
             background: #175241;
         }
-    </style>
-</head>
-<body>
-
-<div class="card">
-    <h2>Harcama Ekle</h2>
     
-    <form action="/add-expense" method="POST" enctype="multipart/form-data">
+    /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
+    @media (max-width: 768px) {
+        /* Konteynerlar */
+        .container, .main-container, .panel-container, .content-container, .form-container, .card, .profile-container, .settings-container {
+            width: 95% !important;
+            max-width: 100% !important;
+            padding: 15px !important;
+            margin: 10px auto !important;
+            box-sizing: border-box !important;
+            box-shadow: none !important;
+        }
 
-        <input type="hidden" name="activityId" value="<%= typeof activityId !== 'undefined' ? activityId : '' %>">
+        /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
+        .flex-row, .activities-grid, .list-item, .expense-item, .payment-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            width: 100% !important;
+            height: auto !important;
+        }
+
         
-        <!-- Miktar Göstergesi -->
-        <div class="amount-display" id="amountDisplay">0,00</div>
-        <input type="hidden" name="amount" id="amountInput" value="0">
 
-        <!-- Harcama Adı -->
-        <div class="form-group">
-            <input type="text" name="expenseName" required placeholder="Harcama Adı: Örn. market, benzin, otopark vb">
-        </div>
+        /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
+        input, select, textarea, .btn, .btn-primary, .btn-danger, .btn-secondary {
+            width: 100% !important;
+            font-size: 16px !important; 
+            margin-top: 5px !important;
+            margin-bottom: 5px !important;
+            box-sizing: border-box !important;
+            
+        }
 
-        <!-- Fiş veya Dekont Yükle (Çoklu Seçim Özellikli) -->
-        <div class="form-group">
-            <input type="file" name="receipt" id="receiptInput" multiple>
-            <div class="file-list" id="fileList"></div>
-        </div>
+        /* Modallar (Acilir Pencereler) */
+        .modal-content, #expenseModal > div, #editExpenseModal > div {
+            width: 95% !important;
+            margin: 20px auto !important;
+            padding: 20px !important;
+            height: auto !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+        }
 
-        <!-- Özel Klavye (Tuş Takımı) -->
-        <div class="keypad" id="keypad">
-            <button type="button" class="key-btn" onclick="pressKey('1')">1</button>
-            <button type="button" class="key-btn" onclick="pressKey('2')">2</button>
-            <button type="button" class="key-btn" onclick="pressKey('3')">3</button>
-            <button type="button" class="key-btn" onclick="pressKey('4')">4</button>
-            <button type="button" class="key-btn" onclick="pressKey('5')">5</button>
-            <button type="button" class="key-btn" onclick="pressKey('6')">6</button>
-            <button type="button" class="key-btn" onclick="pressKey('7')">7</button>
-            <button type="button" class="key-btn" onclick="pressKey('8')">8</button>
-            <button type="button" class="key-btn" onclick="pressKey('9')">9</button>
-            <div></div>
-            <button type="button" class="key-btn" onclick="pressKey('0')">0</button>
-            <button type="button" class="key-btn" onclick="deleteKey()">⌫</button>
-        </div>
+        /* Baslik Boyutlari */
+        h1, h2 {
+            font-size: 1.4rem !important;
+            text-align: center !important;
+        }
+        h3 {
+            font-size: 1.2rem !important;
+        }
 
-        <!-- Harcama Ekle Butonu -->
-        <button type="submit" class="btn-submit" id="submitBtn">Harcama Ekle</button>
-    </form>
-</div>
-
-<script>
-    let currentAmount = "0";
-    const amountDisplay = document.getElementById('amountDisplay');
-    const keypad = document.getElementById('keypad');
-    const receiptInput = document.getElementById('receiptInput');
-    const fileListContainer = document.getElementById('fileList');
-    
-    let selectedFiles = []; // Seçilen dosyaları hafızada tutacağız
-
-    // Kuturaya tıklandığında tuş takımını göster
-    amountDisplay.addEventListener('click', function() {
-        keypad.style.setProperty('display', 'grid', 'important');
-    });
-
-    // Dosya seçildiğinde listeye ekle
-    receiptInput.addEventListener('change', function(e) {
-        const files = Array.from(e.target.files);
-        files.forEach(file => {
-            selectedFiles.push(file);
-        });
-        updateFileList();
-    });
-
-    // Listeden belirli bir dosyayı silme
-    function removeFile(index) {
-        selectedFiles.splice(index, 1);
-        updateFileList();
+        /* Tablolar (Tasan tablolari kaydirilabilir yap) */
+        table {
+            display: block !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            width: 100% !important;
+        }
     }
 
-    // Dosya listesini ekranda güncelle ve inputa yansıt
-    function updateFileList() {
-        fileListContainer.innerHTML = '';
-        
-        // DataTransfer kullanarak inputun içindeki dosyaları güncelliyoruz
-        const dataTransfer = new DataTransfer();
-        
-        selectedFiles.forEach((file, index) => {
-            dataTransfer.items.add(file);
+</style>
+</head>
 
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-            fileItem.innerHTML = `
+<body>
+
+    <div class="card">
+        <h2>Harcama Ekle</h2>
+
+        <form action="/add-expense" method="POST" enctype="multipart/form-data">
+
+            <input type="hidden" name="activityId" value="<%= typeof activityId !== 'undefined' ? activityId : '' %>">
+
+            <!-- Miktar Göstergesi -->
+            <div class="amount-display" id="amountDisplay">0,00</div>
+            <input type="hidden" name="amount" id="amountInput" value="0">
+
+            <!-- Harcama Adı -->
+            <div class="form-group">
+                <input type="text" name="expenseName" required
+                    placeholder="Harcama Adı: Örn. market, benzin, otopark vb">
+            </div>
+
+            <!-- Fiş veya Dekont Yükle (Çoklu Seçim Özellikli) -->
+            <div class="form-group">
+                <input type="file" name="receipt" id="receiptInput" multiple>
+                <div class="file-list" id="fileList"></div>
+            </div>
+
+            <!-- Özel Klavye (Tuş Takımı) -->
+            <div class="keypad" id="keypad">
+                <button type="button" class="key-btn" onclick="pressKey('1')">1</button>
+                <button type="button" class="key-btn" onclick="pressKey('2')">2</button>
+                <button type="button" class="key-btn" onclick="pressKey('3')">3</button>
+                <button type="button" class="key-btn" onclick="pressKey('4')">4</button>
+                <button type="button" class="key-btn" onclick="pressKey('5')">5</button>
+                <button type="button" class="key-btn" onclick="pressKey('6')">6</button>
+                <button type="button" class="key-btn" onclick="pressKey('7')">7</button>
+                <button type="button" class="key-btn" onclick="pressKey('8')">8</button>
+                <button type="button" class="key-btn" onclick="pressKey('9')">9</button>
+                <div></div>
+                <button type="button" class="key-btn" onclick="pressKey('0')">0</button>
+                <button type="button" class="key-btn" onclick="deleteKey()">⌫</button>
+            </div>
+
+            <!-- Harcama Ekle Butonu -->
+            <button type="submit" class="btn-submit" id="submitBtn">Harcama Ekle</button>
+        </form>
+    </div>
+
+    <script>
+        let currentAmount = "0";
+        const amountDisplay = document.getElementById('amountDisplay');
+        const keypad = document.getElementById('keypad');
+        const receiptInput = document.getElementById('receiptInput');
+        const fileListContainer = document.getElementById('fileList');
+
+        let selectedFiles = []; // Seçilen dosyaları hafızada tutacağız
+
+        // Kuturaya tıklandığında tuş takımını göster
+        amountDisplay.addEventListener('click', function () {
+            keypad.style.setProperty('display', 'grid', 'important');
+        });
+
+        // Dosya seçildiğinde listeye ekle
+        receiptInput.addEventListener('change', function (e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                selectedFiles.push(file);
+            });
+            updateFileList();
+        });
+
+        // Listeden belirli bir dosyayı silme
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+        }
+
+        // Dosya listesini ekranda güncelle ve inputa yansıt
+        function updateFileList() {
+            fileListContainer.innerHTML = '';
+
+            // DataTransfer kullanarak inputun içindeki dosyaları güncelliyoruz
+            const dataTransfer = new DataTransfer();
+
+            selectedFiles.forEach((file, index) => {
+                dataTransfer.items.add(file);
+
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
                 <span>${file.name}</span>
                 <button type="button" onclick="removeFile(${index})">×</button>
             `;
-            fileListContainer.appendChild(fileItem);
+                fileListContainer.appendChild(fileItem);
+            });
+
+            receiptInput.files = dataTransfer.files;
+        }
+
+        // Bilgisayar klavyesinden tuş basıldığında algıla
+        document.addEventListener('keydown', function (event) {
+            if (document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'text') {
+                return;
+            }
+
+            if (event.key >= '0' && event.key <= '9') {
+                pressKey(event.key);
+            } else if (event.key === 'Backspace') {
+                deleteKey();
+            }
         });
 
-        receiptInput.files = dataTransfer.files;
-    }
-
-    // Bilgisayar klavyesinden tuş basıldığında algıla
-    document.addEventListener('keydown', function(event) {
-        if (document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'text') {
-            return;
+        function pressKey(num) {
+            if (currentAmount === "0") {
+                currentAmount = num;
+            } else {
+                currentAmount += num;
+            }
+            updateDisplay();
         }
 
-        if (event.key >= '0' && event.key <= '9') {
-            pressKey(event.key);
-        } else if (event.key === 'Backspace') {
-            deleteKey();
+        function deleteKey() {
+            if (currentAmount.length > 1) {
+                currentAmount = currentAmount.slice(0, -1);
+            } else {
+                currentAmount = "0";
+            }
+            updateDisplay();
         }
-    });
 
-    function pressKey(num) {
-        if (currentAmount === "0") {
-            currentAmount = num;
-        } else {
-            currentAmount += num;
-        }
-        updateDisplay();
-    }
+        function updateDisplay() {
+            let displayVal = (parseInt(currentAmount) / 100).toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+            amountDisplay.innerText = displayVal;
+            document.getElementById('amountInput').value = (parseInt(currentAmount) / 100).toFixed(2);
 
-    function deleteKey() {
-        if (currentAmount.length > 1) {
-            currentAmount = currentAmount.slice(0, -1);
-        } else {
-            currentAmount = "0";
+            const submitBtn = document.getElementById('submitBtn');
+            if (parseInt(currentAmount) > 0) {
+                submitBtn.classList.add('active');
+            } else {
+                submitBtn.classList.remove('active');
+            }
         }
-        updateDisplay();
-    }
-
-    function updateDisplay() {
-        let displayVal = (parseInt(currentAmount) / 100).toLocaleString('tr-TR', { minimumFractionDigits: 2 });
-        amountDisplay.innerText = displayVal;
-        document.getElementById('amountInput').value = (parseInt(currentAmount) / 100).toFixed(2);
-        
-        const submitBtn = document.getElementById('submitBtn');
-        if (parseInt(currentAmount) > 0) {
-            submitBtn.classList.add('active');
-        } else {
-            submitBtn.classList.remove('active');
-        }
-    }
-</script>
+    </script>
 
 </body>
+
 </html>

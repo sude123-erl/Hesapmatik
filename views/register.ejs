@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hesapmatik'e Kayıt Ol</title>
+    <script src="/theme.js"></script>
     <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -266,7 +267,70 @@ body, html {
         transform: translateY(0);
     }
 }
-    </style>
+    
+    /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
+    @media (max-width: 768px) {
+        /* Konteynerlar */
+        .container, .main-container, .panel-container, .content-container, .form-container, .card, .profile-container, .settings-container {
+            width: 95% !important;
+            max-width: 100% !important;
+            padding: 15px !important;
+            margin: 10px auto !important;
+            box-sizing: border-box !important;
+            box-shadow: none !important;
+        }
+
+        /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
+        .flex-row, .activities-grid, .list-item, .expense-item, .payment-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            width: 100% !important;
+            height: auto !important;
+        }
+
+        
+
+        /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
+        input, select, textarea, .btn, .btn-primary, .btn-danger, .btn-secondary {
+            width: 100% !important;
+            font-size: 16px !important; 
+            margin-top: 5px !important;
+            margin-bottom: 5px !important;
+            box-sizing: border-box !important;
+            
+        }
+
+        /* Modallar (Acilir Pencereler) */
+        .modal-content, #expenseModal > div, #editExpenseModal > div {
+            width: 95% !important;
+            margin: 20px auto !important;
+            padding: 20px !important;
+            height: auto !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+        }
+
+        /* Baslik Boyutlari */
+        h1, h2 {
+            font-size: 1.4rem !important;
+            text-align: center !important;
+        }
+        h3 {
+            font-size: 1.2rem !important;
+        }
+
+        /* Tablolar (Tasan tablolari kaydirilabilir yap) */
+        table {
+            display: block !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            width: 100% !important;
+        }
+    }
+
+</style>
 </head>
 <body>
 
@@ -301,17 +365,19 @@ body, html {
 
                     <div class="input-group">
                         <label>Kullanıcı Adı</label>
-                        <input type="text" name="username" placeholder="Kullanıcı adınızı belirleyin" required>
+                        <input type="text" name="username" placeholder="Kullanıcı adınızı belirleyin" required maxlength="20">
                     </div>
 
                     <div class="input-group">
                         <label>E-posta Adresi</label>
-                        <input type="email" name="email" placeholder="E-posta adresinizi girin" required>
+                        <input type="email" name="email" placeholder="E-posta adresinizi girin" required pattern="^[^çğşıöüÇĞŞİÖÜ]+$" title="Türkçe karakter kullanılamaz." oninput="validateEmail(this)">
+                        <div id="emailWarning" style="color: #dc2626; font-size: 12px; margin-top: 5px; display: none;"></div>
                     </div>
 
                     <div class="input-group">
                         <label>Telefon Numarası</label>
-                        <input type="tel" name="phone" placeholder="05XX XXX XX XX" required>
+                        <input type="tel" id="phone" name="phone" placeholder="05XX XXX XX XX" required maxlength="11" pattern="^0[0-9]{10}$" title="Telefon numarası 0 ile başlamalı ve 11 hane olmalıdır" oninput="validatePhone(this)">
+                        <div id="phoneWarning" style="color: #dc2626; font-size: 12px; margin-top: 5px; display: none;"></div>
                     </div>
 
                     <div class="input-group">
@@ -330,5 +396,37 @@ body, html {
         </div>
     </div>
 
+<script>
+    function validatePhone(input) {
+        const warning = document.getElementById('phoneWarning');
+        let val = input.value;
+        let warningText = "";
+
+        if (/[^0-9]/.test(val)) {
+            warningText = "Sadece rakam girebilirsiniz.";
+        } else if (val.length > 0 && val[0] !== '0') {
+            warningText = "Telefon numarası 0 ile başlamalıdır.";
+        }
+
+        if (warningText) {
+            warning.style.display = 'block';
+            warning.textContent = warningText;
+        } else {
+            warning.style.display = 'none';
+        }
+    }
+
+    function validateEmail(input) {
+        const warning = document.getElementById('emailWarning');
+        let val = input.value;
+        
+        if (/[çğşıöüÇĞŞİÖÜ]/.test(val)) {
+            warning.style.display = 'block';
+            warning.textContent = "Türkçe karakter kullanılamaz.";
+        } else {
+            warning.style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>

@@ -29,7 +29,14 @@ function customConfirm(event, formElement, messageText) {
 
         document.getElementById('globalConfirmBtn').addEventListener('click', () => {
             if (currentConfirmForm) {
-                currentConfirmForm.submit();
+                if (currentConfirmForm.dataset.ajax === 'true') {
+                    const event = new Event('submit', { cancelable: true, bubbles: true });
+                    currentConfirmForm.dispatchEvent(event);
+                    modal.style.display = 'none';
+                    currentConfirmForm = null;
+                } else {
+                    currentConfirmForm.submit();
+                }
             }
         });
     }
