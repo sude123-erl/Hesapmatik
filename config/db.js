@@ -65,7 +65,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
             createdAt TEXT,
             FOREIGN KEY(userId) REFERENCES users(id)
         )`);
-        
+
         // Alter tables safely
         const alterQueries = [
             `ALTER TABLE activities ADD COLUMN creatorId INTEGER`,
