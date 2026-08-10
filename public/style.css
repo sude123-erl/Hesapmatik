@@ -5,7 +5,8 @@
     box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
     height: 100%;
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
@@ -21,8 +22,10 @@ body, html {
 /* Sol Taraf: Mint Yeşili ve Krem Tonları */
 .login-left-panel {
     flex: 3;
-    background: linear-gradient(135deg, #134e4a 0%, #065f46 100%); /* Derin, şık koyu mint/çam yeşili */
-    color: #fdfbf7; /* Krem/Fildişi metin rengi */
+    background: linear-gradient(135deg, #134e4a 0%, #065f46 100%);
+    /* Derin, şık koyu mint/çam yeşili */
+    color: #fdfbf7;
+    /* Krem/Fildişi metin rengi */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -46,7 +49,8 @@ body, html {
     font-size: 1.5rem;
     font-weight: 800;
     letter-spacing: 3px;
-    color: #6ee7b7; /* Canlı mint yeşili */
+    color: #6ee7b7;
+    /* Canlı mint yeşili */
     margin: 0;
     text-transform: uppercase;
 }
@@ -60,15 +64,18 @@ body, html {
 .hero-line {
     font-size: 4rem;
     font-weight: 800;
-    color: #fdfbf7; /* Krem tonu */
+    color: #fdfbf7;
+    /* Krem tonu */
 }
 
 .hero-line.highlight-green {
-    color: #34d399; /* Parlak mint vurgusu */
+    color: #34d399;
+    /* Parlak mint vurgusu */
 }
 
 .hero-line.highlight-blue {
-    color: #a7f3d0; /* Yumuşak mint tonu */
+    color: #a7f3d0;
+    /* Yumuşak mint tonu */
 }
 
 .hero-subtext {
@@ -81,7 +88,8 @@ body, html {
 /* Sağ Taraf: Login Kartı (Krem Arka Plan) */
 .login-right-panel {
     flex: 2;
-    background-color: #f9f8f6; /* Çok yumuşak krem rengi arkaplan */
+    background-color: #f9f8f6;
+    /* Çok yumuşak krem rengi arkaplan */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -94,7 +102,8 @@ body, html {
     background: #ffffff;
     padding: 50px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(6, 95, 70, 0.08); /* Mint tonlarında hafif bir gölge */
+    box-shadow: 0 10px 30px rgba(6, 95, 70, 0.08);
+    /* Mint tonlarında hafif bir gölge */
     border: 1px solid #f0ede6;
 }
 
@@ -141,7 +150,8 @@ body, html {
 .btn-login {
     width: 100%;
     padding: 16px;
-    background: linear-gradient(45deg, #065f46, #047857); /* Mint/Yeşil tonlarında buton */
+    background: linear-gradient(45deg, #065f46, #047857);
+    /* Mint/Yeşil tonlarında buton */
     color: white;
     border: none;
     border-radius: 12px;
@@ -196,8 +206,15 @@ body, html {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Mobil Uyumluluk */
@@ -228,16 +245,20 @@ body, html {
         padding: 20px;
         background-color: #f9f8f6;
     }
-    
+
     .login-card {
         box-shadow: none;
         padding: 30px;
     }
 }
+
 /* Ekran genişliği 768px veya daha küçük olan mobil cihazlar için */
 @media (max-width: 768px) {
-    body, html {
-        overflow: auto !important; /* Mobilde genel sayfa kaydırmasını açar */
+
+    body,
+    html {
+        overflow: auto !important;
+        /* Mobilde genel sayfa kaydırmasını açar */
         height: auto !important;
     }
 

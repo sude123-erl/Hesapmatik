@@ -75,7 +75,7 @@
             <span class="app-notifications__item-icon">🔔</span>
             <div style="flex:1;">
               <p>${n.message}</p>
-              <time>${new Date(n.createdAt || Date.now()).toLocaleDateString('tr-TR')} ${new Date(n.createdAt || Date.now()).toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'})}</time>
+              <time>${new Date(n.createdAt || Date.now()).toLocaleDateString('tr-TR')} ${new Date(n.createdAt || Date.now()).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</time>
             </div>
             <button class="app-notifications__delete" aria-label="Sil">&times;</button>
           </div>

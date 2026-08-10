@@ -232,7 +232,7 @@
                 width: 100% !important;
                 height: auto !important;
             }
-            
+
             .left-panel-content {
                 position: static;
                 height: auto;
@@ -260,70 +260,91 @@
                 padding: 30px;
             }
         }
-    
-    /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
-    @media (max-width: 768px) {
-        /* Konteynerlar */
-        .container, .main-container, .panel-container, .content-container, .form-container, .card, .profile-container, .settings-container {
-            width: 95% !important;
-            max-width: 100% !important;
-            padding: 15px !important;
-            margin: 10px auto !important;
-            box-sizing: border-box !important;
-            box-shadow: none !important;
-        }
 
-        /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
-        .flex-row, .activities-grid, .list-item, .expense-item, .payment-item {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 10px !important;
-            width: 100% !important;
-            height: auto !important;
-        }
+        /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
+        @media (max-width: 768px) {
 
-        
+            /* Konteynerlar */
+            .container,
+            .main-container,
+            .panel-container,
+            .content-container,
+            .form-container,
+            .card,
+            .profile-container,
+            .settings-container {
+                width: 95% !important;
+                max-width: 100% !important;
+                padding: 15px !important;
+                margin: 10px auto !important;
+                box-sizing: border-box !important;
+                box-shadow: none !important;
+            }
 
-        /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
-        input, select, textarea, .btn, .btn-primary, .btn-danger, .btn-secondary {
-            width: 100% !important;
-            font-size: 16px !important; 
-            margin-top: 5px !important;
-            margin-bottom: 5px !important;
-            box-sizing: border-box !important;
-            
-        }
+            /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
+            .flex-row,
+            .activities-grid,
+            .list-item,
+            .expense-item,
+            .payment-item {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+                width: 100% !important;
+                height: auto !important;
+            }
 
-        /* Modallar (Acilir Pencereler) */
-        .modal-content, #expenseModal > div, #editExpenseModal > div {
-            width: 95% !important;
-            margin: 20px auto !important;
-            padding: 20px !important;
-            height: auto !important;
-            max-height: 90vh !important;
-            overflow-y: auto !important;
-        }
 
-        /* Baslik Boyutlari */
-        h1, h2 {
-            font-size: 1.4rem !important;
-            text-align: center !important;
-        }
-        h3 {
-            font-size: 1.2rem !important;
-        }
 
-        /* Tablolar (Tasan tablolari kaydirilabilir yap) */
-        table {
-            display: block !important;
-            overflow-x: auto !important;
-            white-space: nowrap !important;
-            width: 100% !important;
-        }
-    }
+            /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
+            input,
+            select,
+            textarea,
+            .btn,
+            .btn-primary,
+            .btn-danger,
+            .btn-secondary {
+                width: 100% !important;
+                font-size: 16px !important;
+                margin-top: 5px !important;
+                margin-bottom: 5px !important;
+                box-sizing: border-box !important;
 
-</style>
+            }
+
+            /* Modallar (Acilir Pencereler) */
+            .modal-content,
+            #expenseModal>div,
+            #editExpenseModal>div {
+                width: 95% !important;
+                margin: 20px auto !important;
+                padding: 20px !important;
+                height: auto !important;
+                max-height: 90vh !important;
+                overflow-y: auto !important;
+            }
+
+            /* Baslik Boyutlari */
+            h1,
+            h2 {
+                font-size: 1.4rem !important;
+                text-align: center !important;
+            }
+
+            h3 {
+                font-size: 1.2rem !important;
+            }
+
+            /* Tablolar (Tasan tablolari kaydirilabilir yap) */
+            table {
+                display: block !important;
+                overflow-x: auto !important;
+                white-space: nowrap !important;
+                width: 100% !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -351,121 +372,161 @@
         <div class="login-right-panel">
             <div class="login-card">
 
-                <% if (typeof logoutSuccess !== 'undefined' && logoutSuccess) { %>
+                <% if (typeof logoutSuccess !=='undefined' && logoutSuccess) { %>
                     <!-- BAŞARI: Çıkış Yapıldı -->
-                    <div style="text-align:center; background:#ecfdf5; border:1px solid #a7f3d0; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                    <div
+                        style="text-align:center; background:#ecfdf5; border:1px solid #a7f3d0; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
                         <h3 style="color: #059669; margin-bottom: 5px; font-size:1.1rem;">✅ Çıkış Başarılı</h3>
                         <p style="color: #065f46; font-size: 0.85rem;">Hesabınızdan başarıyla çıkış yapılmıştır.</p>
                     </div>
-                <% } %>
+                    <% } %>
 
-                <% if (typeof successMessage !== 'undefined' && successMessage) { %>
-                    <div style="text-align:center; background:#ecfdf5; border:1px solid #a7f3d0; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                        <h3 style="color: #059669; margin-bottom: 5px; font-size:1.1rem;">✅ Başarılı</h3>
-                        <p style="color: #065f46; font-size: 0.85rem;"><%= successMessage %></p>
-                    </div>
-                <% } %>
-
-                <% if (typeof reactivateSuccess !== 'undefined' && reactivateSuccess) { %>
-                    <!-- BAŞARI: Hesap Aktifleştirildi -->
-                    <div style="text-align:center; background:#ecfdf5; border:1px solid #a7f3d0; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                        <h3 style="color: #059669; margin-bottom: 5px; font-size:1.1rem;">✅ Hesabınız aktifleştirilmiştir!</h3>
-                        <p style="color: #065f46; font-size: 0.85rem;">Şimdi hesabınıza giriş yapabilirsiniz.</p>
-                    </div>
-                <% } %>
-
-                <% if (typeof reactivateStep !== 'undefined' && reactivateStep==='otp' ) { %>
-                        <!-- ADIM 2: OTP Kodu Girme -->
-                        <h2>Aktivasyon Kodu</h2>
-                        <p style="color:#6b7280; font-size:0.85rem; margin: 8px 0 20px;">E-posta adresinize gönderilen 6
-                            haneli kodu girin.</p>
-                        <% if (typeof reactivateError !== 'undefined' && reactivateError==='wrong_otp' ) { %>
+                        <% if (typeof successMessage !=='undefined' && successMessage) { %>
                             <div
-                                style="background:#fef2f2; color:#dc2626; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:14px; border:1px solid #fecaca;">
-                                ❌ Girdiğiniz kod hatalı. Lütfen tekrar deneyin.
+                                style="text-align:center; background:#ecfdf5; border:1px solid #a7f3d0; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                                <h3 style="color: #059669; margin-bottom: 5px; font-size:1.1rem;">✅ Başarılı</h3>
+                                <p style="color: #065f46; font-size: 0.85rem;">
+                                    <%= successMessage %>
+                                </p>
                             </div>
                             <% } %>
-                                <form action="/reactivate/verify" method="POST">
-                                    <div class="input-group">
-                                        <label>Aktivasyon Kodu</label>
-                                        <input type="text" name="otpInput" placeholder="123456" maxlength="6" required
-                                            style="font-size:1.5rem; letter-spacing:8px; text-align:center;" autofocus>
-                                    </div>
-                                    <button type="submit" class="btn-login">Hesabı Aktifleştir</button>
-                                </form>
-                                <div style="text-align:center; margin-top:16px;">
-                                    <a href="/login?passive=1" style="color:#6b7280; font-size:0.8rem;">← Geri dön</a>
-                                </div>
 
-                                <% } else if (typeof passive !== 'undefined' && passive) { %>
-                                    <!-- ADIM 1: Pasif Hesap Uyarısı + E-posta Formu -->
-                                    <h2>Hesap Pasif</h2>
+                                <% if (typeof reactivateSuccess !=='undefined' && reactivateSuccess) { %>
+                                    <!-- BAŞARI: Hesap Aktifleştirildi -->
                                     <div
-                                        style="background:#fef2f2; color:#dc2626; padding:12px 16px; border-radius:8px; font-size:0.85rem; margin: 12px 0 20px; border:1px solid #fecaca;">
-                                        ⚠️ Bu hesap pasif durumda olduğu için giriş yapılamaz.
+                                        style="text-align:center; background:#ecfdf5; border:1px solid #a7f3d0; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                                        <h3 style="color: #059669; margin-bottom: 5px; font-size:1.1rem;">✅ Hesabınız
+                                            aktifleştirilmiştir!</h3>
+                                        <p style="color: #065f46; font-size: 0.85rem;">Şimdi hesabınıza giriş
+                                            yapabilirsiniz.</p>
                                     </div>
-                                    <p style="color:#374151; font-size:0.9rem; margin-bottom:20px;">Hesabınızı yeniden
-                                        aktifleştirmek için kayıtlı e-posta adresinizi girin. Size bir aktivasyon kodu
-                                        göndereceğiz.</p>
-                                    <% if (typeof reactivateError !== 'undefined' && reactivateError==='email_not_found' ) { %>
-                                        <div
-                                            style="background:#fef2f2; color:#dc2626; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:14px; border:1px solid #fecaca;">
-                                            ❌ Bu e-posta adresiyle eşleşen pasif bir hesap bulunamadı.
-                                        </div>
-                                        <% } %>
-                                            <form action="/reactivate" method="POST">
-                                                <div class="input-group">
-                                                    <label>Kayıtlı E-posta Adresiniz</label>
-                                                    <input type="email" name="email" placeholder="ornek@email.com"
-                                                        required autofocus>
+                                    <% } %>
+
+                                        <% if (typeof reactivateStep !=='undefined' && reactivateStep==='otp' ) { %>
+                                            <!-- ADIM 2: OTP Kodu Girme -->
+                                            <h2>Aktivasyon Kodu</h2>
+                                            <p style="color:#6b7280; font-size:0.85rem; margin: 8px 0 20px;">E-posta
+                                                adresinize gönderilen 6
+                                                haneli kodu girin.</p>
+                                            <% if (typeof reactivateError !=='undefined' &&
+                                                reactivateError==='wrong_otp' ) { %>
+                                                <div
+                                                    style="background:#fef2f2; color:#dc2626; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:14px; border:1px solid #fecaca;">
+                                                    ❌ Girdiğiniz kod hatalı. Lütfen tekrar deneyin.
                                                 </div>
-                                                <button type="submit" class="btn-login">Aktivasyon Kodu Gönder</button>
-                                            </form>
-                                            <div style="text-align:center; margin-top:16px;">
-                                                <a href="/login" style="color:#6b7280; font-size:0.8rem;">← Normal giriş
-                                                    için geri dön</a>
-                                            </div>
-
-                                            <% } else { %>
-                                                <!-- NORMAL GİRİŞ FORMU -->
-                                                <h2>Giriş Yap</h2>
-                                                <% if (typeof reactivateError !== 'undefined' && reactivateError==='wrong' ) { %>
-                                                    <div
-                                                        style="background:#fef2f2; color:#dc2626; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:14px; border:1px solid #fecaca;">
-                                                        ❌ Giriş bilgileri veya şifre hatalı.
-                                                    </div>
-                                                <% } else if (typeof reactivateError !== 'undefined' && reactivateError==='passive_wrong' ) { %>
-                                                    <div
-                                                        style="background:#fef2f2; color:#dc2626; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:14px; border:1px solid #fecaca;">
-                                                        ❌ Kullanıcı adı veya şifre hatalı. Hesabınız pasif durumda olabilir, aktifleştirmek için <a href="/login?passive=1" style="color:#b91c1c; text-decoration:underline; font-weight:600;">buraya tıklayın</a>.
-                                                    </div>
                                                 <% } %>
-                                                        <form action="/login" method="POST">
-                                                            <div class="input-group">
-                                                                <label>Kullanıcı Adı, E-posta veya Telefon</label>
-                                                                <input type="text" name="username"
-                                                                    placeholder="Giriş bilginizi yazın" required>
-                                                            </div>
-
-                                                            <div class="input-group">
-                                                                <label>Şifre</label>
-                                                                <input type="password" name="password"
-                                                                    placeholder="Şifrenizi girin" required>
-                                                            </div>
-
-                                                            <button type="submit" class="btn-login">Giriş Yap</button>
-                                                        </form>
-
-                                                        <div class="login-links">
-                                                            <a href="/forgot-password"
-                                                                class="forgot-password-link">Şifremi Unuttum</a>
-                                                            <div>
-                                                                <span style="color: #6b7280; margin-right: 5px;">Hesabın
-                                                                    yok mu?</span>
-                                                                <a href="/register" class="register-link">Kayıt Ol</a>
-                                                            </div>
+                                                    <form action="/reactivate/verify" method="POST">
+                                                        <div class="input-group">
+                                                            <label>Aktivasyon Kodu</label>
+                                                            <input type="text" name="otpInput" placeholder="123456"
+                                                                maxlength="6" required
+                                                                style="font-size:1.5rem; letter-spacing:8px; text-align:center;"
+                                                                autofocus>
                                                         </div>
-                                                        <% } %>
+                                                        <button type="submit" class="btn-login">Hesabı
+                                                            Aktifleştir</button>
+                                                    </form>
+                                                    <div style="text-align:center; margin-top:16px;">
+                                                        <a href="/login?passive=1"
+                                                            style="color:#6b7280; font-size:0.8rem;">← Geri dön</a>
+                                                    </div>
+
+                                                    <% } else if (typeof passive !=='undefined' && passive) { %>
+                                                        <!-- ADIM 1: Pasif Hesap Uyarısı + E-posta Formu -->
+                                                        <h2>Hesap Pasif</h2>
+                                                        <div
+                                                            style="background:#fef2f2; color:#dc2626; padding:12px 16px; border-radius:8px; font-size:0.85rem; margin: 12px 0 20px; border:1px solid #fecaca;">
+                                                            ⚠️ Bu hesap pasif durumda olduğu için giriş yapılamaz.
+                                                        </div>
+                                                        <p style="color:#374151; font-size:0.9rem; margin-bottom:20px;">
+                                                            Hesabınızı yeniden
+                                                            aktifleştirmek için kayıtlı e-posta adresinizi girin. Size
+                                                            bir aktivasyon kodu
+                                                            göndereceğiz.</p>
+                                                        <% if (typeof reactivateError !=='undefined' &&
+                                                            reactivateError==='email_not_found' ) { %>
+                                                            <div
+                                                                style="background:#fef2f2; color:#dc2626; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:14px; border:1px solid #fecaca;">
+                                                                ❌ Bu e-posta adresiyle eşleşen pasif bir hesap
+                                                                bulunamadı.
+                                                            </div>
+                                                            <% } %>
+                                                                <form action="/reactivate" method="POST">
+                                                                    <div class="input-group">
+                                                                        <label>Kayıtlı E-posta Adresiniz</label>
+                                                                        <input type="email" name="email"
+                                                                            placeholder="ornek@email.com" required
+                                                                            autofocus>
+                                                                    </div>
+                                                                    <button type="submit" class="btn-login">Aktivasyon
+                                                                        Kodu Gönder</button>
+                                                                </form>
+                                                                <div style="text-align:center; margin-top:16px;">
+                                                                    <a href="/login"
+                                                                        style="color:#6b7280; font-size:0.8rem;">←
+                                                                        Normal giriş
+                                                                        için geri dön</a>
+                                                                </div>
+
+                                                                <% } else { %>
+                                                                    <!-- NORMAL GİRİŞ FORMU -->
+                                                                    <h2>Giriş Yap</h2>
+                                                                    <% if (typeof reactivateError !=='undefined' &&
+                                                                        reactivateError==='wrong' ) { %>
+                                                                        <div
+                                                                            style="background:#fef2f2; color:#dc2626; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:14px; border:1px solid #fecaca;">
+                                                                            ❌ Giriş bilgileri veya şifre hatalı.
+                                                                        </div>
+                                                                        <% } else if (typeof reactivateError
+                                                                            !=='undefined' &&
+                                                                            reactivateError==='passive_wrong' ) { %>
+                                                                            <div
+                                                                                style="background:#fef2f2; color:#dc2626; padding:10px 14px; border-radius:8px; font-size:0.85rem; margin-bottom:14px; border:1px solid #fecaca;">
+                                                                                ❌ Kullanıcı adı veya şifre hatalı.
+                                                                                Hesabınız pasif durumda olabilir,
+                                                                                aktifleştirmek için <a
+                                                                                    href="/login?passive=1"
+                                                                                    style="color:#b91c1c; text-decoration:underline; font-weight:600;">buraya
+                                                                                    tıklayın</a>.
+                                                                            </div>
+                                                                            <% } %>
+                                                                                <form action="/login" method="POST">
+                                                                                    <div class="input-group">
+                                                                                        <label>Kullanıcı Adı, E-posta
+                                                                                            veya Telefon</label>
+                                                                                        <input type="text"
+                                                                                            name="username"
+                                                                                            placeholder="Giriş bilginizi yazın"
+                                                                                            required>
+                                                                                    </div>
+
+                                                                                    <div class="input-group">
+                                                                                        <label>Şifre</label>
+                                                                                        <input type="password"
+                                                                                            name="password"
+                                                                                            placeholder="Şifrenizi girin"
+                                                                                            required>
+                                                                                    </div>
+
+                                                                                    <button type="submit"
+                                                                                        class="btn-login">Giriş
+                                                                                        Yap</button>
+                                                                                </form>
+
+                                                                                <div class="login-links">
+                                                                                    <a href="/forgot-password"
+                                                                                        class="forgot-password-link">Şifremi
+                                                                                        Unuttum</a>
+                                                                                    <div>
+                                                                                        <span
+                                                                                            style="color: #6b7280; margin-right: 5px;">Hesabın
+                                                                                            yok mu?</span>
+                                                                                        <a href="/register"
+                                                                                            class="register-link">Kayıt
+                                                                                            Ol</a>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <% } %>
 
             </div>
         </div>

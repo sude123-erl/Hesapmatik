@@ -3,7 +3,7 @@ let currentConfirmForm = null;
 function customConfirm(event, formElement, messageText) {
     event.preventDefault();
     currentConfirmForm = formElement;
-    
+
     let modal = document.getElementById('globalConfirmModal');
     if (!modal) {
         modal = document.createElement('div');

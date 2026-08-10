@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Bildirimler temizlenemedi:", err);
             }
         }
-        
+
         // Also handle the individual delete buttons just in case
         if (e.target.closest('.app-notifications__delete')) {
             const btn = e.target.closest('.app-notifications__delete');
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (res.ok) {
                         btn.closest('.app-notifications__item').remove();
                     }
-                } catch(err) { console.error(err); }
+                } catch (err) { console.error(err); }
             }
         }
     });

@@ -253,70 +253,91 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
-    
-    /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
-    @media (max-width: 768px) {
-        /* Konteynerlar */
-        .container, .main-container, .panel-container, .content-container, .form-container, .card, .profile-container, .settings-container {
-            width: 95% !important;
-            max-width: 100% !important;
-            padding: 15px !important;
-            margin: 10px auto !important;
-            box-sizing: border-box !important;
-            box-shadow: none !important;
-        }
 
-        /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
-        .flex-row, .activities-grid, .list-item, .expense-item, .payment-item {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 10px !important;
-            width: 100% !important;
-            height: auto !important;
-        }
+        /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
+        @media (max-width: 768px) {
 
-        
+            /* Konteynerlar */
+            .container,
+            .main-container,
+            .panel-container,
+            .content-container,
+            .form-container,
+            .card,
+            .profile-container,
+            .settings-container {
+                width: 95% !important;
+                max-width: 100% !important;
+                padding: 15px !important;
+                margin: 10px auto !important;
+                box-sizing: border-box !important;
+                box-shadow: none !important;
+            }
 
-        /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
-        input, select, textarea, .btn, .btn-primary, .btn-danger, .btn-secondary {
-            width: 100% !important;
-            font-size: 16px !important; 
-            margin-top: 5px !important;
-            margin-bottom: 5px !important;
-            box-sizing: border-box !important;
-            
-        }
+            /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
+            .flex-row,
+            .activities-grid,
+            .list-item,
+            .expense-item,
+            .payment-item {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+                width: 100% !important;
+                height: auto !important;
+            }
 
-        /* Modallar (Acilir Pencereler) */
-        .modal-content, #expenseModal > div, #editExpenseModal > div {
-            width: 95% !important;
-            margin: 20px auto !important;
-            padding: 20px !important;
-            height: auto !important;
-            max-height: 90vh !important;
-            overflow-y: auto !important;
-        }
 
-        /* Baslik Boyutlari */
-        h1, h2 {
-            font-size: 1.3rem !important;
-            text-align: left !important;
-        }
-        h3 {
-            font-size: 1.2rem !important;
-        }
 
-        /* Tablolar (Tasan tablolari kaydirilabilir yap) */
-        table {
-            display: block !important;
-            overflow-x: auto !important;
-            white-space: nowrap !important;
-            width: 100% !important;
-        }
-    }
+            /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
+            input,
+            select,
+            textarea,
+            .btn,
+            .btn-primary,
+            .btn-danger,
+            .btn-secondary {
+                width: 100% !important;
+                font-size: 16px !important;
+                margin-top: 5px !important;
+                margin-bottom: 5px !important;
+                box-sizing: border-box !important;
 
-</style>
+            }
+
+            /* Modallar (Acilir Pencereler) */
+            .modal-content,
+            #expenseModal>div,
+            #editExpenseModal>div {
+                width: 95% !important;
+                margin: 20px auto !important;
+                padding: 20px !important;
+                height: auto !important;
+                max-height: 90vh !important;
+                overflow-y: auto !important;
+            }
+
+            /* Baslik Boyutlari */
+            h1,
+            h2 {
+                font-size: 1.3rem !important;
+                text-align: left !important;
+            }
+
+            h3 {
+                font-size: 1.2rem !important;
+            }
+
+            /* Tablolar (Tasan tablolari kaydirilabilir yap) */
+            table {
+                display: block !important;
+                overflow-x: auto !important;
+                white-space: nowrap !important;
+                width: 100% !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -612,33 +633,41 @@
         </div>
     </div>
 
-    
+
     <!-- Harcama Ekle Modali -->
     <div id="expenseModal"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(2px); z-index: 2000; justify-content: center; align-items: center; overflow-y: auto;">
         <div class="card"
             style="background: var(--bg-card, #f4f3ef); padding: 25px; border-radius: 20px; width: 90%; max-width: 440px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--border-color, rgba(15, 56, 44, 0.15)); max-height: 90vh; overflow-y: auto; margin: auto;">
             <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="margin: 0; font-size: 20px; color: var(--text-primary, #0f382c); font-weight: 800;">Harcama Ekle</h2>
-                <button type="button" onclick="closeExpenseModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary, #537066);">&times;</button>
+                <h2 style="margin: 0; font-size: 20px; color: var(--text-primary, #0f382c); font-weight: 800;">Harcama
+                    Ekle</h2>
+                <button type="button" onclick="closeExpenseModal()"
+                    style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary, #537066);">&times;</button>
             </div>
-            
+
             <form action="/add-expense" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="activityId" value="<%= typeof activity !== 'undefined' ? (activity._id || activity.id) : '' %>">
+                <input type="hidden" name="activityId"
+                    value="<%= typeof activity !== 'undefined' ? (activity._id || activity.id) : '' %>">
                 <input type="hidden" name="amount" id="modalAmountInput" value="0">
-                
-                <div style="border: 2px solid var(--border-color-hover, #0f382c); border-radius: 14px; padding: 16px; text-align: right; font-size: 32px; font-weight: 800; color: var(--text-primary, #0f382c); margin-bottom: 16px; background: var(--bg-input, #ffffff); cursor: pointer; transition: all 0.2s ease;" id="modalAmountDisplay">0,00</div>
-                
+
+                <div style="border: 2px solid var(--border-color-hover, #0f382c); border-radius: 14px; padding: 16px; text-align: right; font-size: 32px; font-weight: 800; color: var(--text-primary, #0f382c); margin-bottom: 16px; background: var(--bg-input, #ffffff); cursor: pointer; transition: all 0.2s ease;"
+                    id="modalAmountDisplay">0,00</div>
+
                 <div style="margin-bottom: 16px;">
-                    <input type="text" name="expenseName" required placeholder="Harcama Adı: Örn. market, benzin" style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--border-color, rgba(15, 56, 44, 0.2)); border-radius: 12px; font-size: 14px; font-weight: 600; outline: none; background: var(--bg-input, #ffffff); color: var(--text-primary);">
+                    <input type="text" name="expenseName" required placeholder="Harcama Adı: Örn. market, benzin"
+                        style="width: 100%; padding: 12px 16px; border: 1.5px solid var(--border-color, rgba(15, 56, 44, 0.2)); border-radius: 12px; font-size: 14px; font-weight: 600; outline: none; background: var(--bg-input, #ffffff); color: var(--text-primary);">
                 </div>
-                
+
                 <div style="margin-bottom: 16px;">
-                    <input type="file" name="receipt" id="modalReceiptInput" multiple style="width: 100%; padding: 8px 12px; font-size: 13px; cursor: pointer;">
-                    <div id="modalFileList" style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;"></div>
+                    <input type="file" name="receipt" id="modalReceiptInput" multiple
+                        style="width: 100%; padding: 8px 12px; font-size: 13px; cursor: pointer;">
+                    <div id="modalFileList" style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+                    </div>
                 </div>
-                
-                <div id="modalKeypad" style="display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
+
+                <div id="modalKeypad"
+                    style="display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
                     <button type="button" class="key-btn" onclick="modalPressKey('1')">1</button>
                     <button type="button" class="key-btn" onclick="modalPressKey('2')">2</button>
                     <button type="button" class="key-btn" onclick="modalPressKey('3')">3</button>
@@ -652,8 +681,10 @@
                     <button type="button" class="key-btn" onclick="modalPressKey('0')">0</button>
                     <button type="button" class="key-btn" onclick="modalDeleteKey()">⌫</button>
                 </div>
-                
-                <button type="submit" id="modalSubmitBtn" style="width: 100%; background: rgba(15, 56, 44, 0.3); color: #ffffff; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: not-allowed; transition: all 0.2s ease;">Harcama Ekle</button>
+
+                <button type="submit" id="modalSubmitBtn"
+                    style="width: 100%; background: rgba(15, 56, 44, 0.3); color: #ffffff; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: not-allowed; transition: all 0.2s ease;">Harcama
+                    Ekle</button>
             </form>
         </div>
     </div>
@@ -835,11 +866,10 @@
                         debtor.amount -= amount;
                         creditor.amount -= amount;
 
-                        if (debtor.amount < 0.01) dIdx++; 
-                        if (creditor.amount < 0.01) cIdx++; 
-                    } 
-                    // Artık sadece giriş yapan kullanıcının değil, tüm işlemler listelenecek 
-                    // let myTransactions=transactions.filter(t=> t.fromId === currentUserId || t.toId === currentUserId);
+                        if (debtor.amount < 0.01) dIdx++; if (creditor.amount < 0.01) cIdx++; } // Artık sadece giriş
+                            yapan kullanıcının değil, tüm işlemler listelenecek // let
+                            myTransactions=transactions.filter(t=> t.fromId === currentUserId || t.toId ===
+                            currentUserId);
 
                             %>
 
@@ -1158,81 +1188,81 @@
     <script src="/custom-confirm.js"></script>
     <script src="/notifications.js"></script>
 
-<script>
-    let modalCurrentAmount = "0";
-    let modalSelectedFiles = [];
-    
-    function openExpenseModal() {
-        document.getElementById('expenseModal').style.display = 'flex';
-        modalCurrentAmount = "0";
-        modalSelectedFiles = [];
-        modalUpdateDisplay();
-        modalUpdateFileList();
-    }
-    
-    function closeExpenseModal() {
-        document.getElementById('expenseModal').style.display = 'none';
-        document.getElementById('modalKeypad').style.display = 'none';
-    }
+    <script>
+        let modalCurrentAmount = "0";
+        let modalSelectedFiles = [];
 
-    document.getElementById('modalAmountDisplay').addEventListener('click', function () {
-        document.getElementById('modalKeypad').style.display = 'grid';
-    });
-
-    document.getElementById('modalReceiptInput').addEventListener('change', function (e) {
-        const files = Array.from(e.target.files);
-        files.forEach(file => modalSelectedFiles.push(file));
-        modalUpdateFileList();
-    });
-
-    function modalRemoveFile(index) {
-        modalSelectedFiles.splice(index, 1);
-        modalUpdateFileList();
-    }
-
-    function modalUpdateFileList() {
-        const fileListContainer = document.getElementById('modalFileList');
-        const receiptInput = document.getElementById('modalReceiptInput');
-        fileListContainer.innerHTML = '';
-        const dataTransfer = new DataTransfer();
-        modalSelectedFiles.forEach((file, index) => {
-            dataTransfer.items.add(file);
-            const fileItem = document.createElement('div');
-            fileItem.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: var(--bg-input, #ffffff); border: 1px solid rgba(15, 56, 44, 0.15); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--text-primary, #0f382c);';
-            fileItem.innerHTML = `<span>${file.name}</span><button type="button" onclick="modalRemoveFile(${index})" style="background: #fee2e2; color: #ef4444; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>`;
-            fileListContainer.appendChild(fileItem);
-        });
-        receiptInput.files = dataTransfer.files;
-    }
-
-    function modalPressKey(num) {
-        if (modalCurrentAmount === "0") modalCurrentAmount = num;
-        else modalCurrentAmount += num;
-        modalUpdateDisplay();
-    }
-
-    function modalDeleteKey() {
-        if (modalCurrentAmount.length > 1) modalCurrentAmount = modalCurrentAmount.slice(0, -1);
-        else modalCurrentAmount = "0";
-        modalUpdateDisplay();
-    }
-
-    function modalUpdateDisplay() {
-        const amountDisplay = document.getElementById('modalAmountDisplay');
-        let displayVal = (parseInt(modalCurrentAmount) / 100).toLocaleString('tr-TR', { minimumFractionDigits: 2 });
-        amountDisplay.innerText = displayVal;
-        document.getElementById('modalAmountInput').value = (parseInt(modalCurrentAmount) / 100).toFixed(2);
-
-        const submitBtn = document.getElementById('modalSubmitBtn');
-        if (parseInt(modalCurrentAmount) > 0) {
-            submitBtn.style.background = 'var(--btn-primary-bg, #0f382c)';
-            submitBtn.style.cursor = 'pointer';
-        } else {
-            submitBtn.style.background = 'rgba(15, 56, 44, 0.3)';
-            submitBtn.style.cursor = 'not-allowed';
+        function openExpenseModal() {
+            document.getElementById('expenseModal').style.display = 'flex';
+            modalCurrentAmount = "0";
+            modalSelectedFiles = [];
+            modalUpdateDisplay();
+            modalUpdateFileList();
         }
-    }
-</script>
+
+        function closeExpenseModal() {
+            document.getElementById('expenseModal').style.display = 'none';
+            document.getElementById('modalKeypad').style.display = 'none';
+        }
+
+        document.getElementById('modalAmountDisplay').addEventListener('click', function () {
+            document.getElementById('modalKeypad').style.display = 'grid';
+        });
+
+        document.getElementById('modalReceiptInput').addEventListener('change', function (e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => modalSelectedFiles.push(file));
+            modalUpdateFileList();
+        });
+
+        function modalRemoveFile(index) {
+            modalSelectedFiles.splice(index, 1);
+            modalUpdateFileList();
+        }
+
+        function modalUpdateFileList() {
+            const fileListContainer = document.getElementById('modalFileList');
+            const receiptInput = document.getElementById('modalReceiptInput');
+            fileListContainer.innerHTML = '';
+            const dataTransfer = new DataTransfer();
+            modalSelectedFiles.forEach((file, index) => {
+                dataTransfer.items.add(file);
+                const fileItem = document.createElement('div');
+                fileItem.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: var(--bg-input, #ffffff); border: 1px solid rgba(15, 56, 44, 0.15); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--text-primary, #0f382c);';
+                fileItem.innerHTML = `<span>${file.name}</span><button type="button" onclick="modalRemoveFile(${index})" style="background: #fee2e2; color: #ef4444; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>`;
+                fileListContainer.appendChild(fileItem);
+            });
+            receiptInput.files = dataTransfer.files;
+        }
+
+        function modalPressKey(num) {
+            if (modalCurrentAmount === "0") modalCurrentAmount = num;
+            else modalCurrentAmount += num;
+            modalUpdateDisplay();
+        }
+
+        function modalDeleteKey() {
+            if (modalCurrentAmount.length > 1) modalCurrentAmount = modalCurrentAmount.slice(0, -1);
+            else modalCurrentAmount = "0";
+            modalUpdateDisplay();
+        }
+
+        function modalUpdateDisplay() {
+            const amountDisplay = document.getElementById('modalAmountDisplay');
+            let displayVal = (parseInt(modalCurrentAmount) / 100).toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+            amountDisplay.innerText = displayVal;
+            document.getElementById('modalAmountInput').value = (parseInt(modalCurrentAmount) / 100).toFixed(2);
+
+            const submitBtn = document.getElementById('modalSubmitBtn');
+            if (parseInt(modalCurrentAmount) > 0) {
+                submitBtn.style.background = 'var(--btn-primary-bg, #0f382c)';
+                submitBtn.style.cursor = 'pointer';
+            } else {
+                submitBtn.style.background = 'rgba(15, 56, 44, 0.3)';
+                submitBtn.style.cursor = 'not-allowed';
+            }
+        }
+    </script>
 
 </body>
 

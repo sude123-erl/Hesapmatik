@@ -239,14 +239,14 @@ app.post('/login', (req, res) => {
                 }
                 return res.redirect('/dashboard');
             }
-            
+
             // Kullanıcı var ama şifre yanlış, hesap pasif mi kontrol edelim
             const userStatus = row.status ? row.status.toString().trim().toLowerCase() : '';
             if (userStatus === 'passive') {
                 return res.redirect('/login?err=passive_wrong');
             }
         }
-        
+
         // Şifre yanlış veya kullanıcı yok.
         return res.redirect('/login?err=wrong');
     });
@@ -583,14 +583,14 @@ app.get('/settlement/:id', (req, res) => {
 app.post('/activity/:id/upload-image', upload.single('coverImage'), (req, res) => {
     const activityId = req.params.id;
     const currentUserId = req.session.userId;
-    
+
     if (!currentUserId) {
         return res.status(401).send("Giriş yapmanız gerekiyor.");
     }
-    
+
     const removeImage = req.body.removeImage === 'true';
     const coverImage = req.file ? '/uploads/' + req.file.filename : null;
-    
+
     if (coverImage) {
         db.run(`UPDATE activities SET coverImage = ? WHERE id = ?`, [coverImage, activityId], (err) => {
             if (err) {
@@ -1235,7 +1235,7 @@ app.post('/edit-payment/:id', (req, res) => {
 
         db.get(`SELECT activityId, status FROM payments WHERE id = ?`, [paymentId], (err, row) => {
             if (err || !row) return res.send("Güncelleme hatası.");
-            
+
             if (row.status === 'approved') {
                 return res.send(`Bu ödeme onaylandığı için düzenlenemez. Sadece silinebilir. <a href="/activity/${row.activityId}">Geri dön</a>`);
             }

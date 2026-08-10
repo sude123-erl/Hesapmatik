@@ -5,7 +5,7 @@ const files = fs.readdirSync(dir).filter(f => f.endsWith('.ejs'));
 
 files.forEach(f => {
     let content = fs.readFileSync(path.join(dir, f), 'utf8');
-    
+
     // Remove justify-content: center !important; from all inputs
     content = content.replace(/justify-content: center !important;/g, '');
 
@@ -23,13 +23,13 @@ files.forEach(f => {
             -webkit-appearance: none !important;
             background-color: white !important;
         }`;
-        
+
         // Let's just append it to the responsive style block if it exists
         if (content.includes('/* Mobil Stilleri Bitiş */')) {
             content = content.replace('/* Mobil Stilleri Bitiş */', fixCSS + '\n/* Mobil Stilleri Bitiş */');
         }
     }
-    
+
     fs.writeFileSync(path.join(dir, f), content);
 });
 console.log('Fixed date inputs in CSS.');

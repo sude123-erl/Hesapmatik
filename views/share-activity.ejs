@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -188,6 +189,7 @@
             justify-content: center;
             transition: background 0.2s ease, color 0.2s ease;
         }
+
         .btn-remind:hover {
             background: #175241;
         }
@@ -204,81 +206,104 @@
             justify-content: center;
             transition: background 0.2s ease, color 0.2s ease;
         }
+
         .btn-remove:hover {
             background: #fca5a5;
             color: #b91c1c;
         }
-    
-    /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
-    @media (max-width: 768px) {
-        /* Konteynerlar */
-        .container, .main-container, .panel-container, .content-container, .form-container, .card, .profile-container, .settings-container {
-            width: 95% !important;
-            max-width: 100% !important;
-            padding: 15px !important;
-            margin: 10px auto !important;
-            box-sizing: border-box !important;
-            box-shadow: none !important;
-        }
 
-        /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
-        .flex-row, .activities-grid, .list-item, .expense-item, .payment-item {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 10px !important;
-            width: 100% !important;
-            height: auto !important;
-        }
+        /* --- MOBIL UYUM (RESPONSIVE) EKLENTILERI --- */
+        @media (max-width: 768px) {
 
-        
+            /* Konteynerlar */
+            .container,
+            .main-container,
+            .panel-container,
+            .content-container,
+            .form-container,
+            .card,
+            .profile-container,
+            .settings-container {
+                width: 95% !important;
+                max-width: 100% !important;
+                padding: 15px !important;
+                margin: 10px auto !important;
+                box-sizing: border-box !important;
+                box-shadow: none !important;
+            }
 
-        /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
-        input, select, textarea, .btn, .btn-primary, .btn-danger, .btn-secondary {
-            width: 100% !important;
-            font-size: 16px !important; 
-            margin-top: 5px !important;
-            margin-bottom: 5px !important;
-            box-sizing: border-box !important;
-            
-        }
+            /* Izgaralar ve Yatay Dizilimleri Dikeye Cevirme */
+            .flex-row,
+            .activities-grid,
+            .list-item,
+            .expense-item,
+            .payment-item {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+                width: 100% !important;
+                height: auto !important;
+            }
 
-        /* Modallar (Acilir Pencereler) */
-        .modal-content, #expenseModal > div, #editExpenseModal > div {
-            width: 95% !important;
-            margin: 20px auto !important;
-            padding: 20px !important;
-            height: auto !important;
-            max-height: 90vh !important;
-            overflow-y: auto !important;
-        }
 
-        /* Baslik Boyutlari */
-        h1, h2 {
-            font-size: 1.4rem !important;
-            text-align: center !important;
-        }
-        h3 {
-            font-size: 1.2rem !important;
-        }
 
-        /* Tablolar (Tasan tablolari kaydirilabilir yap) */
-        table {
-            display: block !important;
-            overflow-x: auto !important;
-            white-space: nowrap !important;
-            width: 100% !important;
-        }
-    }
+            /* Butonlar, Inputlar, Selectler (iOS Zoom engeli icin font-size 16px) */
+            input,
+            select,
+            textarea,
+            .btn,
+            .btn-primary,
+            .btn-danger,
+            .btn-secondary {
+                width: 100% !important;
+                font-size: 16px !important;
+                margin-top: 5px !important;
+                margin-bottom: 5px !important;
+                box-sizing: border-box !important;
 
-</style>
+            }
+
+            /* Modallar (Acilir Pencereler) */
+            .modal-content,
+            #expenseModal>div,
+            #editExpenseModal>div {
+                width: 95% !important;
+                margin: 20px auto !important;
+                padding: 20px !important;
+                height: auto !important;
+                max-height: 90vh !important;
+                overflow-y: auto !important;
+            }
+
+            /* Baslik Boyutlari */
+            h1,
+            h2 {
+                font-size: 1.4rem !important;
+                text-align: center !important;
+            }
+
+            h3 {
+                font-size: 1.2rem !important;
+            }
+
+            /* Tablolar (Tasan tablolari kaydirilabilir yap) */
+            table {
+                display: block !important;
+                overflow-x: auto !important;
+                white-space: nowrap !important;
+                width: 100% !important;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
     <div class="card">
         <!-- Etkinlik Adı Kutusu -->
         <div class="activity-header-box">
-            <%= typeof activity !== 'undefined' ? activity.name : 'Ankara' %>
+            <%= typeof activity !=='undefined' ? activity.name : 'Ankara' %>
         </div>
 
         <h2>Etkinliği Paylaş</h2>
@@ -291,73 +316,102 @@
 
             <!-- Paylaşım Butonu -->
             <button class="btn-share" onclick="copyShareLink()">Linki Kopyala ve Paylaş</button>
-        <% } else { %>
-            <div style="background: rgba(15, 56, 44, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; color: #537066;">
-                Yalnızca etkinlik sahibi yeni kişileri davet edebilir.
-            </div>
-        <% } %>
-
-        <div>
-            <a href="javascript:history.back()" class="back-link">← Etkinliğe Dön</a>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- Katılımcılar Alanı -->
-        <div class="participants-header">
-            <span>Katılımcılar</span>
-            <span class="badge-count"><%= participants ? participants.length : 0 %> kişi</span>
-        </div>
-
-        <% if (participants && participants.length > 0) { %>
-            <% participants.forEach(p => { %>
-                <div class="participant-box">
-                    <div>
-                        <span style="font-weight: 600;"><%= p.fullname || p.username %></span>
-                        <% if (String(activity.creatorId) === String(p.id)) { %>
-                            <span class="participant-role" style="display:block;">Etkinlik sahibi</span>
-                        <% } %>
-                    </div>
-                    <div style="display: flex; gap: 6px;">
-                        <% if (typeof currentUserId !== 'undefined' && currentUserId && String(currentUserId) !== String(p.id)) { %>
-                            <!-- Hatırlat Butonu -->
-                            <form action="/notify-debt" method="POST" style="margin: 0;" onsubmit="sendReminder(event, this)">
-                                <input type="hidden" name="targetUserId" value="<%= p.id %>">
-                                <input type="hidden" name="activityName" value="<%= activity.activityName %>">
-                                <input type="hidden" name="activityId" value="<%= activity.id %>">
-                                <button type="submit" title="Hatırlat" class="btn-remind">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                                </button>
-                            </form>
-                        <% } %>
-                        
-                        <% if (String(activity.creatorId) !== String(p.id) && isOwner && !isLocked) { %>
-                            <!-- Çıkar Butonu -->
-                            <form action="/activity/<%= activity.id %>/participants/<%= p.id %>/remove" method="POST" style="margin: 0;" onsubmit="customConfirm(event, this, 'Bu kişiyi çıkarmak istediğinize emin misiniz?');">
-                                <button type="submit" title="Çıkar" class="btn-remove">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-                                </button>
-                            </form>
-                        <% } %>
-                    </div>
+            <% } else { %>
+                <div
+                    style="background: rgba(15, 56, 44, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; color: #537066;">
+                    Yalnızca etkinlik sahibi yeni kişileri davet edebilir.
                 </div>
-            <% }) %>
-        <% } %>
+                <% } %>
 
-        <% if (isOwner && !isLocked) { %>
-            <!-- Katılımcı Seçme ve Ekleme -->
-            <form action="/activity/<%= activity.id %>/participants/add" method="POST" class="add-form">
-                <select name="userId" class="select-participant" required>
-                    <option value="" disabled selected>Katılımcı seçin</option>
-                    <% if (availableUsers && availableUsers.length > 0) { %>
-                        <% availableUsers.forEach(u => { %>
-                            <option value="<%= u.id %>"><%= u.fullname || u.username %></option>
-                        <% }) %>
-                    <% } %>
-                </select>
-                <button type="submit" class="btn-add">Ekle</button>
-            </form>
-        <% } %>
+                    <div>
+                        <a href="javascript:history.back()" class="back-link">← Etkinliğe Dön</a>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- Katılımcılar Alanı -->
+                    <div class="participants-header">
+                        <span>Katılımcılar</span>
+                        <span class="badge-count">
+                            <%= participants ? participants.length : 0 %> kişi
+                        </span>
+                    </div>
+
+                    <% if (participants && participants.length> 0) { %>
+                        <% participants.forEach(p=> { %>
+                            <div class="participant-box">
+                                <div>
+                                    <span style="font-weight: 600;">
+                                        <%= p.fullname || p.username %>
+                                    </span>
+                                    <% if (String(activity.creatorId)===String(p.id)) { %>
+                                        <span class="participant-role" style="display:block;">Etkinlik sahibi</span>
+                                        <% } %>
+                                </div>
+                                <div style="display: flex; gap: 6px;">
+                                    <% if (typeof currentUserId !=='undefined' && currentUserId && String(currentUserId)
+                                        !==String(p.id)) { %>
+                                        <!-- Hatırlat Butonu -->
+                                        <form action="/notify-debt" method="POST" style="margin: 0;"
+                                            onsubmit="sendReminder(event, this)">
+                                            <input type="hidden" name="targetUserId" value="<%= p.id %>">
+                                            <input type="hidden" name="activityName"
+                                                value="<%= activity.activityName %>">
+                                            <input type="hidden" name="activityId" value="<%= activity.id %>">
+                                            <button type="submit" title="Hatırlat" class="btn-remind">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <% } %>
+
+                                            <% if (String(activity.creatorId) !==String(p.id) && isOwner && !isLocked) {
+                                                %>
+                                                <!-- Çıkar Butonu -->
+                                                <form
+                                                    action="/activity/<%= activity.id %>/participants/<%= p.id %>/remove"
+                                                    method="POST" style="margin: 0;"
+                                                    onsubmit="customConfirm(event, this, 'Bu kişiyi çıkarmak istediğinize emin misiniz?');">
+                                                    <button type="submit" title="Çıkar" class="btn-remove">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round">
+                                                            <path d="M3 6h18" />
+                                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                                            <line x1="10" x2="10" y1="11" y2="17" />
+                                                            <line x1="14" x2="14" y1="11" y2="17" />
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                                <% } %>
+                                </div>
+                            </div>
+                            <% }) %>
+                                <% } %>
+
+                                    <% if (isOwner && !isLocked) { %>
+                                        <!-- Katılımcı Seçme ve Ekleme -->
+                                        <form action="/activity/<%= activity.id %>/participants/add" method="POST"
+                                            class="add-form">
+                                            <select name="userId" class="select-participant" required>
+                                                <option value="" disabled selected>Katılımcı seçin</option>
+                                                <% if (availableUsers && availableUsers.length> 0) { %>
+                                                    <% availableUsers.forEach(u=> { %>
+                                                        <option value="<%= u.id %>">
+                                                            <%= u.fullname || u.username %>
+                                                        </option>
+                                                        <% }) %>
+                                                            <% } %>
+                                            </select>
+                                            <button type="submit" class="btn-add">Ekle</button>
+                                        </form>
+                                        <% } %>
     </div>
 
     <script>
@@ -399,4 +453,5 @@
     </script>
     <script src="/custom-confirm.js"></script>
 </body>
+
 </html>

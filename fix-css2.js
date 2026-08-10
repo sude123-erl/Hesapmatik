@@ -5,7 +5,7 @@ const files = fs.readdirSync(dir).filter(f => f.endsWith('.ejs'));
 
 files.forEach(f => {
     let content = fs.readFileSync(path.join(dir, f), 'utf8');
-    
+
     // 1. Fix overflow
     content = content.replace(/overflow-x: hidden !important;/g, 'overflow-x: hidden !important;\n            overflow-y: auto !important;\n            height: auto !important;');
 

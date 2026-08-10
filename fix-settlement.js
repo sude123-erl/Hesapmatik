@@ -24,9 +24,9 @@ if (startLine !== -1 && endLine !== -1) {
     let routeLines = lines.slice(startLine, endLine);
     let routeCode = routeLines.join('\n');
     let newRouteCode = routeCode.replace("app.get('/activity/:id',", "app.get('/settlement/:id',").replace("res.render('activity-detail'", "res.render('settlement'");
-    
+
     lines.splice(endLine, 0, "// Mahsuplasma Route", newRouteCode, "");
-    
+
     fs.writeFileSync('server.js', lines.join('\n'));
     console.log('Successfully injected settlement route!');
 } else {
