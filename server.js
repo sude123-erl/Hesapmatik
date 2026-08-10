@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const multer = require('multer');
@@ -9,7 +11,7 @@ const QRCode = require('qrcode');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-const PORT = 2024;
+const PORT = process.env.PORT || 2024;
 const upload = multer({ dest: 'uploads/' });
 
 function getLocalNetworkIp() {
@@ -30,7 +32,7 @@ function getLocalNetworkIp() {
 const localNetworkIp = getLocalNetworkIp();
 
 app.use(session({
-    secret: 'gizli-anahtar-kelime',
+    secret: process.env.SESSION_SECRET || 'gizli-anahtar-kelime',
     resave: false,
     saveUninitialized: false
 }));
@@ -39,8 +41,8 @@ app.use(session({
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'saadetsudegunes31.@gmail.com',
-        pass: 'ycprxvmvcoagxveb'
+        user: process.env.SMTP_USER || 'saadetsudegunes31.@gmail.com',
+        pass: process.env.SMTP_PASS || 'ycprxvmvcoagxveb'
     }
 });
 
@@ -52,102 +54,21 @@ app.use('/uploads', express.static('uploads'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Veritabanı bağlantısı ve tablolar
-const db = new sqlite3.Database('./hesapmatik.db', (err) => {
-    if (err) {
-        console.error('Veritabanı hatası:', err.message);
-    } else {
-        console.log('SQLite veritabanına bağlandık!');
-
-        db.run(`CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            activityId INTEGER,
-            expenseName TEXT,
-            amount REAL,
-            receipt TEXT,
-            userId INTEGER
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS activities (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            activityName TEXT,
-            activityPassword TEXT,
-            coverImage TEXT,
-            activityDate TEXT,
-            creatorId INTEGER,
-            isClosed INTEGER DEFAULT 0
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fullname TEXT,
-            username TEXT UNIQUE,
-            phone TEXT,
-            email TEXT UNIQUE,
-            password TEXT,
-            reset_code TEXT,
-            avatar TEXT,
-            status TEXT DEFAULT 'active',
-            panel_layout TEXT DEFAULT 'grid'
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS activity_participants (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            activityId INTEGER,
-            userId INTEGER,
-            FOREIGN KEY(activityId) REFERENCES activities(id),
-            FOREIGN KEY(userId) REFERENCES users(id)
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS payments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            activityId INTEGER,
-            senderId INTEGER,
-            receiverId INTEGER,
-            amount REAL,
-            description TEXT,
-            status TEXT DEFAULT 'pending',
-            createdAt TEXT,
-            FOREIGN KEY(activityId) REFERENCES activities(id),
-            FOREIGN KEY(senderId) REFERENCES users(id),
-            FOREIGN KEY(receiverId) REFERENCES users(id)
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS notifications (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            userId INTEGER,
-            message TEXT,
-            isRead INTEGER DEFAULT 0,
-            createdAt TEXT,
-            FOREIGN KEY(userId) REFERENCES users(id)
-        )`);
-        db.run(`ALTER TABLE activities ADD COLUMN creatorId INTEGER`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                console.error('Etkinlik sahipligi alani eklenemedi:', err.message);
-            }
-        });
-        db.run(`ALTER TABLE expenses ADD COLUMN userId INTEGER`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                console.error('Harcama kullanicisi alani eklenemedi:', err.message);
-            }
-        });
-        db.run(`ALTER TABLE users ADD COLUMN avatar TEXT`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                // Avatar kolonu zaten varsa hata vermesin
-            }
-        });
-        db.run(`ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                // Status kolonu zaten varsa hata vermesin
-            }
-        });
-        db.run(`ALTER TABLE activities ADD COLUMN isClosed INTEGER DEFAULT 0`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                console.error('Etkinlik isClosed alani eklenemedi:', err.message);
-            }
-        });
-        db.run(`ALTER TABLE users ADD COLUMN panel_layout TEXT DEFAULT 'grid'`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                console.error('Kullanici panel_layout alani eklenemedi:', err.message);
-            }
-        });
-    }
+// Rate Limiter for Auth Routes
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 20, // limit each IP to 20 requests per windowMs
+    message: 'Çok fazla giriş denemesi yaptınız, lütfen daha sonra tekrar deneyin.'
 });
+
+app.use('/login', authLimiter);
+app.use('/register', authLimiter);
+app.use('/forgot-password', authLimiter);
+app.use('/reset-password', authLimiter);
+
+
+// Veritabanı bağlantısı ve tablolar
+const db = require('./config/db');
 
 // Ana Sayfa
 app.get('/', (req, res) => {
