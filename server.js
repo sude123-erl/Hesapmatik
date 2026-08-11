@@ -115,6 +115,13 @@ function redirectWithError(req, res, msg, target = '/panel') {
     return res.redirect(target);
 }
 
+function redirectWithSuccess(req, res, msg, target = '/panel') {
+    if (req.session) {
+        req.session.toastSuccess = msg;
+    }
+    return res.redirect(target);
+}
+
 // Veritabanı bağlantısı ve tablolar
 const db = require('./config/db');
 
@@ -894,7 +901,9 @@ app.get('/panel', (req, res) => {
     }
 
     const toastError = req.session.toastError;
+    const toastSuccess = req.session.toastSuccess;
     delete req.session.toastError;
+    delete req.session.toastSuccess;
 
     const activeQuery = `
         SELECT DISTINCT activities.*
@@ -931,7 +940,8 @@ app.get('/panel', (req, res) => {
                 closedActivities: closedActivities,
                 success: req.query.success,
                 panelLayout: req.session.user.panel_layout || 'grid',
-                toastError: toastError || null
+                toastError: toastError || null,
+                toastSuccess: toastSuccess || null
             });
         });
     });
@@ -1140,7 +1150,7 @@ app.post('/activity/edit/:id', (req, res) => {
             [activityName, activityPassword, activityId],
             (updateErr) => {
                 if (updateErr) return res.status(500).send("Güncellenemedi.");
-                res.redirect(`/activity/${activityId}`);
+                return redirectWithSuccess(req, res, 'Etkinlik adınız güncellenmiştir.');
             }
         );
     });
