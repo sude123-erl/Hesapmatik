@@ -616,7 +616,7 @@
                         style="flex: 1; min-width: 150px; padding: 12px; background: #f4f3ef; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.15); border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         📊 Borçlarım Detay
                     </button>
-                    <% if (activity.isClosed === 0) { %>
+                    <% if (activity.creatorId === currentUserId && activity.isClosed === 0) { %>
                     <form action="/activity/close/<%= activity.id %>" method="POST" style="flex: 1; min-width: 150px; margin: 0;" onsubmit="customConfirm(event, this, 'Mahsuplaşmayı sonlandırmak istediğinizden emin misiniz? Sonlandırıldıktan sonra yeni harcama veya ödeme eklenemez, mevcut olanlar değiştirilemez.');">
                         <button type="submit"
                             style="width: 100%; padding: 12px; background: #e74c3c; color: #f4f3ef; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(231, 76, 60, 0.15);">

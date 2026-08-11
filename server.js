@@ -1090,14 +1090,13 @@ app.post('/activity/close/:id', (req, res) => {
         return res.status(401).send("Giriş yapmanız gerekiyor.");
     }
 
-    const checkUserQuery = `
-        SELECT id FROM activities WHERE id = ? AND creatorId = ?
-        UNION
-        SELECT activityId FROM activity_participants WHERE activityId = ? AND userId = ?
-    `;
-    db.get(checkUserQuery, [activityId, currentUserId, activityId, currentUserId], (err, row) => {
-        if (err || !row) {
-            return res.status(403).send("Bu işlemi yapmaya yetkiniz yok.");
+    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
+        if (err || !activity) {
+            return res.status(404).send("Etkinlik bulunamadı.");
+        }
+
+        if (activity.creatorId !== currentUserId) {
+            return res.status(403).send("Bu işlemi sadece etkinlik sahibi yapabilir.");
         }
 
         // Bekleyen (pending) ödeme var mı kontrol edelim
