@@ -1441,12 +1441,21 @@ app.post('/remove-participant', (req, res) => {
 app.post('/close-activity/:id', (req, res) => {
     if (!req.session || !req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
-    db.run('UPDATE activities SET isClosed = 1 WHERE id = ?', [activityId], function (err) {
-        if (err) {
-            console.error(err);
-            return res.send('Hata oluştu');
+    const currentUserId = req.session.userId;
+
+    db.get('SELECT creatorId FROM activities WHERE id = ?', [activityId], (err, activity) => {
+        if (err || !activity) return res.redirect('/panel?toast_error=' + encodeURIComponent('Etkinlik bulunamadı.'));
+        if (activity.creatorId !== currentUserId) {
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu işlemi sadece etkinlik sahibi yapabilir.'));
         }
-        res.redirect('/panel');
+
+        db.run('UPDATE activities SET isClosed = 1 WHERE id = ?', [activityId], function (updateErr) {
+            if (updateErr) {
+                console.error(updateErr);
+                return res.send('Hata oluştu');
+            }
+            res.redirect('/settlement/' + activityId);
+        });
     });
 });
 
