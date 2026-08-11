@@ -450,7 +450,7 @@ app.get('/activity/:id', (req, res) => {
     `;
     db.get(checkAccessQuery, [activityId, currentUserId, currentUserId], (err, activity) => {
         if (err || !activity) {
-            return res.status(403).send("Bu etkinliğe erişim yetkiniz yok. <a href='/panel'>Panele dön</a>");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu etkinliğe erişim yetkiniz yok.'));
         }
 
         db.all(`SELECT * FROM expenses WHERE activityId = ? AND userId = ?`, [activityId, currentUserId], (err, expenses) => {
@@ -527,7 +527,7 @@ app.get('/settlement/:id', (req, res) => {
     `;
     db.get(checkAccessQuery, [activityId, currentUserId, currentUserId], (err, activity) => {
         if (err || !activity) {
-            return res.status(403).send("Bu etkinliğe erişim yetkiniz yok. <a href='/panel'>Panele dön</a>");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu etkinliğe erişim yetkiniz yok.'));
         }
 
         db.all(`SELECT * FROM expenses WHERE activityId = ? AND userId = ?`, [activityId, currentUserId], (err, expenses) => {
@@ -752,7 +752,7 @@ app.post('/delete-payment/:id', (req, res) => {
         }
 
         if (payment.senderId !== currentUserId) {
-            return res.status(403).send("Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi silebilir.");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi silebilir.'));
         }
 
         if (payment.status === 'approved') {
@@ -1057,9 +1057,9 @@ app.post('/activity/delete/:id', (req, res) => {
     const activityId = req.params.id;
 
     db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
-        if (err || !activity) return res.status(404).send("Etkinlik bulunamadı.");
+        if (err || !activity) return res.redirect('/panel?toast_error=' + encodeURIComponent('Etkinlik bulunamadı.'));
         if (activity.creatorId !== req.session.userId) {
-            return res.status(403).send("Bu işlemi sadece etkinlik sahibi yapabilir.");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu işlemi sadece etkinlik sahibi yapabilir.'));
         }
 
         db.serialize(() => {
@@ -1089,10 +1089,10 @@ app.get('/activity/edit/:id', (req, res) => {
     const activityId = req.params.id;
     db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, row) => {
         if (err || !row) {
-            return res.status(404).send("Etkinlik bulunamadı.");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Etkinlik bulunamadı.'));
         }
         if (row.creatorId !== req.session.userId) {
-            return res.status(403).send("Bu işlemi sadece etkinlik sahibi yapabilir.");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu işlemi sadece etkinlik sahibi yapabilir.'));
         }
         res.render('edit-activity', { activity: row });
     });
@@ -1104,10 +1104,10 @@ app.get('/edit-expense/:id', (req, res) => {
     const expenseId = req.params.id;
     db.get(`SELECT * FROM expenses WHERE id = ?`, [expenseId], (err, row) => {
         if (err || !row) {
-            return res.status(404).send("Harcama bulunamadı.");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Harcama bulunamadı.'));
         }
         if (row.userId !== req.session.userId) {
-            return res.status(403).send("Bu harcamayı sadece ekleyen kişi düzenleyebilir.");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu harcamayı sadece ekleyen kişi düzenleyebilir.'));
         }
         res.render('edit-expense', { expense: row });
     });
@@ -1120,9 +1120,9 @@ app.post('/activity/edit/:id', (req, res) => {
     const { activityName, activityPassword } = req.body;
 
     db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, row) => {
-        if (err || !row) return res.status(404).send("Etkinlik bulunamadı.");
+        if (err || !row) return res.redirect('/panel?toast_error=' + encodeURIComponent('Etkinlik bulunamadı.'));
         if (row.creatorId !== req.session.userId) {
-            return res.status(403).send("Bu işlemi sadece etkinlik sahibi yapabilir.");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu işlemi sadece etkinlik sahibi yapabilir.'));
         }
 
         db.run(
@@ -1221,7 +1221,7 @@ app.get('/share-activity/:id', (req, res) => {
               AND (activities.creatorId = ? OR activity_participants.userId = ?)
         `;
         db.get(checkAccessQuery, [activityId, req.session.userId, req.session.userId], (err, activity) => {
-            if (err || !activity) return res.status(403).send("Bu etkinliğe erişim yetkiniz yok. <a href='/panel'>Panele dön</a>");
+            if (err || !activity) return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu etkinliğe erişim yetkiniz yok.'));
 
             getParticipantManagementState(activityId, req.session.userId, (stateErr, stateActivity, isOwner, isLocked) => {
                 if (stateErr) return res.status(500).send('Katılımcı bilgileri alınamadı.');
@@ -1311,7 +1311,7 @@ app.get('/edit-payment/:id', (req, res) => {
     `, [paymentId], (err, row) => {
         if (err || !row) return res.redirect('back');
         if (row.senderId !== req.session.userId) {
-            return res.status(403).send("Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi düzenleyebilir. <a href='/panel'>Geri dön</a>");
+            return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi düzenleyebilir.'));
         }
         if (row.status === 'approved') {
             return res.send(`Bu ödeme onaylandığı için düzenlenemez. <a href="/activity/${row.activityId}">Geri dön</a>`);
@@ -1337,7 +1337,7 @@ app.post('/edit-payment/:id', (req, res) => {
             if (err || !row) return res.send("Güncelleme hatası.");
 
             if (row.senderId !== req.session.userId) {
-                return res.status(403).send("Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi düzenleyebilir.");
+                return res.redirect('/panel?toast_error=' + encodeURIComponent('Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi düzenleyebilir.'));
             }
 
             if (row.status === 'approved') {
