@@ -973,7 +973,7 @@
             const receiptContainer = document.getElementById('editExpenseReceiptContainer');
             if (receipt) {
                 receiptContainer.style.display = 'block';
-                document.getElementById('editExpenseReceiptImg').src = '/uploads/' + receipt;
+                document.getElementById('editExpenseReceiptImg').src = receipt.startsWith('http') ? receipt : '/uploads/' + receipt;
             } else {
                 receiptContainer.style.display = 'none';
             }

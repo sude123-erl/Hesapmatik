@@ -1,6 +1,15 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 const express = require('express');
+const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'kn7fwx0x',
+    api_key: process.env.CLOUDINARY_API_KEY || '652292375257652',
+    api_secret: process.env.CLOUDINARY_API_SECRET || 'SD-mqfXovtpy_1Qwjp9z1f5KfWQ'
+});
+
 const rateLimit = require('express-rate-limit');
 const sqlite3 = require('@libsql/sqlite3').verbose();
 const path = require('path');
@@ -362,12 +371,23 @@ app.get('/create-activity', (req, res) => {
     res.render('create');
 });
 
-app.post('/create-activity', upload.single('coverImage'), (req, res) => {
+app.post('/create-activity', upload.single('coverImage'), async (req, res) => {
     if (!req.session.userId) {
         return res.redirect('/login');
     }
     const { activityName, activityPassword, activityDate } = req.body;
-    const coverImage = req.file ? '/uploads/' + req.file.filename : null;
+    
+    let coverImage = null;
+    if (req.file) {
+        try {
+            const result = await cloudinary.uploader.upload(req.file.path, { folder: 'hesapmatik' });
+            coverImage = result.secure_url;
+            fs.unlink(req.file.path, () => {});
+        } catch (uploadErr) {
+            console.error("Cloudinary coverImage upload error:", uploadErr);
+        }
+    }
+
     const query = `INSERT INTO activities (activityName, activityPassword, activityDate, coverImage, creatorId) VALUES (?, ?, ?, ?, ?)`;
 
     db.run(query, [activityName, activityPassword, activityDate, coverImage, req.session.userId], function (err) {
@@ -514,7 +534,7 @@ app.get('/settlement/:id', (req, res) => {
 
 
 // Etkinlik Görselini Güncelleme İşlemi
-app.post('/activity/:id/upload-image', upload.single('coverImage'), (req, res) => {
+app.post('/activity/:id/upload-image', upload.single('coverImage'), async (req, res) => {
     const activityId = req.params.id;
     const currentUserId = req.session.userId;
 
@@ -523,7 +543,17 @@ app.post('/activity/:id/upload-image', upload.single('coverImage'), (req, res) =
     }
 
     const removeImage = req.body.removeImage === 'true';
-    const coverImage = req.file ? '/uploads/' + req.file.filename : null;
+    
+    let coverImage = null;
+    if (req.file) {
+        try {
+            const result = await cloudinary.uploader.upload(req.file.path, { folder: 'hesapmatik' });
+            coverImage = result.secure_url;
+            fs.unlink(req.file.path, () => {});
+        } catch (uploadErr) {
+            console.error("Cloudinary coverImage upload error:", uploadErr);
+        }
+    }
 
     if (coverImage) {
         db.run(`UPDATE activities SET coverImage = ? WHERE id = ?`, [coverImage, activityId], (err) => {
@@ -691,7 +721,7 @@ app.get('/add-expense', (req, res) => {
     res.render('add-expense', { activityId: activityId });
 });
 
-app.post('/add-expense', upload.array('receipt'), (req, res) => {
+app.post('/add-expense', upload.array('receipt'), async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).send('Harcama eklemek için giriş yapmanız gerekiyor.');
     }
@@ -699,10 +729,20 @@ app.post('/add-expense', upload.array('receipt'), (req, res) => {
     const expenseName = body.expenseName;
     const amount = body.amount;
     const activityId = body.activityId;
-    const receiptFileName = req.files && req.files.length > 0 ? req.files[0].filename : null;
+    
+    let receiptUrl = null;
+    if (req.files && req.files.length > 0) {
+        try {
+            const result = await cloudinary.uploader.upload(req.files[0].path, { folder: 'hesapmatik' });
+            receiptUrl = result.secure_url;
+            fs.unlink(req.files[0].path, () => {});
+        } catch (uploadErr) {
+            console.error("Cloudinary receipt upload error:", uploadErr);
+        }
+    }
 
     db.run(`INSERT INTO expenses (activityId, expenseName, amount, receipt, userId) VALUES (?, ?, ?, ?, ?)`,
-        [activityId, expenseName, amount, receiptFileName, req.session.userId], (err) => {
+        [activityId, expenseName, amount, receiptUrl, req.session.userId], (err) => {
             if (err) console.error("Harcama eklenirken hata oluştu:", err.message);
 
             if (activityId) {
@@ -730,20 +770,28 @@ app.post('/delete-expense/:id', (req, res) => {
 });
 
 // Harcama Düzenleme İşlemini Kaydetme
-app.post('/edit-expense/:id', upload.array('receipt'), (req, res) => {
+app.post('/edit-expense/:id', upload.array('receipt'), async (req, res) => {
     const expenseId = req.params.id;
     const { expenseName, amount } = req.body;
-    const newReceipt = req.files && req.files.length > 0 ? req.files[0].filename : null;
 
     // Önce harcamanın hangi etkinliğe ait olduğunu bulalım ki işlem bitince o etkinliğe geri yönlendirebilelim
-    db.get(`SELECT activityId, receipt FROM expenses WHERE id = ?`, [expenseId], (err, row) => {
+    db.get(`SELECT activityId, receipt FROM expenses WHERE id = ?`, [expenseId], async (err, row) => {
         if (err || !row) {
             return res.status(404).send("Harcama bulunamadı.");
         }
 
         const activityId = row.activityId;
-        // Eğer yeni bir dosya yüklenmediyse eskisini koruyoruz
-        const receiptToSave = newReceipt ? newReceipt : row.receipt;
+        
+        let receiptToSave = row.receipt;
+        if (req.files && req.files.length > 0) {
+            try {
+                const result = await cloudinary.uploader.upload(req.files[0].path, { folder: 'hesapmatik' });
+                receiptToSave = result.secure_url;
+                fs.unlink(req.files[0].path, () => {});
+            } catch (uploadErr) {
+                console.error("Cloudinary receipt edit upload error:", uploadErr);
+            }
+        }
 
         const updateQuery = `UPDATE expenses SET expenseName = ?, amount = ?, receipt = ? WHERE id = ?`;
         db.run(updateQuery, [expenseName, amount, receiptToSave, expenseId], (updateErr) => {
@@ -854,14 +902,14 @@ app.get('/profile/edit', (req, res) => {
 
 
 // 3. Profil Formu Gönderildiğinde (POST)
-app.post('/profile/edit', upload.single('avatar'), (req, res) => {
+app.post('/profile/edit', upload.single('avatar'), async (req, res) => {
     const currentUser = req.user || (req.session && req.session.user);
     if (!currentUser) return res.redirect('/login');
 
     const userId = currentUser.id || currentUser._id;
     const { phone } = req.body;
 
-    db.get('SELECT * FROM users WHERE id = ?', [userId], (err, user) => {
+    db.get('SELECT * FROM users WHERE id = ?', [userId], async (err, user) => {
         if (err || !user) return res.redirect('/login');
 
         // username ve email değiştirilemez, her zaman DB'deki değer kullanılır
@@ -869,7 +917,13 @@ app.post('/profile/edit', upload.single('avatar'), (req, res) => {
 
         let newAvatar = user.avatar;
         if (req.file) {
-            newAvatar = '/uploads/' + req.file.filename;
+            try {
+                const result = await cloudinary.uploader.upload(req.file.path, { folder: 'hesapmatik' });
+                newAvatar = result.secure_url;
+                fs.unlink(req.file.path, () => {});
+            } catch (uploadErr) {
+                console.error("Cloudinary avatar upload error:", uploadErr);
+            }
         }
 
         const isPhoneChanged = newPhone !== user.phone;
