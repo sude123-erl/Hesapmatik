@@ -148,7 +148,18 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 submitBtn.disabled = true;
                 if (submitBtn.tagName === 'BUTTON' && !submitBtn.innerText.includes('...')) {
-                    submitBtn.innerText = 'Gönderiliyor...';
+                    const txt = submitBtn.innerText.trim().toLowerCase();
+                    let loadingText = 'Kaydediliyor...';
+                    if (txt.includes('giriş')) {
+                        loadingText = 'Giriş yapılıyor...';
+                    } else if (txt.includes('kaydol') || txt.includes('kayıt')) {
+                        loadingText = 'Kaydolunuyor...';
+                    } else if (txt.includes('sil') || txt.includes('çıkar')) {
+                        loadingText = 'Siliniyor...';
+                    } else if (txt.includes('gönder') || txt.includes('şifre')) {
+                        loadingText = 'Lütfen bekleyin...';
+                    }
+                    submitBtn.innerText = loadingText;
                 }
             }, 10);
         }
