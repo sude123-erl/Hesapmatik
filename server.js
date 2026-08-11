@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('@libsql/sqlite3').verbose();
 const path = require('path');
 const multer = require('multer');
 const os = require('os');

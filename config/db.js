@@ -1,12 +1,12 @@
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('@libsql/sqlite3').verbose();
 const path = require('path');
 
-const dbPath = path.resolve(__dirname, '../hesapmatik.db');
+const dbPath = process.env.DATABASE_URL || path.resolve(__dirname, '../hesapmatik.db');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Veritabanı hatası:', err.message);
     } else {
-        console.log('SQLite veritabanına bağlandık!');
+        console.log(process.env.DATABASE_URL ? 'Bulut Turso veritabanına bağlandık!' : 'SQLite veritabanına bağlandık!');
 
         db.serialize(() => {
             db.run(`CREATE TABLE IF NOT EXISTS expenses (
