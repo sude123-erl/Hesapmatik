@@ -782,10 +782,9 @@
                         debtor.amount -= amount;
                         creditor.amount -= amount;
 
-                        if (debtor.amount < 0.01) dIdx++; if (creditor.amount < 0.01) cIdx++; } // Artık sadece giriş
-                            yapan kullanıcının değil, tüm işlemler listelenecek // let
-                            myTransactions=transactions.filter(t=> t.fromId === currentUserId || t.toId ===
-                            currentUserId);
+                        if (debtor.amount < 0.01) dIdx++; if (creditor.amount < 0.01) cIdx++; } 
+                        // Artık sadece giriş yapan kullanıcının değil, tüm işlemler listelenecek 
+                        // let myTransactions=transactions.filter(t=> t.fromId === currentUserId || t.toId === currentUserId);
                             %>
 
                             <div style="margin-top: 15px; margin-bottom: 20px;">
