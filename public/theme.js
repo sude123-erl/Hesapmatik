@@ -139,4 +139,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // Prevent double submission on all forms globally
+    document.addEventListener('submit', (e) => {
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+        if (submitBtn) {
+            setTimeout(() => {
+                submitBtn.disabled = true;
+                if (submitBtn.tagName === 'BUTTON' && !submitBtn.innerText.includes('...')) {
+                    submitBtn.innerText = 'Gönderiliyor...';
+                }
+            }, 10);
+        }
+    });
 });
