@@ -11,6 +11,7 @@ const QRCode = require('qrcode');
 const bcrypt = require('bcryptjs');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 2024;
 const upload = multer({ dest: 'uploads/' });
 
