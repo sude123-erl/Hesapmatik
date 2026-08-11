@@ -72,7 +72,7 @@ const db = require('./config/db');
 
 // Ana Sayfa
 app.get('/', (req, res) => {
-    res.send('Hesapmatik çalışıyor!');
+    res.redirect('/login');
 });
 
 app.get('/register', (req, res) => {
