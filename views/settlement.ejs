@@ -361,13 +361,13 @@
                         <div
                             style="display: inline-flex; align-items: center; gap: 6px; color: #e74c3c; font-size: 12px; font-weight: 600;">
                             <i class="fa-solid fa-lock" style="font-size: 11px;"></i>
-                            Bu mahsuplaşma kapatılmıştır. Yeni harcama veya ödeme eklenemez.
+                            Bu mahsuplaşma sonlandırılmıştır. Yeni harcama veya ödeme eklenemez.
                         </div>
                         <% } else { %>
                         <div
                             style="display: inline-flex; align-items: center; gap: 6px; color: #2e7d32; font-size: 12px; font-weight: 600;">
                             <i class="fa-solid fa-lock-open" style="font-size: 11px;"></i>
-                            Bu etkinlik aktiftir. Ödemelerinizi tamamlayıp mahsuplaşmayı kapatabilirsiniz.
+                            Bu etkinlik aktiftir. Ödemelerinizi tamamlayıp mahsuplaşmayı sonlandırabilirsiniz.
                         </div>
                         <% } %>
                     </div>
@@ -616,11 +616,11 @@
                         style="flex: 1; min-width: 150px; padding: 12px; background: #f4f3ef; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.15); border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         📊 Borçlarım Detay
                     </button>
-                    <% if (activity.creatorId === currentUserId && activity.isClosed === 0) { %>
-                    <form action="/activity/close/<%= activity.id %>" method="POST" style="flex: 1; min-width: 150px; margin: 0;" onsubmit="customConfirm(event, this, 'Mahsuplaşmayı kapatmak istediğinizden emin misiniz? Kapatıldıktan sonra yeni harcama veya ödeme eklenemez, mevcut olanlar değiştirilemez.');">
+                    <% if (activity.isClosed === 0) { %>
+                    <form action="/activity/close/<%= activity.id %>" method="POST" style="flex: 1; min-width: 150px; margin: 0;" onsubmit="customConfirm(event, this, 'Mahsuplaşmayı sonlandırmak istediğinizden emin misiniz? Sonlandırıldıktan sonra yeni harcama veya ödeme eklenemez, mevcut olanlar değiştirilemez.');">
                         <button type="submit"
                             style="width: 100%; padding: 12px; background: #e74c3c; color: #f4f3ef; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(231, 76, 60, 0.15);">
-                            🔒 Mahsuplaşmayı Kapat
+                            🔒 Mahsuplaşmayı Sonlandır
                         </button>
                     </form>
                     <% } %>

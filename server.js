@@ -1090,23 +1090,24 @@ app.post('/activity/close/:id', (req, res) => {
         return res.status(401).send("Giriş yapmanız gerekiyor.");
     }
 
-    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
-        if (err || !activity) {
-            return res.status(404).send("Etkinlik bulunamadı.");
-        }
-
-        if (activity.creatorId !== currentUserId) {
-            return res.status(403).send("Bu işlemi sadece etkinlik sahibi yapabilir.");
+    const checkUserQuery = `
+        SELECT id FROM activities WHERE id = ? AND creatorId = ?
+        UNION
+        SELECT activityId FROM activity_participants WHERE activityId = ? AND userId = ?
+    `;
+    db.get(checkUserQuery, [activityId, currentUserId, activityId, currentUserId], (err, row) => {
+        if (err || !row) {
+            return res.status(403).send("Bu işlemi yapmaya yetkiniz yok.");
         }
 
         // Bekleyen (pending) ödeme var mı kontrol edelim
-        db.get(`SELECT COUNT(*) AS pendingCount FROM payments WHERE activityId = ? AND status = 'pending'`, [activityId], (dbErr, row) => {
+        db.get(`SELECT COUNT(*) AS pendingCount FROM payments WHERE activityId = ? AND status = 'pending'`, [activityId], (dbErr, pendingRow) => {
             if (dbErr) {
                 console.error("Ödemeler kontrol edilirken hata:", dbErr.message);
                 return res.status(500).send("Bir hata oluştu.");
             }
 
-            if (row.pendingCount > 0) {
+            if (pendingRow.pendingCount > 0) {
                 return res.redirect(`/settlement/${activityId}?err=pending_payments`);
             }
 
