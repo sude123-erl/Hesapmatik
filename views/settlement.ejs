@@ -536,9 +536,7 @@
 
                                                                     <% if (typeof currentUserId !=='undefined' &&
                                                                         currentUserId &&
-                                                                        (String(payment.receiverId)===String(currentUserId)
-                                                                        ||
-                                                                        String(payment.senderId)===String(currentUserId)))
+                                                                        String(payment.senderId)===String(currentUserId))
                                                                         { %>
                                                                         <% if (payment.status !=='approved' ) { %>
                                                                             <a href="/edit-payment/<%= payment.id %>"

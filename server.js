@@ -441,9 +441,16 @@ app.get('/activity/:id', (req, res) => {
     const activityId = req.params.id;
     const currentUserId = req.session.userId;
 
-    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
+    const checkAccessQuery = `
+        SELECT activities.* 
+        FROM activities
+        LEFT JOIN activity_participants ON activity_participants.activityId = activities.id
+        WHERE activities.id = ? 
+          AND (activities.creatorId = ? OR activity_participants.userId = ?)
+    `;
+    db.get(checkAccessQuery, [activityId, currentUserId, currentUserId], (err, activity) => {
         if (err || !activity) {
-            return res.status(404).send("Etkinlik bulunamadı.");
+            return res.status(403).send("Bu etkinliğe erişim yetkiniz yok. <a href='/panel'>Panele dön</a>");
         }
 
         db.all(`SELECT * FROM expenses WHERE activityId = ? AND userId = ?`, [activityId, currentUserId], (err, expenses) => {
@@ -511,9 +518,16 @@ app.get('/settlement/:id', (req, res) => {
     const activityId = req.params.id;
     const currentUserId = req.session.userId;
 
-    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
+    const checkAccessQuery = `
+        SELECT activities.* 
+        FROM activities
+        LEFT JOIN activity_participants ON activity_participants.activityId = activities.id
+        WHERE activities.id = ? 
+          AND (activities.creatorId = ? OR activity_participants.userId = ?)
+    `;
+    db.get(checkAccessQuery, [activityId, currentUserId, currentUserId], (err, activity) => {
         if (err || !activity) {
-            return res.status(404).send("Etkinlik bulunamadı.");
+            return res.status(403).send("Bu etkinliğe erişim yetkiniz yok. <a href='/panel'>Panele dön</a>");
         }
 
         db.all(`SELECT * FROM expenses WHERE activityId = ? AND userId = ?`, [activityId, currentUserId], (err, expenses) => {
@@ -737,8 +751,8 @@ app.post('/delete-payment/:id', (req, res) => {
             return res.status(404).send("Ödeme bulunamadı.");
         }
 
-        if (payment.senderId !== currentUserId && payment.receiverId !== currentUserId) {
-            return res.status(403).send("Bu işlemi yapmaya yetkiniz yok.");
+        if (payment.senderId !== currentUserId) {
+            return res.status(403).send("Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi silebilir.");
         }
 
         if (payment.status === 'approved') {
@@ -1039,34 +1053,46 @@ app.post('/profile/verify-otp', (req, res) => {
 
 // Etkinliği Silme
 app.post('/activity/delete/:id', (req, res) => {
+    if (!req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
-    db.serialize(() => {
-        db.run(`DELETE FROM activity_participants WHERE activityId = ?`, [activityId], (err) => {
-            if (err) console.error("Silme hatası (participants):", err.message);
-        });
-        db.run(`DELETE FROM expenses WHERE activityId = ?`, [activityId], (err) => {
-            if (err) console.error("Silme hatası (expenses):", err.message);
-        });
-        db.run(`DELETE FROM payments WHERE activityId = ?`, [activityId], (err) => {
-            if (err) console.error("Silme hatası (payments):", err.message);
-        });
-        db.run(`DELETE FROM activities WHERE id = ?`, [activityId], (err) => {
-            if (err) {
-                console.error("Silme hatası (activities):", err.message);
-                return res.status(500).send("Silinirken bir hata oluştu.");
-            }
-            res.redirect('/panel');
+
+    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
+        if (err || !activity) return res.status(404).send("Etkinlik bulunamadı.");
+        if (activity.creatorId !== req.session.userId) {
+            return res.status(403).send("Bu işlemi sadece etkinlik sahibi yapabilir.");
+        }
+
+        db.serialize(() => {
+            db.run(`DELETE FROM activity_participants WHERE activityId = ?`, [activityId], (err) => {
+                if (err) console.error("Silme hatası (participants):", err.message);
+            });
+            db.run(`DELETE FROM expenses WHERE activityId = ?`, [activityId], (err) => {
+                if (err) console.error("Silme hatası (expenses):", err.message);
+            });
+            db.run(`DELETE FROM payments WHERE activityId = ?`, [activityId], (err) => {
+                if (err) console.error("Silme hatası (payments):", err.message);
+            });
+            db.run(`DELETE FROM activities WHERE id = ?`, [activityId], (err) => {
+                if (err) {
+                    console.error("Silme hatası (activities):", err.message);
+                    return res.status(500).send("Silinirken bir hata oluştu.");
+                }
+                res.redirect('/panel');
+            });
         });
     });
 });
 
 // Düzenleme Sayfasını Açma
 app.get('/activity/edit/:id', (req, res) => {
+    if (!req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
     db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, row) => {
-        if (err) {
-            console.error(err.message);
-            return res.send("Bir hata oluştu.");
+        if (err || !row) {
+            return res.status(404).send("Etkinlik bulunamadı.");
+        }
+        if (row.creatorId !== req.session.userId) {
+            return res.status(403).send("Bu işlemi sadece etkinlik sahibi yapabilir.");
         }
         res.render('edit-activity', { activity: row });
     });
@@ -1074,11 +1100,14 @@ app.get('/activity/edit/:id', (req, res) => {
 
 // Harcama Düzenleme Sayfasını Açma
 app.get('/edit-expense/:id', (req, res) => {
+    if (!req.session.userId) return res.redirect('/login');
     const expenseId = req.params.id;
     db.get(`SELECT * FROM expenses WHERE id = ?`, [expenseId], (err, row) => {
-        if (err) {
-            console.error(err.message);
-            return res.send("Bir hata oluştu.");
+        if (err || !row) {
+            return res.status(404).send("Harcama bulunamadı.");
+        }
+        if (row.userId !== req.session.userId) {
+            return res.status(403).send("Bu harcamayı sadece ekleyen kişi düzenleyebilir.");
         }
         res.render('edit-expense', { expense: row });
     });
@@ -1086,20 +1115,25 @@ app.get('/edit-expense/:id', (req, res) => {
 
 // Etkinliği Güncelleme
 app.post('/activity/edit/:id', (req, res) => {
+    if (!req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
     const { activityName, activityPassword } = req.body;
 
-    db.run(
-        `UPDATE activities SET activityName = ?, activityPassword = ? WHERE id = ?`,
-        [activityName, activityPassword, activityId],
-        (err) => {
-            if (err) {
-                console.error(err.message);
-                return res.send("Güncellenirken bir hata oluştu.");
-            }
-            res.redirect('/panel');
+    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, row) => {
+        if (err || !row) return res.status(404).send("Etkinlik bulunamadı.");
+        if (row.creatorId !== req.session.userId) {
+            return res.status(403).send("Bu işlemi sadece etkinlik sahibi yapabilir.");
         }
-    );
+
+        db.run(
+            `UPDATE activities SET activityName = ?, activityPassword = ? WHERE id = ?`,
+            [activityName, activityPassword, activityId],
+            (updateErr) => {
+                if (updateErr) return res.status(500).send("Güncellenemedi.");
+                res.redirect(`/activity/${activityId}`);
+            }
+        );
+    });
 });
 
 // Katılımcı Yönetimi
@@ -1179,8 +1213,15 @@ app.get('/share-activity/:id', (req, res) => {
     QRCode.toDataURL(inviteLink, (err, qrCodeUrl) => {
         if (err) return res.send("QR kod oluşturulamadı.");
 
-        db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
-            if (err || !activity) return res.send("Etkinlik bulunamadı.");
+        const checkAccessQuery = `
+            SELECT activities.* 
+            FROM activities
+            LEFT JOIN activity_participants ON activity_participants.activityId = activities.id
+            WHERE activities.id = ? 
+              AND (activities.creatorId = ? OR activity_participants.userId = ?)
+        `;
+        db.get(checkAccessQuery, [activityId, req.session.userId, req.session.userId], (err, activity) => {
+            if (err || !activity) return res.status(403).send("Bu etkinliğe erişim yetkiniz yok. <a href='/panel'>Panele dön</a>");
 
             getParticipantManagementState(activityId, req.session.userId, (stateErr, stateActivity, isOwner, isLocked) => {
                 if (stateErr) return res.status(500).send('Katılımcı bilgileri alınamadı.');
@@ -1242,7 +1283,16 @@ app.get('/api/notifications', (req, res) => {
 
 app.post('/api/notifications/clear', (req, res) => {
     if (!req.session.userId) return res.json({ success: false });
-    db.run(`UPDATE notifications SET isRead = 1 WHERE userId = ?`, [req.session.userId], (err) => {
+    db.run(`DELETE FROM notifications WHERE userId = ?`, [req.session.userId], (err) => {
+        if (err) return res.json({ success: false });
+        res.json({ success: true });
+    });
+});
+
+app.post('/api/notifications/delete/:id', (req, res) => {
+    if (!req.session.userId) return res.json({ success: false });
+    const notificationId = req.params.id;
+    db.run(`DELETE FROM notifications WHERE id = ? AND userId = ?`, [notificationId, req.session.userId], (err) => {
         if (err) return res.json({ success: false });
         res.json({ success: true });
     });
@@ -1260,6 +1310,9 @@ app.get('/edit-payment/:id', (req, res) => {
         WHERE payments.id = ?
     `, [paymentId], (err, row) => {
         if (err || !row) return res.redirect('back');
+        if (row.senderId !== req.session.userId) {
+            return res.status(403).send("Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi düzenleyebilir. <a href='/panel'>Geri dön</a>");
+        }
         if (row.status === 'approved') {
             return res.send(`Bu ödeme onaylandığı için düzenlenemez. <a href="/activity/${row.activityId}">Geri dön</a>`);
         }
@@ -1280,11 +1333,15 @@ app.post('/edit-payment/:id', (req, res) => {
 
         const receiverId = user.id;
 
-        db.get(`SELECT activityId, status FROM payments WHERE id = ?`, [paymentId], (err, row) => {
+        db.get(`SELECT activityId, status, senderId FROM payments WHERE id = ?`, [paymentId], (err, row) => {
             if (err || !row) return res.send("Güncelleme hatası.");
 
+            if (row.senderId !== req.session.userId) {
+                return res.status(403).send("Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi düzenleyebilir.");
+            }
+
             if (row.status === 'approved') {
-                return res.send(`Bu ödeme onaylandığı için düzenlenemez. Sadece silinebilir. <a href="/activity/${row.activityId}">Geri dön</a>`);
+                return res.send(`Bu ödeme onaylandığı için düzenlenemez. <a href="/activity/${row.activityId}">Geri dön</a>`);
             }
 
             const activityId = row.activityId;
