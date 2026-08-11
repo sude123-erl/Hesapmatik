@@ -399,9 +399,50 @@
     </div>
 
     <script>
+        function showToast(message, isSuccess = true) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed; 
+                bottom: 30px; 
+                left: 50%; 
+                transform: translateX(-50%) translateY(20px); 
+                background: ${isSuccess ? '#2e7d32' : '#c62828'}; 
+                color: white; 
+                padding: 12px 24px; 
+                border-radius: 30px; 
+                font-weight: 600; 
+                font-size: 14px; 
+                z-index: 999999; 
+                box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); 
+                opacity: 0; 
+                transition: opacity 0.3s ease, transform 0.3s ease; 
+                pointer-events: none; 
+                text-align: center;
+                white-space: nowrap;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         function copyShareLink() {
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                alert('Paylaşım linki kopyalandı!');
+            const inviteLink = '<%= typeof inviteLink !== "undefined" ? inviteLink : "" %>';
+            const linkToCopy = inviteLink || window.location.href;
+            navigator.clipboard.writeText(linkToCopy).then(() => {
+                showToast('Paylaşım linki kopyalandı! 🎉');
+            }).catch(err => {
+                console.error("Kopyalama hatası:", err);
+                showToast('Link kopyalanamadı!', false);
             });
         }
 
