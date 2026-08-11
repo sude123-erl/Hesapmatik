@@ -613,64 +613,59 @@ app.post('/activity/:id/upload-image', upload.single('coverImage'), async (req, 
 app.post('/add-payment', (req, res) => {
     const { activityId, receiverUsername, senderUsername, amount, description } = req.body;
 
-    db.get(`SELECT isClosed FROM activities WHERE id = ?`, [activityId], (err, activity) => {
-        if (err || !activity) return res.status(404).send("Etkinlik bulunamadı.");
-        if (activity.isClosed === 1) return res.status(400).send("Bu etkinlik kapatıldığı için ödeme eklenemez.");
+    // 1. Önce telefonda/tarayıcıda aktif bir oturum var mı ona bakıyoruz, yoksa formdan gelen ismi kullanıyoruz
+    const currentUserId = req.session ? req.session.userId : null;
 
-        // 1. Önce telefonda/tarayıcıda aktif bir oturum var mı ona bakıyoruz, yoksa formdan gelen ismi kullanıyoruz
-        const currentUserId = req.session ? req.session.userId : null;
+    const findSender = (callback) => {
+        if (currentUserId) {
+            return callback(null, currentUserId);
+        }
+        if (senderUsername) {
+            const cleanSender = senderUsername.trim();
+            db.get(`SELECT id FROM users WHERE LOWER(username) = LOWER(?)`, [cleanSender], (err, u) => {
+                if (err || !u) return callback(new Error('Gönderici kullanıcı bulunamadı.'));
+                callback(null, u.id);
+            });
+        } else {
+            callback(new Error('Giriş yapmanız gerekiyor.'));
+        }
+    };
 
-        const findSender = (callback) => {
-            if (currentUserId) {
-                return callback(null, currentUserId);
+    findSender((err, senderId) => {
+        if (err) {
+            return res.status(401).send(err.message + ` <a href="/login">Giriş Yap</a>`);
+        }
+
+        const cleanReceiver = receiverUsername ? receiverUsername.trim() : '';
+
+        db.get(`SELECT id FROM users WHERE LOWER(username) = LOWER(?)`, [cleanReceiver], (err, user) => {
+            if (err || !user) {
+                return res.send(`Hata: '${receiverUsername}' kullanıcı adına sahip bir üye bulunamadı! <a href="/activity/${activityId}">Geri dön</a>`);
             }
-            if (senderUsername) {
-                const cleanSender = senderUsername.trim();
-                db.get(`SELECT id FROM users WHERE LOWER(username) = LOWER(?)`, [cleanSender], (err, u) => {
-                    if (err || !u) return callback(new Error('Gönderici kullanıcı bulunamadı.'));
-                    callback(null, u.id);
-                });
-            } else {
-                callback(new Error('Giriş yapmanız gerekiyor.'));
-            }
-        };
 
-        findSender((err, senderId) => {
-            if (err) {
-                return res.status(401).send(err.message + ` <a href="/login">Giriş Yap</a>`);
-            }
+            const receiverId = user.id;
 
-            const cleanReceiver = receiverUsername ? receiverUsername.trim() : '';
-
-            db.get(`SELECT id FROM users WHERE LOWER(username) = LOWER(?)`, [cleanReceiver], (err, user) => {
-                if (err || !user) {
-                    return res.send(`Hata: '${receiverUsername}' kullanıcı adına sahip bir üye bulunamadı! <a href="/activity/${activityId}">Geri dön</a>`);
+            db.get(`SELECT * FROM activity_participants WHERE activityId = ? AND userId = ?`, [activityId, receiverId], (err, part) => {
+                if (err || !part) {
+                    return res.send(`Hata: Seçtiğiniz kullanıcı bu etkinliğin bir katılımcısı değil! Sadece etkinlikteki kişilere ödeme yapabilirsiniz. <a href="/activity/${activityId}">Geri dön</a>`);
                 }
 
-                const receiverId = user.id;
+                const query = `
+                    INSERT INTO payments (activityId, senderId, receiverId, amount, description, status, createdAt)
+                    VALUES (?, ?, ?, ?, ?, 'pending', date('now'))
+                `;
 
-                db.get(`SELECT * FROM activity_participants WHERE activityId = ? AND userId = ?`, [activityId, receiverId], (err, part) => {
-                    if (err || !part) {
-                        return res.send(`Hata: Seçtiğiniz kullanıcı bu etkinliğin bir katılımcısı değil! Sadece etkinlikteki kişilere ödeme yapabilirsiniz. <a href="/activity/${activityId}">Geri dön</a>`);
+                db.run(query, [activityId, senderId, receiverId, amount, description], (insertErr) => {
+                    if (insertErr) {
+                        console.error("Ödeme eklenirken hata oluştu:", insertErr.message);
+                        return res.status(500).send("Ödeme kaydedilirken bir hata oluştu.");
                     }
-
-                    const query = `
-                        INSERT INTO payments (activityId, senderId, receiverId, amount, description, status, createdAt)
-                        VALUES (?, ?, ?, ?, ?, 'pending', date('now'))
-                    `;
-
-                    db.run(query, [activityId, senderId, receiverId, amount, description], (insertErr) => {
-                        if (insertErr) {
-                            console.error("Ödeme eklenirken hata oluştu:", insertErr.message);
-                            return res.status(500).send("Ödeme kaydedilirken bir hata oluştu.");
-                        }
-                        const referer = req.get('Referrer');
-                        if (referer && referer.includes('/settlement/')) {
-                            res.redirect(`/settlement/${activityId}`);
-                        } else {
-                            res.redirect(`/activity/${activityId}`);
-                        }
-                    });
+                    const referer = req.get('Referrer');
+                    if (referer && referer.includes('/settlement/')) {
+                        res.redirect(`/settlement/${activityId}`);
+                    } else {
+                        res.redirect(`/activity/${activityId}`);
+                    }
                 });
             });
         });
@@ -686,15 +681,9 @@ app.post('/approve-payment/:id', (req, res) => {
         return res.status(401).send("Giriş yapmanız gerekiyor.");
     }
 
-    db.get(`SELECT payments.*, activities.isClosed 
-            FROM payments 
-            JOIN activities ON payments.activityId = activities.id 
-            WHERE payments.id = ?`, [paymentId], (err, payment) => {
+    db.get(`SELECT * FROM payments WHERE id = ?`, [paymentId], (err, payment) => {
         if (err || !payment) {
             return res.status(404).send("Ödeme bulunamadı.");
-        }
-        if (payment.isClosed === 1) {
-            return res.status(400).send("Bu etkinlik kapatıldığı için ödeme onaylanamaz.");
         }
 
         if (String(payment.receiverId) !== String(currentUserId)) {
@@ -735,15 +724,9 @@ app.post('/delete-payment/:id', (req, res) => {
         return res.status(401).send("Giriş yapmanız gerekiyor.");
     }
 
-    db.get(`SELECT payments.*, activities.isClosed 
-            FROM payments 
-            JOIN activities ON payments.activityId = activities.id 
-            WHERE payments.id = ?`, [paymentId], (err, payment) => {
+    db.get(`SELECT * FROM payments WHERE id = ?`, [paymentId], (err, payment) => {
         if (err || !payment) {
             return res.status(404).send("Ödeme bulunamadı.");
-        }
-        if (payment.isClosed === 1) {
-            return res.status(400).send("Bu etkinlik kapatıldığı için ödeme silinemez.");
         }
 
         if (payment.senderId !== currentUserId && payment.receiverId !== currentUserId) {
@@ -782,45 +765,36 @@ app.post('/add-expense', upload.array('receipt'), async (req, res) => {
     const expenseName = body.expenseName;
     const amount = body.amount;
     const activityId = body.activityId;
-
-    db.get(`SELECT isClosed FROM activities WHERE id = ?`, [activityId], async (err, activity) => {
-        if (err || !activity) return res.status(404).send("Etkinlik bulunamadı.");
-        if (activity.isClosed === 1) return res.status(400).send("Bu etkinlik kapatıldığı için harcama eklenemez.");
-
-        let receiptUrl = null;
-        if (req.files && req.files.length > 0) {
-            try {
-                const result = await cloudinary.uploader.upload(req.files[0].path, { folder: 'hesapmatik' });
-                receiptUrl = result.secure_url;
-                fs.unlink(req.files[0].path, () => {});
-            } catch (uploadErr) {
-                console.error("Cloudinary receipt upload error:", uploadErr);
-            }
+    
+    let receiptUrl = null;
+    if (req.files && req.files.length > 0) {
+        try {
+            const result = await cloudinary.uploader.upload(req.files[0].path, { folder: 'hesapmatik' });
+            receiptUrl = result.secure_url;
+            fs.unlink(req.files[0].path, () => {});
+        } catch (uploadErr) {
+            console.error("Cloudinary receipt upload error:", uploadErr);
         }
+    }
 
-        db.run(`INSERT INTO expenses (activityId, expenseName, amount, receipt, userId) VALUES (?, ?, ?, ?, ?)`,
-            [activityId, expenseName, amount, receiptUrl, req.session.userId], (err) => {
-                if (err) console.error("Harcama eklenirken hata oluştu:", err.message);
+    db.run(`INSERT INTO expenses (activityId, expenseName, amount, receipt, userId) VALUES (?, ?, ?, ?, ?)`,
+        [activityId, expenseName, amount, receiptUrl, req.session.userId], (err) => {
+            if (err) console.error("Harcama eklenirken hata oluştu:", err.message);
 
-                if (activityId) {
-                    res.redirect(`/activity/${activityId}`);
-                } else {
-                    res.redirect('/panel');
-                }
-            });
-    });
+            if (activityId) {
+                res.redirect(`/activity/${activityId}`);
+            } else {
+                res.redirect('/panel');
+            }
+        });
 });
 
 // Harcama Silme
 app.post('/delete-expense/:id', (req, res) => {
     const expenseId = req.params.id;
 
-    db.get(`SELECT expenses.activityId, activities.isClosed 
-            FROM expenses 
-            JOIN activities ON expenses.activityId = activities.id 
-            WHERE expenses.id = ?`, [expenseId], (err, row) => {
+    db.get(`SELECT activityId FROM expenses WHERE id = ?`, [expenseId], (err, row) => {
         if (err || !row) return res.redirect('back');
-        if (row.isClosed === 1) return res.status(400).send("Bu etkinlik kapatıldığı için harcama silinemez.");
 
         const activityId = row.activityId;
 
@@ -836,14 +810,11 @@ app.post('/edit-expense/:id', upload.array('receipt'), async (req, res) => {
     const expenseId = req.params.id;
     const { expenseName, amount } = req.body;
 
-    db.get(`SELECT expenses.activityId, expenses.receipt, activities.isClosed 
-            FROM expenses 
-            JOIN activities ON expenses.activityId = activities.id 
-            WHERE expenses.id = ?`, [expenseId], async (err, row) => {
+    // Önce harcamanın hangi etkinliğe ait olduğunu bulalım ki işlem bitince o etkinliğe geri yönlendirebilelim
+    db.get(`SELECT activityId, receipt FROM expenses WHERE id = ?`, [expenseId], async (err, row) => {
         if (err || !row) {
             return res.status(404).send("Harcama bulunamadı.");
         }
-        if (row.isClosed === 1) return res.status(400).send("Bu etkinlik kapatıldığı için harcama düzenlenemez.");
 
         const activityId = row.activityId;
         
@@ -1081,47 +1052,6 @@ app.post('/activity/delete/:id', (req, res) => {
     });
 });
 
-// Etkinliği Kapatma (Arşivleme)
-app.post('/activity/close/:id', (req, res) => {
-    const activityId = req.params.id;
-    const currentUserId = req.session.userId;
-
-    if (!currentUserId) {
-        return res.status(401).send("Giriş yapmanız gerekiyor.");
-    }
-
-    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
-        if (err || !activity) {
-            return res.status(404).send("Etkinlik bulunamadı.");
-        }
-
-        if (activity.creatorId !== currentUserId) {
-            return res.status(403).send("Bu işlemi sadece etkinlik sahibi yapabilir.");
-        }
-
-        // Bekleyen (pending) ödeme var mı kontrol edelim
-        db.get(`SELECT COUNT(*) AS pendingCount FROM payments WHERE activityId = ? AND status = 'pending'`, [activityId], (dbErr, pendingRow) => {
-            if (dbErr) {
-                console.error("Ödemeler kontrol edilirken hata:", dbErr.message);
-                return res.status(500).send("Bir hata oluştu.");
-            }
-
-            if (pendingRow.pendingCount > 0) {
-                return res.redirect(`/settlement/${activityId}?err=pending_payments`);
-            }
-
-            // Bekleyen ödeme yok, kapatabiliriz!
-            db.run(`UPDATE activities SET isClosed = 1 WHERE id = ?`, [activityId], (updateErr) => {
-                if (updateErr) {
-                    console.error("Etkinlik kapatılırken hata:", updateErr.message);
-                    return res.status(500).send("Kapatma işlemi sırasında hata oluştu.");
-                }
-                res.redirect(`/settlement/${activityId}`);
-            });
-        });
-    });
-});
-
 // Düzenleme Sayfasını Açma
 app.get('/activity/edit/:id', (req, res) => {
     const activityId = req.params.id;
@@ -1338,18 +1268,11 @@ app.post('/edit-payment/:id', (req, res) => {
 
         const receiverId = user.id;
 
-        db.get(`SELECT payments.activityId, payments.status, activities.isClosed 
-                FROM payments 
-                JOIN activities ON payments.activityId = activities.id 
-                WHERE payments.id = ?`, [paymentId], (err, row) => {
+        db.get(`SELECT activityId, status FROM payments WHERE id = ?`, [paymentId], (err, row) => {
             if (err || !row) return res.send("Güncelleme hatası.");
 
-            if (row.isClosed === 1) {
-                return res.status(400).send("Bu etkinlik kapatıldığı için ödeme düzenlenemez.");
-            }
-
             if (row.status === 'approved') {
-                return res.send(`Bu ödeme onaylandığı için düzenlenemez. <a href="/activity/${row.activityId}">Geri dön</a>`);
+                return res.send(`Bu ödeme onaylandığı için düzenlenemez. Sadece silinebilir. <a href="/activity/${row.activityId}">Geri dön</a>`);
             }
 
             const activityId = row.activityId;

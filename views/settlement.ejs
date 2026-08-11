@@ -357,19 +357,11 @@
                                 <%= activityName %>
                             </h1>
                         </div>
-                        <% if (activity.isClosed === 1) { %>
                         <div
-                            style="display: inline-flex; align-items: center; gap: 6px; color: #e74c3c; font-size: 12px; font-weight: 600;">
+                            style="display: inline-flex; align-items: center; gap: 6px; color: #7b948a; font-size: 12px; font-weight: 500;">
                             <i class="fa-solid fa-lock" style="font-size: 11px;"></i>
-                            Bu mahsuplaşma sonlandırılmıştır. Yeni harcama veya ödeme eklenemez.
+                            Bu etkinlik kapatılmıştır. Sadece ödemeler yapılabilir.
                         </div>
-                        <% } else { %>
-                        <div
-                            style="display: inline-flex; align-items: center; gap: 6px; color: #2e7d32; font-size: 12px; font-weight: 600;">
-                            <i class="fa-solid fa-lock-open" style="font-size: 11px;"></i>
-                            Bu etkinlik aktiftir. Ödemelerinizi tamamlayıp mahsuplaşmayı sonlandırabilirsiniz.
-                        </div>
-                        <% } %>
                     </div>
         </div>
 
@@ -606,24 +598,15 @@
 
                 <!-- Alt İşlem Butonları -->
                 <div
-                    style="display: flex; gap: 15px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; flex-wrap: wrap;">
-                    <% if (activity.isClosed === 0) { %>
-                    <button <%=myDebt> 0 ? '' : 'disabled' %> onclick="<%= myDebt> 0 ? 'openPaymentModal()' : 'return false;' %>" type="button" style="flex: 1; min-width: 150px; padding: 12px; background: <%= myDebt> 0 ? 'var(--btn-primary-bg, #0f382c)' : '#a0a0a0' %>; color: #f4f3ef; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: <%= myDebt> 0 ? 'pointer' : 'not-allowed' %>; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); opacity: <%= myDebt> 0 ? '1' : '0.6' %>;">
+                    style="display: flex; gap: 15px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    <button <%=myDebt> 0 ? '' : 'disabled' %> onclick="<%= myDebt> 0 ? 'openPaymentModal()' : 'return false;' %>" type="button" style="flex: 1; padding: 12px; background: <%= myDebt> 0 ? 'var(--btn-primary-bg, #0f382c)' : '#a0a0a0' %>; color: #f4f3ef; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: <%= myDebt> 0 ? 'pointer' : 'not-allowed' %>; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); opacity: <%= myDebt> 0 ? '1' : '0.6' %>;">
                                         💸 Ödeme Ekle/Kaydet
                     </button>
-                    <% } %>
                     <button onclick="openBalancesModal()" type="button"
-                        style="flex: 1; min-width: 150px; padding: 12px; background: #f4f3ef; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.15); border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        style="flex: 1; padding: 12px; background: #f4f3ef; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.15); border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         📊 Borçlarım Detay
                     </button>
-                    <% if (activity.creatorId === currentUserId && activity.isClosed === 0) { %>
-                    <form action="/activity/close/<%= activity.id %>" method="POST" style="flex: 1; min-width: 150px; margin: 0;" onsubmit="customConfirm(event, this, 'Mahsuplaşmayı sonlandırmak istediğinizden emin misiniz? Sonlandırıldıktan sonra yeni harcama veya ödeme eklenemez, mevcut olanlar değiştirilemez.');">
-                        <button type="submit"
-                            style="width: 100%; padding: 12px; background: #e74c3c; color: #f4f3ef; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(231, 76, 60, 0.15);">
-                            🔒 Mahsuplaşmayı Sonlandır
-                        </button>
-                    </form>
-                    <% } %>
+
                 </div>
 
     </div>
@@ -996,14 +979,6 @@
                 }, 'image/jpeg', 0.8);
             } else {
                 form.submit();
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('err') === 'pending_payments') {
-                alert('Tüm ödemeler onaylanmadan mahsuplaşma kapatılamaz! Lütfen bekleyen ödemeleri alıcıların onaylamasını sağlayın.');
-                window.history.replaceState({}, document.title, window.location.pathname);
             }
         });
 
