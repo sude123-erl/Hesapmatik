@@ -395,23 +395,7 @@
                             <% }) %>
                                 <% } %>
 
-                                    <% if (isOwner && !isLocked) { %>
-                                        <!-- Katılımcı Seçme ve Ekleme -->
-                                        <form action="/activity/<%= activity.id %>/participants/add" method="POST"
-                                            class="add-form">
-                                            <select name="userId" class="select-participant" required>
-                                                <option value="" disabled selected>Katılımcı seçin</option>
-                                                <% if (availableUsers && availableUsers.length> 0) { %>
-                                                    <% availableUsers.forEach(u=> { %>
-                                                        <option value="<%= u.id %>">
-                                                            <%= u.fullname || u.username %>
-                                                        </option>
-                                                        <% }) %>
-                                                            <% } %>
-                                            </select>
-                                            <button type="submit" class="btn-add">Ekle</button>
-                                        </form>
-                                        <% } %>
+
     </div>
 
     <script>
