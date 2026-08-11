@@ -197,7 +197,7 @@ app.post('/login', (req, res) => {
                 const returnTo = req.session.returnTo;
                 delete req.session.returnTo;
 
-                if (returnTo && /^\/join\/\d+$/.test(returnTo)) {
+                if (returnTo && returnTo.startsWith('/')) {
                     return res.redirect(returnTo);
                 }
                 return res.redirect('/dashboard');
@@ -434,6 +434,10 @@ app.post('/create-activity', upload.single('coverImage'), async (req, res) => {
 
 // Etkinlik Detay Sayfası
 app.get('/activity/:id', (req, res) => {
+    if (!req.session.userId) {
+        req.session.returnTo = req.originalUrl;
+        return res.redirect('/login');
+    }
     const activityId = req.params.id;
     const currentUserId = req.session.userId;
 
@@ -500,6 +504,10 @@ app.get('/activity/:id', (req, res) => {
 
 // Mahsuplasma Route
 app.get('/settlement/:id', (req, res) => {
+    if (!req.session.userId) {
+        req.session.returnTo = req.originalUrl;
+        return res.redirect('/login');
+    }
     const activityId = req.params.id;
     const currentUserId = req.session.userId;
 
@@ -1155,6 +1163,10 @@ app.post('/activity/:id/participants/:userId/remove', (req, res) => {
 
 // Share Activity
 app.get('/share-activity/:id', (req, res) => {
+    if (!req.session.userId) {
+        req.session.returnTo = req.originalUrl;
+        return res.redirect('/login');
+    }
     const activityId = req.params.id;
     // Determine base URL for QR code. If the request host is localhost, replace it with the detected local network IP if available.
     let host = req.get('host');
