@@ -733,6 +733,10 @@ app.post('/delete-payment/:id', (req, res) => {
             return res.status(403).send("Bu işlemi yapmaya yetkiniz yok.");
         }
 
+        if (payment.status === 'approved') {
+            return res.status(400).send("Onaylanmış ödemeler silinemez.");
+        }
+
         db.run(`DELETE FROM payments WHERE id = ?`, [paymentId], (err) => {
             if (err) {
                 return res.status(500).send("Silme işleminde hata oluştu.");
