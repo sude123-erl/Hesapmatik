@@ -623,7 +623,7 @@
                 </span>
             </div>
 
-            <form action="/add-payment" method="POST">
+            <form action="/add-payment" method="POST" onsubmit="const btn = this.querySelector('button[type=submit]'); setTimeout(() => { btn.disabled = true; btn.innerText = 'Kaydediliyor...'; }, 10);">
                 <input type="hidden" name="activityId" value="<%= activity.id %>">
                 <input type="hidden" name="senderUsername" value="<%= currentUser ? currentUser.username : '' %>">
 
