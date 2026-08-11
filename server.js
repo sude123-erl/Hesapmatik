@@ -996,12 +996,23 @@ app.post('/profile/verify-otp', (req, res) => {
 // Etkinliği Silme
 app.post('/activity/delete/:id', (req, res) => {
     const activityId = req.params.id;
-    db.run(`DELETE FROM activities WHERE id = ?`, [activityId], (err) => {
-        if (err) {
-            console.error(err.message);
-            return res.send("Silinirken bir hata oluştu.");
-        }
-        res.redirect('/panel');
+    db.serialize(() => {
+        db.run(`DELETE FROM activity_participants WHERE activityId = ?`, [activityId], (err) => {
+            if (err) console.error("Silme hatası (participants):", err.message);
+        });
+        db.run(`DELETE FROM expenses WHERE activityId = ?`, [activityId], (err) => {
+            if (err) console.error("Silme hatası (expenses):", err.message);
+        });
+        db.run(`DELETE FROM payments WHERE activityId = ?`, [activityId], (err) => {
+            if (err) console.error("Silme hatası (payments):", err.message);
+        });
+        db.run(`DELETE FROM activities WHERE id = ?`, [activityId], (err) => {
+            if (err) {
+                console.error("Silme hatası (activities):", err.message);
+                return res.status(500).send("Silinirken bir hata oluştu.");
+            }
+            res.redirect('/panel');
+        });
     });
 });
 
