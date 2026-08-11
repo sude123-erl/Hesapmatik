@@ -431,6 +431,12 @@ app.get('/activity/:id', (req, res) => {
                             participants: participants,
                             currentUser: req.session.user || null,
                             currentUserId: currentUserId
+                        }, (renderErr, html) => {
+                            if (renderErr) {
+                                console.error("EJS Render Hatası (activity-detail):", renderErr);
+                                return res.status(500).send("EJS Render Hatası (activity-detail): " + renderErr.message);
+                            }
+                            res.send(html);
                         });
                     });
                 });
@@ -491,6 +497,12 @@ app.get('/settlement/:id', (req, res) => {
                             participants: participants,
                             currentUser: req.session.user || null,
                             currentUserId: currentUserId
+                        }, (renderErr, html) => {
+                            if (renderErr) {
+                                console.error("EJS Render Hatası (settlement):", renderErr);
+                                return res.status(500).send("EJS Render Hatası (settlement): " + renderErr.message);
+                            }
+                            res.send(html);
                         });
                     });
                 });
