@@ -52,9 +52,41 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.SMTP_USER || 'saadetsudegunes31.@gmail.com',
-        pass: process.env.SMTP_PASS || 'ycprxvmvcoagxveb'
+        pass: process.env.SMTP_PASS || 'swwwkbyrjxjyqejo'
     }
 });
+
+// Render SMTP port blokajını aşmak için HTTP tabanlı Google Apps Script desteği
+function sendMail(options, callback) {
+    const scriptUrl = process.env.GMAIL_SCRIPT_URL;
+    if (scriptUrl) {
+        const payload = {
+            secret: 'hesapmatik-gizli-anahtar',
+            to: options.to,
+            subject: options.subject,
+            html: options.html || options.text
+        };
+        
+        fetch(scriptUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.status === "success") {
+                callback(null, { response: "250 OK (via Script)" });
+            } else {
+                callback(new Error(data.message || "Script error"));
+            }
+        })
+        .catch(err => {
+            callback(err);
+        });
+    } else {
+        transporter.sendMail(options, callback);
+    }
+}
 
 // Form verilerini okuyabilmek için middleware ayarları
 app.use(express.urlencoded({ extended: true }));
@@ -215,7 +247,7 @@ app.post('/reactivate', (req, res) => {
 
         console.log('Aktivasyon OTP kodu:', otpCode);
 
-        transporter.sendMail(mailOptions, (mailErr) => {
+        sendMail(mailOptions, (mailErr) => {
             if (mailErr) {
                 console.error('Mail gönderilemedi:', mailErr);
             }
@@ -334,7 +366,7 @@ app.post('/forgot-password', (req, res) => {
                 text: `Şifre sıfırlama kodun: ${code}`
             };
 
-            transporter.sendMail(mailOptions, (error, info) => {
+            sendMail(mailOptions, (error, info) => {
                 if (error) {
                     console.error('Mail gönderme hatası:', error);
                     return res.send('Gmail Hatası: ' + error.message);
