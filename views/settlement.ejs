@@ -599,13 +599,7 @@
                 <!-- Alt İşlem Butonları -->
                 <div
                     style="display: flex; gap: 15px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                    <button <%=myDebt> 0 ? '' : 'disabled' %> onclick="<%= myDebt> 0 ? 'openPaymentModal()' : 'return
-                            false;' %>" type="button" style="flex: 1; padding: 12px; background: <%= myDebt> 0 ?
-                                'var(--btn-primary-bg, #0f382c)' : '#a0a0a0' %>; color: #f4f3ef; border: none;
-                                border-radius: 12px; font-weight: 600; font-size: 14px; cursor: <%= myDebt> 0 ?
-                                    'pointer' : 'not-allowed' %>; display: flex; align-items: center; justify-content:
-                                    center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); opacity: <%=
-                                        myDebt> 0 ? '1' : '0.6' %>;">
+                    <button <%=myDebt> 0 ? '' : 'disabled' %> onclick="<%= myDebt> 0 ? 'openPaymentModal()' : 'return false;' %>" type="button" style="flex: 1; padding: 12px; background: <%= myDebt> 0 ? 'var(--btn-primary-bg, #0f382c)' : '#a0a0a0' %>; color: #f4f3ef; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: <%= myDebt> 0 ? 'pointer' : 'not-allowed' %>; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); opacity: <%= myDebt> 0 ? '1' : '0.6' %>;">
                                         💸 Ödeme Ekle/Kaydet
                     </button>
                     <button onclick="openBalancesModal()" type="button"
