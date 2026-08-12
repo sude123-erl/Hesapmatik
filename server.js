@@ -2,7 +2,6 @@ require('dotenv').config();
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const multer = require('multer');
 const os = require('os');
@@ -13,27 +12,80 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = process.env.PORT || 2024;
 
-// Kalıcı veri saklama dizini tespiti (Render Persistent Disk veya varsayılan yerel dizin)
-let dataDir = process.env.DATA_DIR || (process.env.RENDER ? '/var/data' : path.join(__dirname, 'data'));
+// Render arkasındaki HTTPS proxy desteği
+app.set('trust proxy', 1);
 
-if (!fs.existsSync(dataDir)) {
-    try {
-        fs.mkdirSync(dataDir, { recursive: true });
-    } catch (e) {
-        console.warn(`'${dataDir}' dizini oluşturulamadı (${e.message}). Güvenli yerel dizine geçiliyor.`);
-        dataDir = path.join(__dirname, 'data');
-        if (!fs.existsSync(dataDir)) {
+// Veritabanı URL veya dosya yolu tespiti (Render Environment Variables desteği)
+const dbUrlOrPath = process.env.DATABASE_URL || 
+                    process.env.TURSO_DATABASE_URL || 
+                    process.env.LIBSQL_URL || 
+                    process.env.DB_URL || 
+                    process.env.DB_PATH;
+
+let dbPath;
+
+if (dbUrlOrPath) {
+    dbPath = dbUrlOrPath;
+} else {
+    // Kalıcı veri saklama dizini tespiti (Render Persistent Disk veya varsayılan yerel dizin)
+    let dataDir = process.env.DATA_DIR || (process.env.RENDER ? '/var/data' : path.join(__dirname, 'data'));
+
+    if (!fs.existsSync(dataDir)) {
+        try {
             fs.mkdirSync(dataDir, { recursive: true });
+        } catch (e) {
+            console.warn(`'${dataDir}' dizini oluşturulamadı (${e.message}). Güvenli yerel dizine geçiliyor.`);
+            dataDir = path.join(__dirname, 'data');
+            if (!fs.existsSync(dataDir)) {
+                fs.mkdirSync(dataDir, { recursive: true });
+            }
         }
     }
+    dbPath = path.join(dataDir, 'hesapmatik.db');
 }
 
-let uploadsDir = path.join(dataDir, 'uploads');
+// Uzak veritabanı URL'si mi yoksa yerel SQLite dosya yolu mu tespiti
+const isRemoteDb = typeof dbPath === 'string' && (
+    dbPath.startsWith('libsql:') ||
+    dbPath.startsWith('http:') ||
+    dbPath.startsWith('https:') ||
+    dbPath.startsWith('ws:') ||
+    dbPath.startsWith('wss:')
+);
+
+let sqlite3;
+if (isRemoteDb) {
+    try {
+        sqlite3 = require('@libsql/sqlite3').verbose();
+    } catch (e) {
+        sqlite3 = require('sqlite3').verbose();
+    }
+} else {
+    sqlite3 = require('sqlite3').verbose();
+}
+
+// Uploads dizini ayarı
+let uploadsDir;
+if (process.env.DATA_DIR || process.env.RENDER) {
+    let baseDataDir = process.env.DATA_DIR || '/var/data';
+    if (!fs.existsSync(baseDataDir)) {
+        try {
+            fs.mkdirSync(baseDataDir, { recursive: true });
+            uploadsDir = path.join(baseDataDir, 'uploads');
+        } catch (e) {
+            uploadsDir = path.join(__dirname, 'uploads');
+        }
+    } else {
+        uploadsDir = path.join(baseDataDir, 'uploads');
+    }
+} else {
+    uploadsDir = path.join(__dirname, 'uploads');
+}
+
 if (!fs.existsSync(uploadsDir)) {
     try {
         fs.mkdirSync(uploadsDir, { recursive: true });
     } catch (e) {
-        console.warn(`'${uploadsDir}' dizini oluşturulamadı (${e.message}). Güvenli yükleme dizinine geçiliyor.`);
         uploadsDir = path.join(__dirname, 'uploads');
         if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir, { recursive: true });
@@ -41,38 +93,37 @@ if (!fs.existsSync(uploadsDir)) {
     }
 }
 
-const dbPath = process.env.DB_PATH || path.join(dataDir, 'hesapmatik.db');
 const upload = multer({ dest: uploadsDir });
 
 function getLocalNetworkIp() {
     const networks = os.networkInterfaces();
-    // console.log('Network interfaces:', networks); // Kullanıcının isteği üzerine gizlendi
     for (const entries of Object.values(networks)) {
         for (const network of entries || []) {
             if (network.family === 'IPv4' && !network.internal && network.address !== '127.0.0.1') {
-                // console.log('Detected local IP:', network.address); // Gizlendi
                 return network.address;
             }
         }
     }
-    // console.log('No external IPv4 address found, falling back to null'); // Gizlendi
     return null;
 }
 
 const localNetworkIp = getLocalNetworkIp();
 
 app.use(session({
-    secret: 'gizli-anahtar-kelime',
+    secret: process.env.SESSION_SECRET || 'gizli-anahtar-kelime-degisti',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 gün boyunca oturumu koru
+    }
 }));
 
 // E-posta gönderici ayarları (Gmail SMTP)
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'saadetsudegunes31.@gmail.com',
-        pass: 'ycprxvmvcoagxveb'
+        user: process.env.SMTP_USER || 'saadetsudegunes31.@gmail.com',
+        pass: process.env.SMTP_PASS || 'ycprxvmvcoagxveb'
     }
 });
 
@@ -89,7 +140,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Veritabanı hatası:', err.message);
     } else {
-        console.log(`SQLite veritabanına bağlandık: ${dbPath}`);
+        console.log(`SQLite / LibSQL veritabanına bağlandık: ${dbPath}`);
 
         db.serialize(() => {
             db.run(`CREATE TABLE IF NOT EXISTS expenses (
