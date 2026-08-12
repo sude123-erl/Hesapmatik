@@ -148,36 +148,18 @@ const db = new sqlite3.Database(dbPath, (err) => {
                 isRead INTEGER DEFAULT 0,
                 createdAt TEXT,
                 FOREIGN KEY(userId) REFERENCES users(id)
-            )`);
-            db.run(`ALTER TABLE activities ADD COLUMN creatorId INTEGER`, (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    console.error('Etkinlik sahipligi alani eklenemedi:', err.message);
-                }
-            });
-            db.run(`ALTER TABLE expenses ADD COLUMN userId INTEGER`, (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    console.error('Harcama kullanicisi alani eklenemedi:', err.message);
-                }
-            });
-            db.run(`ALTER TABLE users ADD COLUMN avatar TEXT`, (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    // Avatar kolonu zaten varsa hata vermesin
-                }
-            });
-            db.run(`ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'`, (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    // Status kolonu zaten varsa hata vermesin
-                }
-            });
-            db.run(`ALTER TABLE activities ADD COLUMN isClosed INTEGER DEFAULT 0`, (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    console.error('Etkinlik isClosed alani eklenemedi:', err.message);
-                }
-            });
-            db.run(`ALTER TABLE users ADD COLUMN panel_layout TEXT DEFAULT 'grid'`, (err) => {
-                if (err && !err.message.includes('duplicate column name')) {
-                    console.error('Kullanici panel_layout alani eklenemedi:', err.message);
-                }
+            )`, () => {
+                const alterQueries = [
+                    `ALTER TABLE activities ADD COLUMN creatorId INTEGER`,
+                    `ALTER TABLE expenses ADD COLUMN userId INTEGER`,
+                    `ALTER TABLE users ADD COLUMN avatar TEXT`,
+                    `ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'`,
+                    `ALTER TABLE activities ADD COLUMN isClosed INTEGER DEFAULT 0`,
+                    `ALTER TABLE users ADD COLUMN panel_layout TEXT DEFAULT 'grid'`
+                ];
+                alterQueries.forEach(query => {
+                    db.run(query, () => {});
+                });
             });
         });
     }
