@@ -100,13 +100,25 @@
         });
       };
 
+      const markAllAsRead = async () => {
+        try {
+          badge.style.display = 'none';
+          await fetch('/api/notifications/clear', { method: 'POST' });
+          list.querySelectorAll('.app-notifications__item.unread').forEach(el => {
+            el.classList.remove('unread');
+          });
+        } catch (err) {
+          console.error('Bildirimler okundu işaretlenemedi:', err);
+        }
+      };
+
       const clearNotifications = async () => {
         try {
           const res = await fetch('/api/notifications/clear', { method: 'POST' });
           const data = await res.json();
           if (data.success) {
             badge.style.display = 'none';
-            // Bildirimleri tekrar çekip okundu olarak güncel halini gösterelim
+            // Bildirimleri tekrar çekip güncel halini gösterelim
             fetchNotifications();
           }
         } catch (err) {
@@ -124,6 +136,7 @@
         toggle.setAttribute('aria-expanded', open);
         if (open) {
           fetchNotifications();
+          markAllAsRead();
         }
       });
 
