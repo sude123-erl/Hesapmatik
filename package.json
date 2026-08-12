@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "postinstall": "npm rebuild sqlite3 --build-from-source"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,6 @@
     "multer": "^2.2.0",
     "nodemailer": "^9.0.5",
     "qrcode": "^1.5.4",
-    "sqlite3": "^6.0.1"
+    "sqlite3": "5.1.7"
   }
 }
