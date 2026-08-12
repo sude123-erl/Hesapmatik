@@ -1183,29 +1183,9 @@ app.get('/api/notifications', (req, res) => {
     });
 });
 
-// Mark notifications as read
-app.post(['/api/notifications/read', '/notifications/read'], (req, res) => {
+app.post('/api/notifications/clear', (req, res) => {
     if (!req.session.userId) return res.json({ success: false });
     db.run(`UPDATE notifications SET isRead = 1 WHERE userId = ?`, [req.session.userId], (err) => {
-        if (err) return res.json({ success: false });
-        res.json({ success: true });
-    });
-});
-
-// Clear all notifications
-app.post(['/api/notifications/clear', '/notifications/clear'], (req, res) => {
-    if (!req.session.userId) return res.json({ success: false });
-    db.run(`DELETE FROM notifications WHERE userId = ?`, [req.session.userId], (err) => {
-        if (err) return res.json({ success: false });
-        res.json({ success: true });
-    });
-});
-
-// Delete single notification
-app.post(['/api/notifications/delete/:id', '/notifications/delete/:id'], (req, res) => {
-    if (!req.session.userId) return res.json({ success: false });
-    const notificationId = req.params.id;
-    db.run(`DELETE FROM notifications WHERE id = ? AND userId = ?`, [notificationId, req.session.userId], (err) => {
         if (err) return res.json({ success: false });
         res.json({ success: true });
     });
@@ -1413,6 +1393,10 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`Sunucu ayakta: http://localhost:${PORT}`);
     if (localNetworkIp) {
         console.log(`Aynı Wi-Fi ağı için: http://${localNetworkIp}:${PORT}`);
+    }
+});
+
+
     }
 });
 
