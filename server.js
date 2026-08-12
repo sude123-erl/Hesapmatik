@@ -631,7 +631,9 @@ app.get('/settlement/:id', (req, res) => {
                     db.all(`SELECT * FROM expenses WHERE activityId = ?`, [activityId], (allExpenseErr, allExpenses) => {
                         if (allExpenseErr) allExpenses = [];
 
-                        res.render('settlement', {
+                        const viewTemplate = (activity && Number(activity.isClosed) === 2) ? 'settlement-closed' : 'settlement';
+
+                        res.render(viewTemplate, {
                             activity: activity,
                             activityName: activity.activityName,
                             expenses: expenses,
@@ -724,22 +726,28 @@ app.post('/add-payment', (req, res) => {
                     return res.send(`Hata: Seçtiğiniz kullanıcı bu etkinliğin bir katılımcısı değil! Sadece etkinlikteki kişilere ödeme yapabilirsiniz. <a href="/activity/${activityId}">Geri dön</a>`);
                 }
 
-                const query = `
-                    INSERT INTO payments (activityId, senderId, receiverId, amount, description, status, createdAt)
-                    VALUES (?, ?, ?, ?, ?, 'pending', date('now'))
-                `;
+                db.get(`SELECT isClosed FROM activities WHERE id = ?`, [activityId], (err, act) => {
+                    if (act && Number(act.isClosed) === 2) {
+                        return res.status(403).send("Bu etkinliğin mahsuplaşması kapatılmıştır. Yeni ödeme eklenemez.");
+                    }
 
-                db.run(query, [activityId, senderId, receiverId, amount, description], (insertErr) => {
-                    if (insertErr) {
-                        console.error("Ödeme eklenirken hata oluştu:", insertErr.message);
-                        return res.status(500).send("Ödeme kaydedilirken bir hata oluştu.");
-                    }
-                    const referer = req.get('Referrer');
-                    if (referer && referer.includes('/settlement/')) {
-                        res.redirect(`/settlement/${activityId}`);
-                    } else {
-                        res.redirect(`/activity/${activityId}`);
-                    }
+                    const query = `
+                        INSERT INTO payments (activityId, senderId, receiverId, amount, description, status, createdAt)
+                        VALUES (?, ?, ?, ?, ?, 'pending', date('now'))
+                    `;
+
+                    db.run(query, [activityId, senderId, receiverId, amount, description], (insertErr) => {
+                        if (insertErr) {
+                            console.error("Ödeme eklenirken hata oluştu:", insertErr.message);
+                            return res.status(500).send("Ödeme kaydedilirken bir hata oluştu.");
+                        }
+                        const referer = req.get('Referrer');
+                        if (referer && referer.includes('/settlement/')) {
+                            res.redirect(`/settlement/${activityId}`);
+                        } else {
+                            res.redirect(`/activity/${activityId}`);
+                        }
+                    });
                 });
             });
         });
@@ -827,16 +835,22 @@ app.post('/add-expense', upload.array('receipt'), (req, res) => {
     const activityId = body.activityId;
     const receiptFileName = req.files && req.files.length > 0 ? req.files[0].filename : null;
 
-    db.run(`INSERT INTO expenses (activityId, expenseName, amount, receipt, userId) VALUES (?, ?, ?, ?, ?)`,
-        [activityId, expenseName, amount, receiptFileName, req.session.userId], (err) => {
-            if (err) console.error("Harcama eklenirken hata oluştu:", err.message);
+    db.get(`SELECT isClosed FROM activities WHERE id = ?`, [activityId], (err, act) => {
+        if (act && Number(act.isClosed) >= 1) {
+            return res.status(403).send("Bu etkinlikte harcama ekleme kapatılmıştır. Mahsuplaşma veya rapor aşamasındadır.");
+        }
 
-            if (activityId) {
-                res.redirect(`/activity/${activityId}`);
-            } else {
-                res.redirect('/panel');
-            }
-        });
+        db.run(`INSERT INTO expenses (activityId, expenseName, amount, receipt, userId) VALUES (?, ?, ?, ?, ?)`,
+            [activityId, expenseName, amount, receiptFileName, req.session.userId], (err) => {
+                if (err) console.error("Harcama eklenirken hata oluştu:", err.message);
+
+                if (activityId) {
+                    res.redirect(`/activity/${activityId}`);
+                } else {
+                    res.redirect('/panel');
+                }
+            });
+    });
 });
 
 // Harcama Silme
@@ -912,7 +926,7 @@ app.get('/panel', (req, res) => {
         FROM activities
         LEFT JOIN activity_participants ON activity_participants.activityId = activities.id
         WHERE (activities.creatorId = ? OR activity_participants.userId = ?)
-          AND (activities.isClosed IS NULL OR activities.isClosed = 0)
+          AND (activities.isClosed IS NULL OR activities.isClosed = 0 OR activities.isClosed = 1)
         ORDER BY activities.id DESC
     `;
 
@@ -921,7 +935,7 @@ app.get('/panel', (req, res) => {
         FROM activities
         LEFT JOIN activity_participants ON activity_participants.activityId = activities.id
         WHERE (activities.creatorId = ? OR activity_participants.userId = ?)
-          AND activities.isClosed = 1
+          AND activities.isClosed = 2
         ORDER BY activities.id DESC
     `;
 
@@ -1436,16 +1450,47 @@ app.post('/remove-participant', (req, res) => {
     });
 });
 
-// Etkinliği Kapat
+// 1. AŞAMA KAPANIŞI: Harcama Eklemesini Kapatıp Mahsuplaşma / Ödeme Aşamasına Geç (isClosed = 1)
 app.post('/close-activity/:id', (req, res) => {
     if (!req.session || !req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
-    db.run('UPDATE activities SET isClosed = 1 WHERE id = ?', [activityId], function (err) {
-        if (err) {
-            console.error(err);
-            return res.send('Hata oluştu');
+
+    db.get('SELECT * FROM activities WHERE id = ?', [activityId], (err, activity) => {
+        if (err || !activity) return res.send('Etkinlik bulunamadı.');
+
+        if (String(activity.creatorId) !== String(req.session.userId)) {
+            return res.status(403).send('Sadece etkinlik sahibi harcama eklemeyi kapatabilir.');
         }
-        res.redirect('/panel');
+
+        db.run('UPDATE activities SET isClosed = 1 WHERE id = ?', [activityId], function (err) {
+            if (err) {
+                console.error(err);
+                return res.send('Hata oluştu');
+            }
+            res.redirect(`/settlement/${activityId}`);
+        });
+    });
+});
+
+// 2. AŞAMA KAPANIŞI: Mahsuplaşmayı Kapat ve Rapor Moduna Geç (isClosed = 2)
+app.post('/finish-settlement/:id', (req, res) => {
+    if (!req.session || !req.session.userId) return res.redirect('/login');
+    const activityId = req.params.id;
+
+    db.get('SELECT * FROM activities WHERE id = ?', [activityId], (err, activity) => {
+        if (err || !activity) return res.send('Etkinlik bulunamadı.');
+
+        if (String(activity.creatorId) !== String(req.session.userId)) {
+            return res.status(403).send('Sadece etkinlik sahibi mahsuplaşmayı kapatabilir.');
+        }
+
+        db.run('UPDATE activities SET isClosed = 2 WHERE id = ?', [activityId], function (err) {
+            if (err) {
+                console.error(err);
+                return res.send('Hata oluştu');
+            }
+            res.redirect(`/settlement/${activityId}`);
+        });
     });
 });
 

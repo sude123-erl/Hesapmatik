@@ -436,9 +436,17 @@
                     <span class="notification-badge">1</span>
                 </button>
             </div>
-            <% if (activity.isClosed==0) { %>
+            <% if (activity.isClosed == 0) { %>
                 <button type="button" onclick="openExpenseModal()" class="btn-add-expense">+ Yeni harcama ekle</button>
-                <% } %>
+            <% } else if (activity.isClosed == 1) { %>
+                <span style="font-size: 13px; font-weight: 700; color: #d97706; background: rgba(217, 119, 6, 0.12); padding: 8px 14px; border-radius: 20px; border: 1px solid rgba(217, 119, 6, 0.3);">
+                    ⌛ Harcama Kapandı (Mahsuplaşma Aşamasında)
+                </span>
+            <% } else { %>
+                <span style="font-size: 13px; font-weight: 700; color: #28a745; background: rgba(40, 167, 69, 0.1); padding: 8px 14px; border-radius: 20px; border: 1px solid rgba(40, 167, 69, 0.3);">
+                    🔒 Mahsuplaşma Tamamlandı & Kapatıldı
+                </span>
+            <% } %>
         </div>
     </div>
 
@@ -452,12 +460,13 @@
 
         <!-- Harcama Listesi (Tıklandığında açılacak alan) -->
         <div id="expenseListContainer" style="display: none; margin-top: 15px; margin-bottom: 20px;">
-            <% if (expenses && expenses.length> 0) { %>
+            <% let displayExpenses = (typeof allExpenses !== 'undefined' && allExpenses && allExpenses.length > 0) ? allExpenses : (expenses || []); %>
+            <% if (displayExpenses && displayExpenses.length > 0) { %>
                 <div
                     style="background: #f4f3ef; border: 1px solid rgba(15, 56, 44, 0.08); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
                     <h3 style="margin-bottom: 15px; font-size: 18px; color: #0f382c;">Harcama Listesi</h3>
                     <ul style="list-style: none; padding: 0; margin: 0;">
-                        <% expenses.forEach(expense=> { %>
+                        <% displayExpenses.forEach(expense => { %>
                             <li
                                 style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(15, 56, 44, 0.08);">
                                 <div>
@@ -465,41 +474,43 @@
                                         <%= expense.expenseName %>
                                     </span>
                                     <span style="font-weight: 700; color: #0f382c; margin-left: 15px;">
-                                        <%= expense.amount %> TL
+                                        <%= Number(expense.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %> TL
                                     </span>
                                 </div>
 
-                                <div style="display: flex; gap: 8px;">
-                                    <button type="button" data-id="<%= expense.id %>"
-                                        data-name="<%= expense.expenseName %>" data-amount="<%= expense.amount %>"
-                                        data-receipt="<%= expense.receipt ? expense.receipt : '' %>"
-                                        onclick="openEditExpenseModal(this)" title="Düzenle"
-                                        style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(15, 56, 44, 0.06); color: #0f382c; border-radius: 8px; border: none; cursor: pointer;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M12 20h9" />
-                                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                                        </svg>
-                                    </button>
-
-                                    <form action="/delete-expense/<%= expense.id %>" method="POST" style="margin: 0;"
-                                        class="ajax-delete-expense-form" data-ajax="true"
-                                        onsubmit="customConfirm(event, this, 'Bu harcamayı silmek istediğinden emin misin?');">
-                                        <button type="submit" title="Sil"
-                                            style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: #fde8e8; color: #e74c3c; border: none; border-radius: 8px; cursor: pointer;">
+                                <% if (activity.isClosed == 0 && typeof currentUserId !== 'undefined' && String(expense.userId) === String(currentUserId)) { %>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button type="button" data-id="<%= expense.id %>"
+                                            data-name="<%= expense.expenseName %>" data-amount="<%= expense.amount %>"
+                                            data-receipt="<%= expense.receipt ? expense.receipt : '' %>"
+                                            onclick="openEditExpenseModal(this)" title="Düzenle"
+                                            style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(15, 56, 44, 0.06); color: #0f382c; border-radius: 8px; border: none; cursor: pointer;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M3 6h18" />
-                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                                <line x1="10" x2="10" y1="11" y2="17" />
-                                                <line x1="14" x2="14" y1="11" y2="17" />
+                                                <path d="M12 20h9" />
+                                                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                                             </svg>
                                         </button>
-                                    </form>
-                                </div>
+
+                                        <form action="/delete-expense/<%= expense.id %>" method="POST" style="margin: 0;"
+                                            class="ajax-delete-expense-form" data-ajax="true"
+                                            onsubmit="customConfirm(event, this, 'Bu harcamayı silmek istediğinden emin misin?');">
+                                            <button type="submit" title="Sil"
+                                                style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: #fde8e8; color: #e74c3c; border: none; border-radius: 8px; cursor: pointer;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M3 6h18" />
+                                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                                    <line x1="10" x2="10" y1="11" y2="17" />
+                                                    <line x1="14" x2="14" y1="11" y2="17" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                <% } %>
                             </li>
                             <% }) %>
                     </ul>
@@ -619,29 +630,35 @@
 
                     <!-- Alt İşlem Butonları -->
                     <div
-                        style="display: flex; gap: 15px; margin-bottom: 30px; max-width: 250px; margin-left: auto; margin-right: 0;">
-                        <% if (activity.isClosed==1) { %>
-                            <a href="/settlement/<%= activity.id %>"
-                                style="flex:1;padding:8px;background:#28a745;color:#f4f3ef;border:none;border-radius:10px;font-weight:600;font-size:12px;cursor:pointer;text-align:center;text-decoration:none;">Mahsuplaşma
-                                Sayfasına Geç</a>
-                            <% } else if (typeof currentUserId !=='undefined' && currentUserId &&
-                                String(activity.creatorId)===String(currentUserId)) { %>
-                                <form action="/close-activity/<%= activity.id %>" method="POST"
-                                    style="display:inline; width: 100%;">
+                        style="display: flex; gap: 15px; margin-bottom: 30px; max-width: 340px; margin-left: auto; margin-right: 0;">
+                        <% if (activity.isClosed == 0) { %>
+                            <% if (typeof currentUserId !== 'undefined' && currentUserId && String(activity.creatorId) === String(currentUserId)) { %>
+                                <form action="/close-activity/<%= activity.id %>" method="POST" style="display:inline; width: 100%;">
                                     <button type="submit"
-                                        onclick="customConfirm(event, this.form, 'Etkinliği kapatmak istediğinize emin misiniz? Kapatıldıktan sonra yeni harcama eklenemez, mahsuplaşma aşamasına geçilir.')"
-                                        style="flex:1; width: 100%; padding:8px;background:#e74c3c;color:#f4f3ef;border:none;border-radius:10px;font-weight:600;font-size:12px;cursor:pointer;transition:background .2s;"
+                                        onclick="customConfirm(event, this.form, 'Harcama eklemeyi kapatıp Mahsuplaşma aşamasına geçmek istediğinize emin misiniz?')"
+                                        style="width: 100%; padding:10px; background:#e74c3c; color:#f4f3ef; border:none; border-radius:10px; font-weight:600; font-size:13px; cursor:pointer; transition:background .2s;"
                                         onmouseover="this.style.background='#c0392b'"
                                         onmouseout="this.style.background='#e74c3c'">
                                         Etkinliği Kapat ve Mahsuplaşmaya Geç
                                     </button>
                                 </form>
-                                <% } else { %>
-                                    <div
-                                        style="flex:1; width: 100%; padding:8px;background:#95a5a6;color:#f4f3ef;border:none;border-radius:10px;font-weight:600;font-size:12px;text-align:center;">
-                                        Etkinlik sahibinin etkinliği kapatması bekleniyor
-                                    </div>
-                                    <% } %>
+                            <% } else { %>
+                                <a href="/settlement/<%= activity.id %>"
+                                    style="flex:1; padding:10px; background:#0f382c; color:#f4f3ef; border:none; border-radius:10px; font-weight:600; font-size:13px; cursor:pointer; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                    💳 Mahsuplaşma Sayfasına Git
+                                </a>
+                            <% } %>
+                        <% } else if (activity.isClosed == 1) { %>
+                            <a href="/settlement/<%= activity.id %>"
+                                style="flex:1; padding:10px; background:#0f382c; color:#f4f3ef; border:none; border-radius:10px; font-weight:600; font-size:13px; cursor:pointer; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                💳 Mahsuplaşma & Ödeme Yap
+                            </a>
+                        <% } else { %>
+                            <a href="/settlement/<%= activity.id %>"
+                                style="flex:1; padding:10px; background:#28a745; color:#f4f3ef; border:none; border-radius:10px; font-weight:600; font-size:13px; cursor:pointer; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                📊 Mahsuplaşma Raporunu Gör
+                            </a>
+                        <% } %>
                     </div>
     </div>
 
