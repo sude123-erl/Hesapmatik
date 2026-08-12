@@ -1195,20 +1195,35 @@ app.get('/join/:id', (req, res) => {
 
 // Notifications API
 app.get('/api/notifications', (req, res) => {
-    if (!req.session.userId) return res.json({ success: false, notifications: [] });
+    if (!req.session || !req.session.userId) return res.json({ success: false, notifications: [] });
     db.all(`SELECT * FROM notifications WHERE userId = ? ORDER BY id DESC LIMIT 15`, [req.session.userId], (err, rows) => {
         if (err) return res.json({ success: false, notifications: [] });
         res.json({ success: true, notifications: rows });
     });
 });
 
-app.post('/api/notifications/clear', (req, res) => {
-    if (!req.session.userId) return res.json({ success: false });
+const handleClearNotifications = (req, res) => {
+    if (!req.session || !req.session.userId) return res.json({ success: false });
     db.run(`UPDATE notifications SET isRead = 1 WHERE userId = ?`, [req.session.userId], (err) => {
         if (err) return res.json({ success: false });
         res.json({ success: true });
     });
-});
+};
+
+app.post('/api/notifications/clear', handleClearNotifications);
+app.post('/notifications/clear', handleClearNotifications);
+
+const handleDeleteNotification = (req, res) => {
+    if (!req.session || !req.session.userId) return res.json({ success: false });
+    const id = req.params.id;
+    db.run(`DELETE FROM notifications WHERE id = ? AND userId = ?`, [id, req.session.userId], (err) => {
+        if (err) return res.json({ success: false });
+        res.json({ success: true });
+    });
+};
+
+app.post('/api/notifications/delete/:id', handleDeleteNotification);
+app.post('/notifications/delete/:id', handleDeleteNotification);
 
 // Edit Payment
 app.get('/edit-payment/:id', (req, res) => {

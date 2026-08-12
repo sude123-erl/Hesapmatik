@@ -145,5 +145,3 @@
 
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
-document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
-}) ();
