@@ -9,7 +9,7 @@ const QRCode = require('qrcode');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-const PORT = process.env.PORT || 2024;
+const PORT = 2024;
 const upload = multer({ dest: 'uploads/' });
 
 function getLocalNetworkIp() {
@@ -1389,9 +1389,9 @@ app.post('/profile/delete', async (req, res) => {
 });
 
 // Sunucuyu Başlat (Listen Bloğu)
-app.listen(PORT, () => {
-    console.log(`Sunucu ayakta: http://localhost:${PORT}`);
+app.listen(process.env.PORT || PORT, '0.0.0.0', () => {
+    console.log(`Sunucu ayakta: http://localhost:${process.env.PORT || PORT}`);
     if (localNetworkIp) {
-        console.log(`Aynı Wi-Fi ağı için: http://${localNetworkIp}:${PORT}`);
+        console.log(`Aynı Wi-Fi ağı için: http://${localNetworkIp}:${process.env.PORT || PORT}`);
     }
 });
