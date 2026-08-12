@@ -91,92 +91,94 @@ const db = new sqlite3.Database(dbPath, (err) => {
     } else {
         console.log(`SQLite veritabanına bağlandık: ${dbPath}`);
 
-        db.run(`CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            activityId INTEGER,
-            expenseName TEXT,
-            amount REAL,
-            receipt TEXT,
-            userId INTEGER
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS activities (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            activityName TEXT,
-            activityPassword TEXT,
-            coverImage TEXT,
-            activityDate TEXT,
-            creatorId INTEGER,
-            isClosed INTEGER DEFAULT 0
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fullname TEXT,
-            username TEXT UNIQUE,
-            phone TEXT,
-            email TEXT UNIQUE,
-            password TEXT,
-            reset_code TEXT,
-            avatar TEXT,
-            status TEXT DEFAULT 'active',
-            panel_layout TEXT DEFAULT 'grid'
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS activity_participants (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            activityId INTEGER,
-            userId INTEGER,
-            FOREIGN KEY(activityId) REFERENCES activities(id),
-            FOREIGN KEY(userId) REFERENCES users(id)
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS payments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            activityId INTEGER,
-            senderId INTEGER,
-            receiverId INTEGER,
-            amount REAL,
-            description TEXT,
-            status TEXT DEFAULT 'pending',
-            createdAt TEXT,
-            FOREIGN KEY(activityId) REFERENCES activities(id),
-            FOREIGN KEY(senderId) REFERENCES users(id),
-            FOREIGN KEY(receiverId) REFERENCES users(id)
-        )`);
-        db.run(`CREATE TABLE IF NOT EXISTS notifications (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            userId INTEGER,
-            message TEXT,
-            isRead INTEGER DEFAULT 0,
-            createdAt TEXT,
-            FOREIGN KEY(userId) REFERENCES users(id)
-        )`);
-        db.run(`ALTER TABLE activities ADD COLUMN creatorId INTEGER`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                console.error('Etkinlik sahipligi alani eklenemedi:', err.message);
-            }
-        });
-        db.run(`ALTER TABLE expenses ADD COLUMN userId INTEGER`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                console.error('Harcama kullanicisi alani eklenemedi:', err.message);
-            }
-        });
-        db.run(`ALTER TABLE users ADD COLUMN avatar TEXT`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                // Avatar kolonu zaten varsa hata vermesin
-            }
-        });
-        db.run(`ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                // Status kolonu zaten varsa hata vermesin
-            }
-        });
-        db.run(`ALTER TABLE activities ADD COLUMN isClosed INTEGER DEFAULT 0`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                console.error('Etkinlik isClosed alani eklenemedi:', err.message);
-            }
-        });
-        db.run(`ALTER TABLE users ADD COLUMN panel_layout TEXT DEFAULT 'grid'`, (err) => {
-            if (err && !err.message.includes('duplicate column name')) {
-                console.error('Kullanici panel_layout alani eklenemedi:', err.message);
-            }
+        db.serialize(() => {
+            db.run(`CREATE TABLE IF NOT EXISTS expenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                activityId INTEGER,
+                expenseName TEXT,
+                amount REAL,
+                receipt TEXT,
+                userId INTEGER
+            )`);
+            db.run(`CREATE TABLE IF NOT EXISTS activities (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                activityName TEXT,
+                activityPassword TEXT,
+                coverImage TEXT,
+                activityDate TEXT,
+                creatorId INTEGER,
+                isClosed INTEGER DEFAULT 0
+            )`);
+            db.run(`CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                fullname TEXT,
+                username TEXT UNIQUE,
+                phone TEXT,
+                email TEXT UNIQUE,
+                password TEXT,
+                reset_code TEXT,
+                avatar TEXT,
+                status TEXT DEFAULT 'active',
+                panel_layout TEXT DEFAULT 'grid'
+            )`);
+            db.run(`CREATE TABLE IF NOT EXISTS activity_participants (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                activityId INTEGER,
+                userId INTEGER,
+                FOREIGN KEY(activityId) REFERENCES activities(id),
+                FOREIGN KEY(userId) REFERENCES users(id)
+            )`);
+            db.run(`CREATE TABLE IF NOT EXISTS payments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                activityId INTEGER,
+                senderId INTEGER,
+                receiverId INTEGER,
+                amount REAL,
+                description TEXT,
+                status TEXT DEFAULT 'pending',
+                createdAt TEXT,
+                FOREIGN KEY(activityId) REFERENCES activities(id),
+                FOREIGN KEY(senderId) REFERENCES users(id),
+                FOREIGN KEY(receiverId) REFERENCES users(id)
+            )`);
+            db.run(`CREATE TABLE IF NOT EXISTS notifications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                userId INTEGER,
+                message TEXT,
+                isRead INTEGER DEFAULT 0,
+                createdAt TEXT,
+                FOREIGN KEY(userId) REFERENCES users(id)
+            )`);
+            db.run(`ALTER TABLE activities ADD COLUMN creatorId INTEGER`, (err) => {
+                if (err && !err.message.includes('duplicate column name')) {
+                    console.error('Etkinlik sahipligi alani eklenemedi:', err.message);
+                }
+            });
+            db.run(`ALTER TABLE expenses ADD COLUMN userId INTEGER`, (err) => {
+                if (err && !err.message.includes('duplicate column name')) {
+                    console.error('Harcama kullanicisi alani eklenemedi:', err.message);
+                }
+            });
+            db.run(`ALTER TABLE users ADD COLUMN avatar TEXT`, (err) => {
+                if (err && !err.message.includes('duplicate column name')) {
+                    // Avatar kolonu zaten varsa hata vermesin
+                }
+            });
+            db.run(`ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'`, (err) => {
+                if (err && !err.message.includes('duplicate column name')) {
+                    // Status kolonu zaten varsa hata vermesin
+                }
+            });
+            db.run(`ALTER TABLE activities ADD COLUMN isClosed INTEGER DEFAULT 0`, (err) => {
+                if (err && !err.message.includes('duplicate column name')) {
+                    console.error('Etkinlik isClosed alani eklenemedi:', err.message);
+                }
+            });
+            db.run(`ALTER TABLE users ADD COLUMN panel_layout TEXT DEFAULT 'grid'`, (err) => {
+                if (err && !err.message.includes('duplicate column name')) {
+                    console.error('Kullanici panel_layout alani eklenemedi:', err.message);
+                }
+            });
         });
     }
 });
