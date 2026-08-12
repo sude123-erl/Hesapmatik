@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const express = require('express');
