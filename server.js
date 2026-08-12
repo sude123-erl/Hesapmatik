@@ -12,23 +12,34 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = process.env.PORT || 2024;
 
-// Kalıcı veri saklama dizini (Render Persistent Disk veya yerel)
-const dataDir = process.env.DATA_DIR || (process.env.RENDER ? '/var/data' : __dirname);
+// Kalıcı veri saklama dizini tespiti (Render Persistent Disk veya varsayılan yerel dizin)
+let dataDir = process.env.DATA_DIR || (process.env.RENDER ? '/var/data' : path.join(__dirname, 'data'));
+
 if (!fs.existsSync(dataDir)) {
     try {
         fs.mkdirSync(dataDir, { recursive: true });
     } catch (e) {
-        console.error('Veri dizini oluşturulamadı:', e.message);
+        console.warn(`'${dataDir}' dizini oluşturulamadı (${e.message}). Güvenli yerel dizine geçiliyor.`);
+        dataDir = path.join(__dirname, 'data');
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
     }
 }
-const uploadsDir = path.join(dataDir, 'uploads');
+
+let uploadsDir = path.join(dataDir, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     try {
         fs.mkdirSync(uploadsDir, { recursive: true });
     } catch (e) {
-        console.error('Yüklemeler dizini oluşturulamadı:', e.message);
+        console.warn(`'${uploadsDir}' dizini oluşturulamadı (${e.message}). Güvenli yükleme dizinine geçiliyor.`);
+        uploadsDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
     }
 }
+
 const dbPath = process.env.DB_PATH || path.join(dataDir, 'hesapmatik.db');
 const upload = multer({ dest: uploadsDir });
 
