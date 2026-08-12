@@ -12,6 +12,64 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Modal keypad styles */
+        .key-btn {
+            background: #ffffff !important;
+            border: 1px solid rgba(15, 56, 44, 0.1) !important;
+            border-radius: 14px !important;
+            padding: 16px !important;
+            font-size: 22px !important;
+            font-weight: 700 !important;
+            color: #0f382c !important;
+            cursor: pointer !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            text-align: center !important;
+            box-shadow: 0 2px 4px rgba(15, 56, 44, 0.03) !important;
+            user-select: none !important;
+        }
+
+        .key-btn:hover {
+            background: #f4f6f4 !important;
+            border-color: rgba(15, 56, 44, 0.2) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(15, 56, 44, 0.06) !important;
+        }
+
+        .key-btn:active {
+            background: #e1e4e1 !important;
+            transform: translateY(1px) !important;
+            box-shadow: none !important;
+        }
+
+        .key-btn.clear-btn {
+            color: #d32f2f !important;
+            background: #ffebee !important;
+            border-color: rgba(211, 47, 47, 0.15) !important;
+        }
+
+        .key-btn.clear-btn:hover {
+            background: #ffcdd2 !important;
+            border-color: rgba(211, 47, 47, 0.3) !important;
+        }
+
+        .key-btn.delete-btn {
+            color: #e65100 !important;
+            background: #fff3e0 !important;
+            border-color: rgba(230, 81, 0, 0.15) !important;
+        }
+
+        .key-btn.delete-btn:hover {
+            background: #ffe0b2 !important;
+            border-color: rgba(230, 81, 0, 0.3) !important;
+        }
+
+        #modalAmountDisplay:focus {
+            border-color: var(--border-color-hover, #0f382c) !important;
+            box-shadow: 0 0 0 4px rgba(15, 56, 44, 0.15) !important;
+            background: var(--bg-input, #ffffff) !important;
+            outline: none !important;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -647,13 +705,14 @@
                     style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary, #537066);">&times;</button>
             </div>
 
-            <form action="/add-expense" method="POST" enctype="multipart/form-data" onsubmit="const btn = this.querySelector('button[type=submit]'); setTimeout(() => { btn.disabled = true; btn.innerText = 'Harcama Ekleniyor...'; }, 10);">
+            <form action="/add-expense" method="POST" enctype="multipart/form-data"
+                onsubmit="const btn = this.querySelector('button[type=submit]'); setTimeout(() => { btn.disabled = true; btn.innerText = 'Harcama Ekleniyor...'; }, 10);">
                 <input type="hidden" name="activityId"
                     value="<%= typeof activity !== 'undefined' ? (activity._id || activity.id) : '' %>">
                 <input type="hidden" name="amount" id="modalAmountInput" value="0">
 
-                <div style="border: 2px solid var(--border-color-hover, #0f382c); border-radius: 14px; padding: 16px; text-align: right; font-size: 32px; font-weight: 800; color: var(--text-primary, #0f382c); margin-bottom: 16px; background: var(--bg-input, #ffffff); cursor: pointer; transition: all 0.2s ease;"
-                    id="modalAmountDisplay">0,00</div>
+                <div style="border: 2px solid var(--border-color-hover, #0f382c); border-radius: 14px; padding: 16px; text-align: right; font-size: 32px; font-weight: 800; color: var(--text-primary, #0f382c); margin-bottom: 16px; background: var(--bg-input, #ffffff); cursor: pointer; transition: all 0.2s ease; outline: none;"
+                    id="modalAmountDisplay" tabindex="0">0,00</div>
 
                 <div style="margin-bottom: 16px;">
                     <input type="text" name="expenseName" required placeholder="Harcama Adı: Örn. market, benzin"
@@ -668,7 +727,7 @@
                 </div>
 
                 <div id="modalKeypad"
-                    style="display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
+                    style="display: none; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
                     <button type="button" class="key-btn" onclick="modalPressKey('1')">1</button>
                     <button type="button" class="key-btn" onclick="modalPressKey('2')">2</button>
                     <button type="button" class="key-btn" onclick="modalPressKey('3')">3</button>
@@ -678,12 +737,10 @@
                     <button type="button" class="key-btn" onclick="modalPressKey('7')">7</button>
                     <button type="button" class="key-btn" onclick="modalPressKey('8')">8</button>
                     <button type="button" class="key-btn" onclick="modalPressKey('9')">9</button>
-                    <div></div>
+                    <button type="button" class="key-btn clear-btn" onclick="modalClearKey()">C</button>
                     <button type="button" class="key-btn" onclick="modalPressKey('0')">0</button>
-                    <button type="button" class="key-btn" onclick="modalDeleteKey()">⌫</button>
-                </div>
-
-                <button type="submit" id="modalSubmitBtn"
+                    <button type="button" class="key-btn delete-btn" onclick="modalDeleteKey()">⌫</button>
+                </div><button type="submit" id="modalSubmitBtn"
                     style="width: 100%; background: rgba(15, 56, 44, 0.3); color: #ffffff; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: not-allowed; transition: all 0.2s ease;">Harcama
                     Ekle</button>
             </form>
@@ -867,8 +924,10 @@
                         debtor.amount -= amount;
                         creditor.amount -= amount;
 
-                        if (debtor.amount < 0.01) dIdx++; if (creditor.amount < 0.01) cIdx++; } // Artık sadece giriş yapan kullanıcının değil, tüm işlemler listelenecek
-                        // let myTransactions=transactions.filter(t=> t.fromId === currentUserId || t.toId === currentUserId);
+                        if (debtor.amount < 0.01) dIdx++; if (creditor.amount < 0.01) cIdx++; } // Artık sadece giriş
+                            yapan kullanıcının değil, tüm işlemler listelenecek // let
+                            myTransactions=transactions.filter(t=> t.fromId === currentUserId || t.toId ===
+                            currentUserId);
 
                             %>
 
@@ -1197,6 +1256,11 @@
             modalSelectedFiles = [];
             modalUpdateDisplay();
             modalUpdateFileList();
+            document.getElementById('modalKeypad').style.display = 'grid';
+            setTimeout(() => {
+                const amountDisplay = document.getElementById('modalAmountDisplay');
+                if (amountDisplay) amountDisplay.focus();
+            }, 100);
         }
 
         function closeExpenseModal() {
@@ -1206,6 +1270,33 @@
 
         document.getElementById('modalAmountDisplay').addEventListener('click', function () {
             document.getElementById('modalKeypad').style.display = 'grid';
+            document.getElementById('modalAmountDisplay').focus();
+        });
+
+        document.getElementById('modalAmountDisplay').addEventListener('focus', function () {
+            document.getElementById('modalKeypad').style.display = 'grid';
+        });
+
+        // PC Keyboard Support
+        document.addEventListener('keydown', function (event) {
+            const modal = document.getElementById('expenseModal');
+            if (!modal || modal.style.display === 'none') {
+                return;
+            }
+            if (document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'text') {
+                return;
+            }
+
+            if (event.key >= '0' && event.key <= '9') {
+                modalPressKey(event.key);
+                event.preventDefault();
+            } else if (event.key === 'Backspace') {
+                modalDeleteKey();
+                event.preventDefault();
+            } else if (event.key.toLowerCase() === 'c') {
+                modalClearKey();
+                event.preventDefault();
+            }
         });
 
         document.getElementById('modalReceiptInput').addEventListener('change', function (e) {
@@ -1237,6 +1328,11 @@
         function modalPressKey(num) {
             if (modalCurrentAmount === "0") modalCurrentAmount = num;
             else modalCurrentAmount += num;
+            modalUpdateDisplay();
+        }
+
+        function modalClearKey() {
+            modalCurrentAmount = "0";
             modalUpdateDisplay();
         }
 

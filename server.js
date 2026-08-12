@@ -1,17 +1,6 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config();
 const express = require('express');
-const fs = require('fs');
-const cloudinary = require('cloudinary').v2;
-
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'kn7fwx0x',
-    api_key: process.env.CLOUDINARY_API_KEY || '652292375257652',
-    api_secret: process.env.CLOUDINARY_API_SECRET || 'SD-mqfXovtpy_1Qwjp9z1f5KfWQ'
-});
-
-const rateLimit = require('express-rate-limit');
-const sqlite3 = require('@libsql/sqlite3').verbose();
+const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const multer = require('multer');
 const os = require('os');
@@ -20,8 +9,7 @@ const QRCode = require('qrcode');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-app.set('trust proxy', 1);
-const PORT = process.env.PORT || 2024;
+const PORT = 2024;
 const upload = multer({ dest: 'uploads/' });
 
 function getLocalNetworkIp() {
@@ -42,7 +30,7 @@ function getLocalNetworkIp() {
 const localNetworkIp = getLocalNetworkIp();
 
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'gizli-anahtar-kelime',
+    secret: 'gizli-anahtar-kelime',
     resave: false,
     saveUninitialized: false
 }));
@@ -51,42 +39,10 @@ app.use(session({
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.SMTP_USER || 'saadetsudegunes31.@gmail.com',
-        pass: process.env.SMTP_PASS || 'swwwkbyrjxjyqejo'
+        user: 'saadetsudegunes31.@gmail.com',
+        pass: 'ycprxvmvcoagxveb'
     }
 });
-
-// Render SMTP port blokajını aşmak için HTTP tabanlı Google Apps Script desteği
-function sendMail(options, callback) {
-    const scriptUrl = process.env.GMAIL_SCRIPT_URL;
-    if (scriptUrl) {
-        const payload = {
-            secret: 'hesapmatik-gizli-anahtar',
-            to: options.to,
-            subject: options.subject,
-            html: options.html || options.text
-        };
-        
-        fetch(scriptUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data && data.status === "success") {
-                callback(null, { response: "250 OK (via Script)" });
-            } else {
-                callback(new Error(data.message || "Script error"));
-            }
-        })
-        .catch(err => {
-            callback(err);
-        });
-    } else {
-        transporter.sendMail(options, callback);
-    }
-}
 
 // Form verilerini okuyabilmek için middleware ayarları
 app.use(express.urlencoded({ extended: true }));
@@ -96,38 +52,106 @@ app.use('/uploads', express.static('uploads'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Rate Limiter for Auth Routes
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 20, // limit each IP to 20 requests per windowMs
-    message: 'Çok fazla giriş denemesi yaptınız, lütfen daha sonra tekrar deneyin.'
-});
-
-app.use('/login', authLimiter);
-app.use('/register', authLimiter);
-app.use('/forgot-password', authLimiter);
-app.use('/reset-password', authLimiter);
-
-function redirectWithError(req, res, msg, target = '/panel') {
-    if (req.session) {
-        req.session.toastError = msg;
-    }
-    return res.redirect(target);
-}
-
-function redirectWithSuccess(req, res, msg, target = '/panel') {
-    if (req.session) {
-        req.session.toastSuccess = msg;
-    }
-    return res.redirect(target);
-}
-
 // Veritabanı bağlantısı ve tablolar
-const db = require('./config/db');
+const db = new sqlite3.Database('./hesapmatik.db', (err) => {
+    if (err) {
+        console.error('Veritabanı hatası:', err.message);
+    } else {
+        console.log('SQLite veritabanına bağlandık!');
+
+        db.run(`CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            activityId INTEGER,
+            expenseName TEXT,
+            amount REAL,
+            receipt TEXT,
+            userId INTEGER
+        )`);
+        db.run(`CREATE TABLE IF NOT EXISTS activities (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            activityName TEXT,
+            activityPassword TEXT,
+            coverImage TEXT,
+            activityDate TEXT,
+            creatorId INTEGER,
+            isClosed INTEGER DEFAULT 0
+        )`);
+        db.run(`CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fullname TEXT,
+            username TEXT UNIQUE,
+            phone TEXT,
+            email TEXT UNIQUE,
+            password TEXT,
+            reset_code TEXT,
+            avatar TEXT,
+            status TEXT DEFAULT 'active',
+            panel_layout TEXT DEFAULT 'grid'
+        )`);
+        db.run(`CREATE TABLE IF NOT EXISTS activity_participants (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            activityId INTEGER,
+            userId INTEGER,
+            FOREIGN KEY(activityId) REFERENCES activities(id),
+            FOREIGN KEY(userId) REFERENCES users(id)
+        )`);
+        db.run(`CREATE TABLE IF NOT EXISTS payments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            activityId INTEGER,
+            senderId INTEGER,
+            receiverId INTEGER,
+            amount REAL,
+            description TEXT,
+            status TEXT DEFAULT 'pending',
+            createdAt TEXT,
+            FOREIGN KEY(activityId) REFERENCES activities(id),
+            FOREIGN KEY(senderId) REFERENCES users(id),
+            FOREIGN KEY(receiverId) REFERENCES users(id)
+        )`);
+        db.run(`CREATE TABLE IF NOT EXISTS notifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            userId INTEGER,
+            message TEXT,
+            isRead INTEGER DEFAULT 0,
+            createdAt TEXT,
+            FOREIGN KEY(userId) REFERENCES users(id)
+        )`);
+        db.run(`ALTER TABLE activities ADD COLUMN creatorId INTEGER`, (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+                console.error('Etkinlik sahipligi alani eklenemedi:', err.message);
+            }
+        });
+        db.run(`ALTER TABLE expenses ADD COLUMN userId INTEGER`, (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+                console.error('Harcama kullanicisi alani eklenemedi:', err.message);
+            }
+        });
+        db.run(`ALTER TABLE users ADD COLUMN avatar TEXT`, (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+                // Avatar kolonu zaten varsa hata vermesin
+            }
+        });
+        db.run(`ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'`, (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+                // Status kolonu zaten varsa hata vermesin
+            }
+        });
+        db.run(`ALTER TABLE activities ADD COLUMN isClosed INTEGER DEFAULT 0`, (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+                console.error('Etkinlik isClosed alani eklenemedi:', err.message);
+            }
+        });
+        db.run(`ALTER TABLE users ADD COLUMN panel_layout TEXT DEFAULT 'grid'`, (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+                console.error('Kullanici panel_layout alani eklenemedi:', err.message);
+            }
+        });
+    }
+});
 
 // Ana Sayfa
 app.get('/', (req, res) => {
-    res.redirect('/login');
+    res.send('Hesapmatik çalışıyor!');
 });
 
 app.get('/register', (req, res) => {
@@ -210,7 +234,7 @@ app.post('/login', (req, res) => {
                 const returnTo = req.session.returnTo;
                 delete req.session.returnTo;
 
-                if (returnTo && returnTo.startsWith('/')) {
+                if (returnTo && /^\/join\/\d+$/.test(returnTo)) {
                     return res.redirect(returnTo);
                 }
                 return res.redirect('/dashboard');
@@ -260,7 +284,7 @@ app.post('/reactivate', (req, res) => {
 
         console.log('Aktivasyon OTP kodu:', otpCode);
 
-        sendMail(mailOptions, (mailErr) => {
+        transporter.sendMail(mailOptions, (mailErr) => {
             if (mailErr) {
                 console.error('Mail gönderilemedi:', mailErr);
             }
@@ -379,7 +403,7 @@ app.post('/forgot-password', (req, res) => {
                 text: `Şifre sıfırlama kodun: ${code}`
             };
 
-            sendMail(mailOptions, (error, info) => {
+            transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     console.error('Mail gönderme hatası:', error);
                     return res.send('Gmail Hatası: ' + error.message);
@@ -416,23 +440,12 @@ app.get('/create-activity', (req, res) => {
     res.render('create');
 });
 
-app.post('/create-activity', upload.single('coverImage'), async (req, res) => {
+app.post('/create-activity', upload.single('coverImage'), (req, res) => {
     if (!req.session.userId) {
         return res.redirect('/login');
     }
     const { activityName, activityPassword, activityDate } = req.body;
-    
-    let coverImage = null;
-    if (req.file) {
-        try {
-            const result = await cloudinary.uploader.upload(req.file.path, { folder: 'hesapmatik' });
-            coverImage = result.secure_url;
-            fs.unlink(req.file.path, () => {});
-        } catch (uploadErr) {
-            console.error("Cloudinary coverImage upload error:", uploadErr);
-        }
-    }
-
+    const coverImage = req.file ? '/uploads/' + req.file.filename : null;
     const query = `INSERT INTO activities (activityName, activityPassword, activityDate, coverImage, creatorId) VALUES (?, ?, ?, ?, ?)`;
 
     db.run(query, [activityName, activityPassword, activityDate, coverImage, req.session.userId], function (err) {
@@ -447,23 +460,12 @@ app.post('/create-activity', upload.single('coverImage'), async (req, res) => {
 
 // Etkinlik Detay Sayfası
 app.get('/activity/:id', (req, res) => {
-    if (!req.session.userId) {
-        req.session.returnTo = req.originalUrl;
-        return res.redirect('/login');
-    }
     const activityId = req.params.id;
     const currentUserId = req.session.userId;
 
-    const checkAccessQuery = `
-        SELECT activities.* 
-        FROM activities
-        LEFT JOIN activity_participants ON activity_participants.activityId = activities.id
-        WHERE activities.id = ? 
-          AND (activities.creatorId = ? OR activity_participants.userId = ?)
-    `;
-    db.get(checkAccessQuery, [activityId, currentUserId, currentUserId], (err, activity) => {
+    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
         if (err || !activity) {
-            return redirectWithError(req, res, 'Bu etkinliğe erişim yetkiniz yok.');
+            return res.status(404).send("Etkinlik bulunamadı.");
         }
 
         db.all(`SELECT * FROM expenses WHERE activityId = ? AND userId = ?`, [activityId, currentUserId], (err, expenses) => {
@@ -508,12 +510,6 @@ app.get('/activity/:id', (req, res) => {
                             participants: participants,
                             currentUser: req.session.user || null,
                             currentUserId: currentUserId
-                        }, (renderErr, html) => {
-                            if (renderErr) {
-                                console.error("EJS Render Hatası (activity-detail):", renderErr);
-                                return res.status(500).send("EJS Render Hatası (activity-detail): " + renderErr.message);
-                            }
-                            res.send(html);
                         });
                     });
                 });
@@ -524,23 +520,12 @@ app.get('/activity/:id', (req, res) => {
 
 // Mahsuplasma Route
 app.get('/settlement/:id', (req, res) => {
-    if (!req.session.userId) {
-        req.session.returnTo = req.originalUrl;
-        return res.redirect('/login');
-    }
     const activityId = req.params.id;
     const currentUserId = req.session.userId;
 
-    const checkAccessQuery = `
-        SELECT activities.* 
-        FROM activities
-        LEFT JOIN activity_participants ON activity_participants.activityId = activities.id
-        WHERE activities.id = ? 
-          AND (activities.creatorId = ? OR activity_participants.userId = ?)
-    `;
-    db.get(checkAccessQuery, [activityId, currentUserId, currentUserId], (err, activity) => {
+    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
         if (err || !activity) {
-            return redirectWithError(req, res, 'Bu etkinliğe erişim yetkiniz yok.');
+            return res.status(404).send("Etkinlik bulunamadı.");
         }
 
         db.all(`SELECT * FROM expenses WHERE activityId = ? AND userId = ?`, [activityId, currentUserId], (err, expenses) => {
@@ -585,12 +570,6 @@ app.get('/settlement/:id', (req, res) => {
                             participants: participants,
                             currentUser: req.session.user || null,
                             currentUserId: currentUserId
-                        }, (renderErr, html) => {
-                            if (renderErr) {
-                                console.error("EJS Render Hatası (settlement):", renderErr);
-                                return res.status(500).send("EJS Render Hatası (settlement): " + renderErr.message);
-                            }
-                            res.send(html);
                         });
                     });
                 });
@@ -601,7 +580,7 @@ app.get('/settlement/:id', (req, res) => {
 
 
 // Etkinlik Görselini Güncelleme İşlemi
-app.post('/activity/:id/upload-image', upload.single('coverImage'), async (req, res) => {
+app.post('/activity/:id/upload-image', upload.single('coverImage'), (req, res) => {
     const activityId = req.params.id;
     const currentUserId = req.session.userId;
 
@@ -610,17 +589,7 @@ app.post('/activity/:id/upload-image', upload.single('coverImage'), async (req, 
     }
 
     const removeImage = req.body.removeImage === 'true';
-    
-    let coverImage = null;
-    if (req.file) {
-        try {
-            const result = await cloudinary.uploader.upload(req.file.path, { folder: 'hesapmatik' });
-            coverImage = result.secure_url;
-            fs.unlink(req.file.path, () => {});
-        } catch (uploadErr) {
-            console.error("Cloudinary coverImage upload error:", uploadErr);
-        }
-    }
+    const coverImage = req.file ? '/uploads/' + req.file.filename : null;
 
     if (coverImage) {
         db.run(`UPDATE activities SET coverImage = ? WHERE id = ?`, [coverImage, activityId], (err) => {
@@ -738,12 +707,7 @@ app.post('/approve-payment/:id', (req, res) => {
                 `INSERT INTO notifications (userId, message, isRead, createdAt) VALUES (?, ?, 0, datetime('now'))`,
                 [targetUserId, notificationMessage],
                 () => {
-                    let redirectUrl = req.body.returnTo === '/dashboard' ? '/dashboard' : `/activity/${payment.activityId}`;
-                    const referer = req.get('Referrer');
-                    if (req.body.returnTo !== '/dashboard' && referer && referer.includes('/settlement/')) {
-                        redirectUrl = `/settlement/${payment.activityId}`;
-                    }
-                    res.redirect(redirectUrl);
+                    res.redirect(req.body.returnTo === '/dashboard' ? '/dashboard' : `/activity/${payment.activityId}`);
                 }
             );
         });
@@ -764,24 +728,15 @@ app.post('/delete-payment/:id', (req, res) => {
             return res.status(404).send("Ödeme bulunamadı.");
         }
 
-        if (payment.senderId !== currentUserId) {
-            return redirectWithError(req, res, 'Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi silebilir.');
-        }
-
-        if (payment.status === 'approved') {
-            return res.status(400).send("Onaylanmış ödemeler silinemez.");
+        if (payment.senderId !== currentUserId && payment.receiverId !== currentUserId) {
+            return res.status(403).send("Bu işlemi yapmaya yetkiniz yok.");
         }
 
         db.run(`DELETE FROM payments WHERE id = ?`, [paymentId], (err) => {
             if (err) {
                 return res.status(500).send("Silme işleminde hata oluştu.");
             }
-            const referer = req.get('Referrer');
-            if (referer && referer.includes('/settlement/')) {
-                res.redirect(`/settlement/${payment.activityId}`);
-            } else {
-                res.redirect(`/activity/${payment.activityId}`);
-            }
+            res.redirect(`/activity/${payment.activityId}`);
         });
     });
 });
@@ -792,7 +747,7 @@ app.get('/add-expense', (req, res) => {
     res.render('add-expense', { activityId: activityId });
 });
 
-app.post('/add-expense', upload.array('receipt'), async (req, res) => {
+app.post('/add-expense', upload.array('receipt'), (req, res) => {
     if (!req.session.userId) {
         return res.status(401).send('Harcama eklemek için giriş yapmanız gerekiyor.');
     }
@@ -800,20 +755,10 @@ app.post('/add-expense', upload.array('receipt'), async (req, res) => {
     const expenseName = body.expenseName;
     const amount = body.amount;
     const activityId = body.activityId;
-    
-    let receiptUrl = null;
-    if (req.files && req.files.length > 0) {
-        try {
-            const result = await cloudinary.uploader.upload(req.files[0].path, { folder: 'hesapmatik' });
-            receiptUrl = result.secure_url;
-            fs.unlink(req.files[0].path, () => {});
-        } catch (uploadErr) {
-            console.error("Cloudinary receipt upload error:", uploadErr);
-        }
-    }
+    const receiptFileName = req.files && req.files.length > 0 ? req.files[0].filename : null;
 
     db.run(`INSERT INTO expenses (activityId, expenseName, amount, receipt, userId) VALUES (?, ?, ?, ?, ?)`,
-        [activityId, expenseName, amount, receiptUrl, req.session.userId], (err) => {
+        [activityId, expenseName, amount, receiptFileName, req.session.userId], (err) => {
             if (err) console.error("Harcama eklenirken hata oluştu:", err.message);
 
             if (activityId) {
@@ -841,28 +786,20 @@ app.post('/delete-expense/:id', (req, res) => {
 });
 
 // Harcama Düzenleme İşlemini Kaydetme
-app.post('/edit-expense/:id', upload.array('receipt'), async (req, res) => {
+app.post('/edit-expense/:id', upload.array('receipt'), (req, res) => {
     const expenseId = req.params.id;
     const { expenseName, amount } = req.body;
+    const newReceipt = req.files && req.files.length > 0 ? req.files[0].filename : null;
 
     // Önce harcamanın hangi etkinliğe ait olduğunu bulalım ki işlem bitince o etkinliğe geri yönlendirebilelim
-    db.get(`SELECT activityId, receipt FROM expenses WHERE id = ?`, [expenseId], async (err, row) => {
+    db.get(`SELECT activityId, receipt FROM expenses WHERE id = ?`, [expenseId], (err, row) => {
         if (err || !row) {
             return res.status(404).send("Harcama bulunamadı.");
         }
 
         const activityId = row.activityId;
-        
-        let receiptToSave = row.receipt;
-        if (req.files && req.files.length > 0) {
-            try {
-                const result = await cloudinary.uploader.upload(req.files[0].path, { folder: 'hesapmatik' });
-                receiptToSave = result.secure_url;
-                fs.unlink(req.files[0].path, () => {});
-            } catch (uploadErr) {
-                console.error("Cloudinary receipt edit upload error:", uploadErr);
-            }
-        }
+        // Eğer yeni bir dosya yüklenmediyse eskisini koruyoruz
+        const receiptToSave = newReceipt ? newReceipt : row.receipt;
 
         const updateQuery = `UPDATE expenses SET expenseName = ?, amount = ?, receipt = ? WHERE id = ?`;
         db.run(updateQuery, [expenseName, amount, receiptToSave, expenseId], (updateErr) => {
@@ -900,11 +837,6 @@ app.get('/panel', (req, res) => {
         return res.redirect('/login');
     }
 
-    const toastError = req.session.toastError;
-    const toastSuccess = req.session.toastSuccess;
-    delete req.session.toastError;
-    delete req.session.toastSuccess;
-
     const activeQuery = `
         SELECT DISTINCT activities.*
         FROM activities
@@ -939,9 +871,7 @@ app.get('/panel', (req, res) => {
                 activities: activeActivities,
                 closedActivities: closedActivities,
                 success: req.query.success,
-                panelLayout: req.session.user.panel_layout || 'grid',
-                toastError: toastError || null,
-                toastSuccess: toastSuccess || null
+                panelLayout: req.session.user.panel_layout || 'grid'
             });
         });
     });
@@ -980,14 +910,14 @@ app.get('/profile/edit', (req, res) => {
 
 
 // 3. Profil Formu Gönderildiğinde (POST)
-app.post('/profile/edit', upload.single('avatar'), async (req, res) => {
+app.post('/profile/edit', upload.single('avatar'), (req, res) => {
     const currentUser = req.user || (req.session && req.session.user);
     if (!currentUser) return res.redirect('/login');
 
     const userId = currentUser.id || currentUser._id;
     const { phone } = req.body;
 
-    db.get('SELECT * FROM users WHERE id = ?', [userId], async (err, user) => {
+    db.get('SELECT * FROM users WHERE id = ?', [userId], (err, user) => {
         if (err || !user) return res.redirect('/login');
 
         // username ve email değiştirilemez, her zaman DB'deki değer kullanılır
@@ -995,13 +925,7 @@ app.post('/profile/edit', upload.single('avatar'), async (req, res) => {
 
         let newAvatar = user.avatar;
         if (req.file) {
-            try {
-                const result = await cloudinary.uploader.upload(req.file.path, { folder: 'hesapmatik' });
-                newAvatar = result.secure_url;
-                fs.unlink(req.file.path, () => {});
-            } catch (uploadErr) {
-                console.error("Cloudinary avatar upload error:", uploadErr);
-            }
+            newAvatar = '/uploads/' + req.file.filename;
         }
 
         const isPhoneChanged = newPhone !== user.phone;
@@ -1073,46 +997,23 @@ app.post('/profile/verify-otp', (req, res) => {
 
 // Etkinliği Silme
 app.post('/activity/delete/:id', (req, res) => {
-    if (!req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
-
-    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
-        if (err || !activity) return redirectWithError(req, res, 'Etkinlik bulunamadı.');
-        if (activity.creatorId !== req.session.userId) {
-            return redirectWithError(req, res, 'Bu işlemi sadece etkinlik sahibi yapabilir.');
+    db.run(`DELETE FROM activities WHERE id = ?`, [activityId], (err) => {
+        if (err) {
+            console.error(err.message);
+            return res.send("Silinirken bir hata oluştu.");
         }
-
-        db.serialize(() => {
-            db.run(`DELETE FROM activity_participants WHERE activityId = ?`, [activityId], (err) => {
-                if (err) console.error("Silme hatası (participants):", err.message);
-            });
-            db.run(`DELETE FROM expenses WHERE activityId = ?`, [activityId], (err) => {
-                if (err) console.error("Silme hatası (expenses):", err.message);
-            });
-            db.run(`DELETE FROM payments WHERE activityId = ?`, [activityId], (err) => {
-                if (err) console.error("Silme hatası (payments):", err.message);
-            });
-            db.run(`DELETE FROM activities WHERE id = ?`, [activityId], (err) => {
-                if (err) {
-                    console.error("Silme hatası (activities):", err.message);
-                    return res.status(500).send("Silinirken bir hata oluştu.");
-                }
-                res.redirect('/panel');
-            });
-        });
+        res.redirect('/panel');
     });
 });
 
 // Düzenleme Sayfasını Açma
 app.get('/activity/edit/:id', (req, res) => {
-    if (!req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
     db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, row) => {
-        if (err || !row) {
-            return redirectWithError(req, res, 'Etkinlik bulunamadı.');
-        }
-        if (row.creatorId !== req.session.userId) {
-            return redirectWithError(req, res, 'Bu işlemi sadece etkinlik sahibi yapabilir.');
+        if (err) {
+            console.error(err.message);
+            return res.send("Bir hata oluştu.");
         }
         res.render('edit-activity', { activity: row });
     });
@@ -1120,14 +1021,11 @@ app.get('/activity/edit/:id', (req, res) => {
 
 // Harcama Düzenleme Sayfasını Açma
 app.get('/edit-expense/:id', (req, res) => {
-    if (!req.session.userId) return res.redirect('/login');
     const expenseId = req.params.id;
     db.get(`SELECT * FROM expenses WHERE id = ?`, [expenseId], (err, row) => {
-        if (err || !row) {
-            return redirectWithError(req, res, 'Harcama bulunamadı.');
-        }
-        if (row.userId !== req.session.userId) {
-            return redirectWithError(req, res, 'Bu harcamayı sadece ekleyen kişi düzenleyebilir.');
+        if (err) {
+            console.error(err.message);
+            return res.send("Bir hata oluştu.");
         }
         res.render('edit-expense', { expense: row });
     });
@@ -1135,25 +1033,20 @@ app.get('/edit-expense/:id', (req, res) => {
 
 // Etkinliği Güncelleme
 app.post('/activity/edit/:id', (req, res) => {
-    if (!req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
     const { activityName, activityPassword } = req.body;
 
-    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, row) => {
-        if (err || !row) return redirectWithError(req, res, 'Etkinlik bulunamadı.');
-        if (row.creatorId !== req.session.userId) {
-            return redirectWithError(req, res, 'Bu işlemi sadece etkinlik sahibi yapabilir.');
-        }
-
-        db.run(
-            `UPDATE activities SET activityName = ?, activityPassword = ? WHERE id = ?`,
-            [activityName, activityPassword, activityId],
-            (updateErr) => {
-                if (updateErr) return res.status(500).send("Güncellenemedi.");
-                return redirectWithSuccess(req, res, 'Etkinlik adınız güncellenmiştir.');
+    db.run(
+        `UPDATE activities SET activityName = ?, activityPassword = ? WHERE id = ?`,
+        [activityName, activityPassword, activityId],
+        (err) => {
+            if (err) {
+                console.error(err.message);
+                return res.send("Güncellenirken bir hata oluştu.");
             }
-        );
-    });
+            res.redirect('/panel');
+        }
+    );
 });
 
 // Katılımcı Yönetimi
@@ -1217,10 +1110,6 @@ app.post('/activity/:id/participants/:userId/remove', (req, res) => {
 
 // Share Activity
 app.get('/share-activity/:id', (req, res) => {
-    if (!req.session.userId) {
-        req.session.returnTo = req.originalUrl;
-        return res.redirect('/login');
-    }
     const activityId = req.params.id;
     // Determine base URL for QR code. If the request host is localhost, replace it with the detected local network IP if available.
     let host = req.get('host');
@@ -1233,15 +1122,8 @@ app.get('/share-activity/:id', (req, res) => {
     QRCode.toDataURL(inviteLink, (err, qrCodeUrl) => {
         if (err) return res.send("QR kod oluşturulamadı.");
 
-        const checkAccessQuery = `
-            SELECT activities.* 
-            FROM activities
-            LEFT JOIN activity_participants ON activity_participants.activityId = activities.id
-            WHERE activities.id = ? 
-              AND (activities.creatorId = ? OR activity_participants.userId = ?)
-        `;
-        db.get(checkAccessQuery, [activityId, req.session.userId, req.session.userId], (err, activity) => {
-            if (err || !activity) return redirectWithError(req, res, 'Bu etkinliğe erişim yetkiniz yok.');
+        db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
+            if (err || !activity) return res.send("Etkinlik bulunamadı.");
 
             getParticipantManagementState(activityId, req.session.userId, (stateErr, stateActivity, isOwner, isLocked) => {
                 if (stateErr) return res.status(500).send('Katılımcı bilgileri alınamadı.');
@@ -1301,7 +1183,17 @@ app.get('/api/notifications', (req, res) => {
     });
 });
 
-app.post('/api/notifications/clear', (req, res) => {
+// Mark notifications as read
+app.post(['/api/notifications/read', '/notifications/read'], (req, res) => {
+    if (!req.session.userId) return res.json({ success: false });
+    db.run(`UPDATE notifications SET isRead = 1 WHERE userId = ?`, [req.session.userId], (err) => {
+        if (err) return res.json({ success: false });
+        res.json({ success: true });
+    });
+});
+
+// Clear all notifications
+app.post(['/api/notifications/clear', '/notifications/clear'], (req, res) => {
     if (!req.session.userId) return res.json({ success: false });
     db.run(`DELETE FROM notifications WHERE userId = ?`, [req.session.userId], (err) => {
         if (err) return res.json({ success: false });
@@ -1309,7 +1201,8 @@ app.post('/api/notifications/clear', (req, res) => {
     });
 });
 
-app.post('/api/notifications/delete/:id', (req, res) => {
+// Delete single notification
+app.post(['/api/notifications/delete/:id', '/notifications/delete/:id'], (req, res) => {
     if (!req.session.userId) return res.json({ success: false });
     const notificationId = req.params.id;
     db.run(`DELETE FROM notifications WHERE id = ? AND userId = ?`, [notificationId, req.session.userId], (err) => {
@@ -1330,9 +1223,6 @@ app.get('/edit-payment/:id', (req, res) => {
         WHERE payments.id = ?
     `, [paymentId], (err, row) => {
         if (err || !row) return res.redirect('back');
-        if (row.senderId !== req.session.userId) {
-            return redirectWithError(req, res, 'Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi düzenleyebilir.');
-        }
         if (row.status === 'approved') {
             return res.send(`Bu ödeme onaylandığı için düzenlenemez. <a href="/activity/${row.activityId}">Geri dön</a>`);
         }
@@ -1353,15 +1243,11 @@ app.post('/edit-payment/:id', (req, res) => {
 
         const receiverId = user.id;
 
-        db.get(`SELECT activityId, status, senderId FROM payments WHERE id = ?`, [paymentId], (err, row) => {
+        db.get(`SELECT activityId, status FROM payments WHERE id = ?`, [paymentId], (err, row) => {
             if (err || !row) return res.send("Güncelleme hatası.");
 
-            if (row.senderId !== req.session.userId) {
-                return redirectWithError(req, res, 'Bu işlemi yapmaya yetkiniz yok. Sadece ödemeyi ekleyen kişi düzenleyebilir.');
-            }
-
             if (row.status === 'approved') {
-                return res.send(`Bu ödeme onaylandığı için düzenlenemez. <a href="/activity/${row.activityId}">Geri dön</a>`);
+                return res.send(`Bu ödeme onaylandığı için düzenlenemez. Sadece silinebilir. <a href="/activity/${row.activityId}">Geri dön</a>`);
             }
 
             const activityId = row.activityId;
@@ -1461,21 +1347,12 @@ app.post('/remove-participant', (req, res) => {
 app.post('/close-activity/:id', (req, res) => {
     if (!req.session || !req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
-    const currentUserId = req.session.userId;
-
-    db.get('SELECT creatorId FROM activities WHERE id = ?', [activityId], (err, activity) => {
-        if (err || !activity) return redirectWithError(req, res, 'Etkinlik bulunamadı.');
-        if (activity.creatorId !== currentUserId) {
-            return redirectWithError(req, res, 'Bu işlemi sadece etkinlik sahibi yapabilir.');
+    db.run('UPDATE activities SET isClosed = 1 WHERE id = ?', [activityId], function (err) {
+        if (err) {
+            console.error(err);
+            return res.send('Hata oluştu');
         }
-
-        db.run('UPDATE activities SET isClosed = 1 WHERE id = ?', [activityId], function (updateErr) {
-            if (updateErr) {
-                console.error(updateErr);
-                return res.send('Hata oluştu');
-            }
-            res.redirect('/settlement/' + activityId);
-        });
+        res.redirect('/panel');
     });
 });
 

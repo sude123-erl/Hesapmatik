@@ -55,9 +55,18 @@
         }
       };
 
+      const markAsRead = async () => {
+        try {
+          await fetch('/api/notifications/read', { method: 'POST' });
+          if (badge) badge.style.display = 'none';
+        } catch (err) {
+          console.error('Bildirimler okundu olarak işaretlenemedi:', err);
+        }
+      };
+
       const renderNotifications = (notifications) => {
         if (!notifications || notifications.length === 0) {
-          badge.style.display = 'none';
+          if (badge) badge.style.display = 'none';
           list.innerHTML = '<div class="app-notifications__empty">Henüz bir bildiriminiz yok.</div>';
           return;
         }
@@ -77,7 +86,7 @@
               <p>${n.message}</p>
               <time>${new Date(n.createdAt || Date.now()).toLocaleDateString('tr-TR')} ${new Date(n.createdAt || Date.now()).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</time>
             </div>
-            <button class="app-notifications__delete" aria-label="Sil">&times;</button>
+            <button class="app-notifications__delete" aria-label="Sil" data-id="${n.id}">&times;</button>
           </div>
         `).join('');
 
@@ -86,7 +95,7 @@
           btn.addEventListener('click', async (e) => {
             e.stopPropagation();
             const item = e.target.closest('.app-notifications__item');
-            const id = item.dataset.id;
+            const id = item ? item.dataset.id : btn.dataset.id;
             try {
               const res = await fetch('/api/notifications/delete/' + id, { method: 'POST' });
               const data = await res.json();
@@ -94,7 +103,7 @@
                 fetchNotifications();
               }
             } catch (err) {
-              console.error('Bildirim silinemedi', err);
+              console.error('Bildirim silinemedi:', err);
             }
           });
         });
@@ -105,8 +114,7 @@
           const res = await fetch('/api/notifications/clear', { method: 'POST' });
           const data = await res.json();
           if (data.success) {
-            badge.style.display = 'none';
-            // Bildirimleri tekrar çekip okundu olarak güncel halini gösterelim
+            if (badge) badge.style.display = 'none';
             fetchNotifications();
           }
         } catch (err) {
@@ -118,12 +126,15 @@
       fetchNotifications();
 
       // Menüyü açıp kapama
-      toggle.addEventListener('click', (event) => {
+      toggle.addEventListener('click', async (event) => {
         event.stopPropagation();
         const open = widget.classList.toggle('is-open');
         toggle.setAttribute('aria-expanded', open);
         if (open) {
-          fetchNotifications();
+          // Bildirim butonuna tıklandığında badge'i hemen gizle ve sunucuya okundu bilgisini gönder
+          if (badge) badge.style.display = 'none';
+          await markAsRead();
+          await fetchNotifications();
         }
       });
 
@@ -143,5 +154,9 @@
     });
   };
 
-  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

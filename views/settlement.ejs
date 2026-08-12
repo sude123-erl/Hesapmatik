@@ -484,15 +484,12 @@
                     <% if (typeof payments !=='undefined' && payments && payments.length> 0) { %>
                         <div style="display: flex; flex-direction: column; gap: 12px;">
                             <% payments.forEach(function(payment) { %>
-                                <% let blockBg='#e8e7e1'; let blockBorder='rgba(15, 56, 44, 0.1)'; if (typeof currentUserId !== 'undefined' && currentUserId) { 
-                                    if (String(payment.senderId) === String(currentUserId)) { 
-                                        blockBg='#ffd6d6'; // Açık kırmızı
-                                        blockBorder='#ff9e9e'; 
-                                    } else if (String(payment.receiverId) === String(currentUserId)) { 
-                                        blockBg='#d1f4e0'; // Açık yeşil
-                                        blockBorder='#7ce3b1'; 
-                                    } 
-                                } %>
+                                <% let blockBg='#e8e7e1' ; let blockBorder='rgba(15, 56, 44, 0.1)' ; if (typeof
+                                    currentUserId !=='undefined' && currentUserId) { if
+                                    (String(payment.senderId)===String(currentUserId)) { blockBg='#ffd6d6' ; // Açık
+                                    kırmızı blockBorder='#ff9e9e' ; } else if
+                                    (String(payment.receiverId)===String(currentUserId)) { blockBg='#d1f4e0' ; // Açık
+                                    yeşil blockBorder='#7ce3b1' ; } } %>
                                     <div
                                         style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-radius: 12px; background-color: <%= blockBg %>; border: 1px solid <%= blockBorder %>;">
                                         <div>
@@ -562,8 +559,7 @@
                                                                                     style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: #ffd6d6; color: #e74c3c; border: none; border-radius: 8px; cursor: pointer;">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                                                         width="16" height="16"
-                                                                                        viewBox="0 0 24 24"
-                                                                                        fill="none"
+                                                                                        viewBox="0 0 24 24" fill="none"
                                                                                         stroke="currentColor"
                                                                                         stroke-width="2"
                                                                                         stroke-linecap="round"
@@ -573,15 +569,15 @@
                                                                                             d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                                                                                         <path
                                                                                             d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                                                                        <line x1="10" x2="10"
-                                                                                            y1="11" y2="17" />
-                                                                                        <line x1="14" x2="14"
-                                                                                            y1="11" y2="17" />
+                                                                                        <line x1="10" x2="10" y1="11"
+                                                                                            y2="17" />
+                                                                                        <line x1="14" x2="14" y1="11"
+                                                                                            y2="17" />
                                                                                     </svg>
                                                                                 </button>
                                                                             </form>
-                                                                        <% } %>
-                                                                    <% } %>
+                                                                            <% } %>
+                                                                                <% } %>
                                             </div>
                                         </div>
                                     </div>
@@ -597,7 +593,13 @@
                 <!-- Alt İşlem Butonları -->
                 <div
                     style="display: flex; gap: 15px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                    <button <%=myDebt> 0 ? '' : 'disabled' %> onclick="<%= myDebt> 0 ? 'openPaymentModal()' : 'return false;' %>" type="button" style="flex: 1; padding: 12px; background: <%= myDebt> 0 ? 'var(--btn-primary-bg, #0f382c)' : '#a0a0a0' %>; color: #f4f3ef; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: <%= myDebt> 0 ? 'pointer' : 'not-allowed' %>; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); opacity: <%= myDebt> 0 ? '1' : '0.6' %>;">
+                    <button <%=myDebt> 0 ? '' : 'disabled' %> onclick="<%= myDebt> 0 ? 'openPaymentModal()' : 'return
+                            false;' %>" type="button" style="flex: 1; padding: 12px; background: <%= myDebt> 0 ?
+                                'var(--btn-primary-bg, #0f382c)' : '#a0a0a0' %>; color: #f4f3ef; border: none;
+                                border-radius: 12px; font-weight: 600; font-size: 14px; cursor: <%= myDebt> 0 ?
+                                    'pointer' : 'not-allowed' %>; display: flex; align-items: center; justify-content:
+                                    center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); opacity: <%=
+                                        myDebt> 0 ? '1' : '0.6' %>;">
                                         💸 Ödeme Ekle/Kaydet
                     </button>
                     <button onclick="openBalancesModal()" type="button"
@@ -621,7 +623,8 @@
                 </span>
             </div>
 
-            <form action="/add-payment" method="POST" onsubmit="const btn = this.querySelector('button[type=submit]'); setTimeout(() => { btn.disabled = true; btn.innerText = 'Kaydediliyor...'; }, 10);">
+            <form action="/add-payment" method="POST"
+                onsubmit="const btn = this.querySelector('button[type=submit]'); setTimeout(() => { btn.disabled = true; btn.innerText = 'Kaydediliyor...'; }, 10);">
                 <input type="hidden" name="activityId" value="<%= activity.id %>">
                 <input type="hidden" name="senderUsername" value="<%= currentUser ? currentUser.username : '' %>">
 
@@ -777,9 +780,10 @@
                         debtor.amount -= amount;
                         creditor.amount -= amount;
 
-                        if (debtor.amount < 0.01) dIdx++; if (creditor.amount < 0.01) cIdx++; } 
-                        // Artık sadece giriş yapan kullanıcının değil, tüm işlemler listelenecek 
-                        // let myTransactions=transactions.filter(t=> t.fromId === currentUserId || t.toId === currentUserId);
+                        if (debtor.amount < 0.01) dIdx++; if (creditor.amount < 0.01) cIdx++; } // Artık sadece giriş
+                            yapan kullanıcının değil, tüm işlemler listelenecek // let
+                            myTransactions=transactions.filter(t=> t.fromId === currentUserId || t.toId ===
+                            currentUserId);
                             %>
 
                             <div style="margin-top: 15px; margin-bottom: 20px;">
