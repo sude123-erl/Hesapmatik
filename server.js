@@ -1,3 +1,4 @@
+const fs = require('fs');
 const nodemailer = require('nodemailer');
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
@@ -9,8 +10,27 @@ const QRCode = require('qrcode');
 const bcrypt = require('bcryptjs');
 
 const app = express();
-const PORT = 2024;
-const upload = multer({ dest: 'uploads/' });
+const PORT = process.env.PORT || 2024;
+
+// Kalıcı veri saklama dizini (Render Persistent Disk veya yerel)
+const dataDir = process.env.DATA_DIR || (process.env.RENDER ? '/var/data' : __dirname);
+if (!fs.existsSync(dataDir)) {
+    try {
+        fs.mkdirSync(dataDir, { recursive: true });
+    } catch (e) {
+        console.error('Veri dizini oluşturulamadı:', e.message);
+    }
+}
+const uploadsDir = path.join(dataDir, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    try {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+    } catch (e) {
+        console.error('Yüklemeler dizini oluşturulamadı:', e.message);
+    }
+}
+const dbPath = process.env.DB_PATH || path.join(dataDir, 'hesapmatik.db');
+const upload = multer({ dest: uploadsDir });
 
 function getLocalNetworkIp() {
     const networks = os.networkInterfaces();
@@ -48,16 +68,16 @@ const transporter = nodemailer.createTransport({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(uploadsDir));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Veritabanı bağlantısı ve tablolar
-const db = new sqlite3.Database('./hesapmatik.db', (err) => {
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Veritabanı hatası:', err.message);
     } else {
-        console.log('SQLite veritabanına bağlandık!');
+        console.log(`SQLite veritabanına bağlandık: ${dbPath}`);
 
         db.run(`CREATE TABLE IF NOT EXISTS expenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -151,7 +171,10 @@ const db = new sqlite3.Database('./hesapmatik.db', (err) => {
 
 // Ana Sayfa
 app.get('/', (req, res) => {
-    res.send('Hesapmatik çalışıyor!');
+    if (req.session && req.session.userId) {
+        return res.redirect('/dashboard');
+    }
+    return res.redirect('/login');
 });
 
 app.get('/register', (req, res) => {
