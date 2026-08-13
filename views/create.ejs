@@ -39,10 +39,33 @@
             align-items: center;
         }
 
+        /* Üst Header / Hero Bar (Full Width) */
+        .settlement-hero {
+            background: linear-gradient(135deg, #0f382c 0%, #175241 100%);
+            color: #ffffff;
+            padding: 12px 20px;
+            margin-bottom: 18px;
+            width: 100%;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 6px 20px rgba(15, 56, 44, 0.12);
+            position: relative;
+            overflow: visible !important;
+        }
+
+        .settlement-hero-content {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
         .create-container {
             width: 90%;
             max-width: 600px;
-            margin: 30px auto;
+            margin: 10px auto 30px auto;
             background: #ffffff;
             border: 1px solid rgba(15, 56, 44, 0.15);
             border-radius: 20px;
@@ -257,6 +280,35 @@
 </head>
 
 <body>
+
+    <!-- Header Hero Banner (Settlement Style) -->
+    <div class="settlement-hero">
+        <div class="settlement-hero-content">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;">
+                    ✨
+                </div>
+                <div>
+                    <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.12); color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.18); margin-bottom: 4px;">
+                        <span style="width: 7px; height: 7px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                        Yeni Etkinlik
+                    </div>
+                    <h1 style="font-size: 19px; font-weight: 600; margin: 0; color: #ffffff; letter-spacing: -0.2px;">
+                        Etkinlik Oluştur
+                    </h1>
+                </div>
+            </div>
+
+            <div>
+                <a href="/panel"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); transition: all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.22)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+                    <i class="fas fa-arrow-left" style="font-size: 11px;"></i> Panele Dön
+                </a>
+            </div>
+        </div>
+    </div>
 
     <div class="create-container">
         <div class="page-title">Yeni Etkinlik Oluştur</div>

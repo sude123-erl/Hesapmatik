@@ -22,7 +22,58 @@
             background-color: #e8e7e1 !important;
             color: #0f382c !important;
             min-height: 100vh;
-            padding-bottom: 50px;
+            padding-bottom: 110px !important;
+        }
+
+        /* Alt Navigasyon Barı (Dark Green Gradient Theme - Full Width Curved) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #0f382c 0%, #175241 100%) !important;
+            color: #ffffff !important;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 -6px 20px rgba(15, 56, 44, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.65) !important;
+            font-size: 10.5px;
+            font-weight: 500;
+            gap: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: #ffffff !important;
+            font-weight: 700;
+            opacity: 1 !important;
+            transform: translateY(-1px);
+        }
+
+        .nav-item i,
+        .nav-item svg {
+            font-size: 18px !important;
+            width: 18px !important;
+            height: 18px !important;
+            max-width: 18px !important;
+            max-height: 18px !important;
+            display: block !important;
+            fill: currentColor !important;
+            color: inherit !important;
+            margin-bottom: 2px !important;
         }
 
         .settlement-hero {
@@ -359,7 +410,14 @@
 
             <h2>Etkinliği Paylaş</h2>
 
-            <% if (isOwner) { %>
+            <% let isSettlementPhase = (typeof activity !== 'undefined' && activity.isClosed !== null && activity.isClosed !== undefined && Number(activity.isClosed) >= 1); %>
+            
+            <% if (isSettlementPhase) { %>
+                <div style="background: #fffbe6; border: 1px solid #ffe58f; border-radius: 14px; padding: 16px; margin-bottom: 20px; font-size: 13.5px; color: #856404; font-weight: 500; text-align: center;">
+                    <i class="fas fa-lock" style="color: #d97706; margin-right: 6px;"></i>
+                    Mahsuplaşma aşamasına geçildiği için yeni katılımcı ekleme ve çıkarma kapatılmıştır.
+                </div>
+            <% } else if (isOwner) { %>
                 <!-- QR Kod -->
                 <div class="qr-container">
                     <img src="<%= typeof qrCodeUrl !== 'undefined' ? qrCodeUrl : '/path-to-qr.png' %>" alt="QR Kod">
@@ -367,18 +425,13 @@
 
                 <!-- Paylaşım Butonu -->
                 <button class="btn-share" onclick="copyShareLink()">Linki Kopyala ve Paylaş</button>
-                <% } else { %>
-                    <div
-                        style="background: rgba(15, 56, 44, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; color: #537066;">
-                        Yalnızca etkinlik sahibi yeni kişileri davet edebilir.
-                    </div>
-                    <% } %>
+            <% } else { %>
+                <div style="background: rgba(15, 56, 44, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; color: #537066;">
+                    Yalnızca etkinlik sahibi yeni kişileri davet edebilir.
+                </div>
+            <% } %>
 
-                        <div>
-                            <a href="javascript:history.back()" class="back-link">← Etkinliğe Dön</a>
-                        </div>
-
-                        <div class="divider"></div>
+                        <div class="divider" style="margin-top: 20px;"></div>
 
                         <!-- Katılımcılar Alanı -->
                         <div class="participants-header">
@@ -446,6 +499,15 @@
                                 <% }) %>
                                     <% } %>
 
+            <!-- Etkinliğe Dön Buton Kutusu (En Altta) -->
+            <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(15, 56, 44, 0.12);">
+                <a href="<%= isSettlementPhase ? '/settlement/' + activity.id : '/activity/' + activity.id %>"
+                    style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px 18px; background: #ffffff; color: #0f382c; border: 1.5px solid rgba(15, 56, 44, 0.18); border-radius: 14px; font-weight: 600; font-size: 13.5px; text-decoration: none; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.02); transition: all 0.2s ease;"
+                    onmouseover="this.style.background='#f4f3ef'; this.style.borderColor='#0f382c';"
+                    onmouseout="this.style.background='#ffffff'; this.style.borderColor='rgba(15, 56, 44, 0.18)';">
+                    <i class="fas fa-arrow-left" style="font-size: 12px;"></i> Etkinliğe Dön
+                </a>
+            </div>
 
         </div>
 
@@ -529,6 +591,18 @@
         </script>
         <script src="/custom-confirm.js"></script>
     </div>
+        <!-- Alt Navigasyon Menüsü -->
+        <nav class="bottom-nav">
+            <a href="/panel" class="nav-item">
+                <i class="fas fa-folder-open"></i>
+                <span>Etkinlikler</span>
+            </a>
+            <a href="/profile" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profil</span>
+            </a>
+        </nav>
+
 </body>
 
 </html>

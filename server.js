@@ -1189,7 +1189,9 @@ function getParticipantManagementState(activityId, userId, callback) {
             (SELECT COUNT(*) FROM payments WHERE activityId = ?) AS paymentCount`,
             [activityId, activityId], (countErr, counts) => {
                 if (countErr) return callback(countErr);
-                callback(null, activity, activity.creatorId === userId, (counts.expenseCount + counts.paymentCount) > 0);
+                const isClosedState = activity.isClosed !== null && activity.isClosed !== undefined && Number(activity.isClosed) >= 1;
+                const isLocked = (counts.expenseCount + counts.paymentCount) > 0 || isClosedState;
+                callback(null, activity, activity.creatorId === userId, isLocked);
             });
     });
 }
@@ -1199,6 +1201,9 @@ function requireParticipantManagement(req, res, callback) {
     getParticipantManagementState(req.params.id, req.session.userId, (err, activity, isOwner, isLocked) => {
         if (err) return res.status(404).send('Etkinlik bulunamadi.');
         if (!isOwner) return res.status(403).send('Katılımcıları yalnızca etkinliği oluşturan kişi yönetebilir.');
+        if (activity.isClosed !== null && activity.isClosed !== undefined && Number(activity.isClosed) >= 1) {
+            return res.status(409).send('Mahsuplaşma aşamasına geçildiği için yeni katılımcı eklenemez veya çıkarılamaz.');
+        }
         if (isLocked) return res.status(409).send('Harcama veya ödeme kaydı olduğu için katılımcılar değiştirilemez.');
         callback(activity);
     });
@@ -1281,12 +1286,26 @@ app.get('/join/:id', (req, res) => {
     const activityId = req.params.id;
     const userId = req.session.userId;
 
-    db.get(`SELECT * FROM activity_participants WHERE activityId = ? AND userId = ?`, [activityId, userId], (err, row) => {
-        if (row) return res.redirect(`/activity/${activityId}`);
+    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
+        if (err || !activity) return res.send("Etkinlik bulunamadı.");
 
-        db.run(`INSERT INTO activity_participants (activityId, userId) VALUES (?, ?)`, [activityId, userId], (err) => {
-            if (err) return res.send("Etkinliğe katılırken bir hata oluştu.");
-            res.redirect(`/activity/${activityId}`);
+        if (activity.isClosed !== null && activity.isClosed !== undefined && Number(activity.isClosed) >= 1) {
+            return res.send(`Etkinliğin mahsuplaşma aşamasına geçildiği için yeni katılımcı eklenemez! <a href="/settlement/${activityId}">Mahsuplaşma Sayfasına Git</a>`);
+        }
+
+        db.get(`SELECT * FROM activity_participants WHERE activityId = ? AND userId = ?`, [activityId, userId], (err, row) => {
+            if (row) {
+                if (Number(activity.isClosed) >= 1) {
+                    return res.redirect(`/settlement/${activityId}`);
+                } else {
+                    return res.redirect(`/activity/${activityId}`);
+                }
+            }
+
+            db.run(`INSERT INTO activity_participants (activityId, userId) VALUES (?, ?)`, [activityId, userId], (err) => {
+                if (err) return res.send("Etkinliğe katılırken bir hata oluştu.");
+                res.redirect(`/activity/${activityId}`);
+            });
         });
     });
 });

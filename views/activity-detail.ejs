@@ -381,6 +381,7 @@
         .nav-item.active {
             color: #ffffff !important;
             font-weight: 700;
+            opacity: 1 !important;
             transform: translateY(-1px);
         }
 
@@ -393,12 +394,8 @@
             max-height: 18px !important;
             display: block !important;
             fill: currentColor !important;
+            color: inherit !important;
             margin-bottom: 2px !important;
-        }
-
-        .nav-item.active,
-        .nav-item:hover {
-            color: #0f382c !important;
         }
 
         /* Özet Kutuları Tasarımı */
@@ -562,18 +559,12 @@
                 <i class="fas fa-bell"></i>
                 <span class="notification-badge">1</span>
             </button>
-            <% if (activity.isClosed==0) { %>
-                <button type="button" onclick="openExpenseModal()" class="icon-btn-hero"
-                    style="width: auto; padding: 0 14px; font-weight: 600; font-size: 13px; gap: 6px; background: rgba(255, 255, 255, 0.22); border-color: rgba(255, 255, 255, 0.35);">
-                    <i class="fas fa-plus"></i> Harcama Ekle
-                </button>
-                <% } %>
-                    <a href="/panel"
-                        style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); transition: all 0.2s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.22)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.12)'">
-                        <i class="fas fa-arrow-left" style="font-size: 11px;"></i> Panele Dön
-                    </a>
+            <a href="/panel"
+                style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); transition: all 0.2s;"
+                onmouseover="this.style.background='rgba(255,255,255,0.22)'"
+                onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+                <i class="fas fa-arrow-left" style="font-size: 11px;"></i> Panele Dön
+            </a>
         </div>
     </div>
 </div>
@@ -581,10 +572,20 @@
 <!-- Ana İçerik Alanı -->
 <div class="content-area">
 
-    <!-- Harcama Kayıtlarım Butonu -->
-    <button onclick="toggleExpenseList()" class="btn-expense-records" type="button">
-        📁 Harcama Kayıtlarım
-    </button>
+    <!-- Harcama Kayıtlarım ve Harcama Ekle Satırı -->
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+        <button onclick="toggleExpenseList()" type="button"
+            style="padding: 12px 18px; background: #ffffff; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.12); border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.02); transition: all 0.2s ease;">
+            📁 Harcama Kayıtlarım
+        </button>
+
+        <% if (activity.isClosed == 0) { %>
+            <button type="button" onclick="openExpenseModal()"
+                style="padding: 12px 20px; background: #0f382c; color: #ffffff; border: none; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); transition: all 0.2s ease;">
+                <i class="fas fa-plus"></i> Harcama Ekle
+            </button>
+        <% } %>
+    </div>
 
     <!-- Harcama Listesi (Tıklandığında açılacak alan) -->
     <div id="expenseListContainer" style="display: none; margin-top: 15px; margin-bottom: 20px;">
