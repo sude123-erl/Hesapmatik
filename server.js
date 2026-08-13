@@ -1086,7 +1086,7 @@ app.post('/profile/verify-otp', (req, res) => {
 
 // Etkinliği Silme
 app.post('/activity/delete/:id', (req, res) => {
-    if (!req.session.userId) {
+    if (!req.session || !req.session.userId) {
         if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
             return res.status(401).json({ success: false, message: "Oturum açmanız gerekiyor." });
         }
@@ -1095,29 +1095,45 @@ app.post('/activity/delete/:id', (req, res) => {
 
     const activityId = req.params.id;
 
-    // İlişkili harcamaları, ödemeleri ve katılımcıları temizle
-    db.run(`DELETE FROM expenses WHERE activityId = ?`, [activityId], (err1) => {
-        if (err1) console.error('Harcama silme hatası:', err1.message);
+    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
+        if (err || !activity) {
+            if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+                return res.status(404).json({ success: false, message: "Etkinlik bulunamadı." });
+            }
+            return res.send("Etkinlik bulunamadı.");
+        }
 
-        db.run(`DELETE FROM payments WHERE activityId = ?`, [activityId], (err2) => {
-            if (err2) console.error('Ödeme silme hatası:', err2.message);
+        if (String(activity.creatorId) !== String(req.session.userId)) {
+            if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+                return res.status(403).json({ success: false, message: "Sadece etkinlik sahibi bu etkinliği silebilir." });
+            }
+            return res.status(403).send("Sadece etkinlik sahibi bu etkinliği silebilir.");
+        }
 
-            db.run(`DELETE FROM activity_participants WHERE activityId = ?`, [activityId], (err3) => {
-                if (err3) console.error('Katılımcı silme hatası:', err3.message);
+        // İlişkili harcamaları, ödemeleri ve katılımcıları temizle
+        db.run(`DELETE FROM expenses WHERE activityId = ?`, [activityId], (err1) => {
+            if (err1) console.error('Harcama silme hatası:', err1.message);
 
-                db.run(`DELETE FROM activities WHERE id = ?`, [activityId], (err4) => {
-                    if (err4) {
-                        console.error('Etkinlik silme hatası:', err4.message);
-                        if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
-                            return res.status(500).json({ success: false, message: "Silinirken bir hata oluştu." });
+            db.run(`DELETE FROM payments WHERE activityId = ?`, [activityId], (err2) => {
+                if (err2) console.error('Ödeme silme hatası:', err2.message);
+
+                db.run(`DELETE FROM activity_participants WHERE activityId = ?`, [activityId], (err3) => {
+                    if (err3) console.error('Katılımcı silme hatası:', err3.message);
+
+                    db.run(`DELETE FROM activities WHERE id = ?`, [activityId], (err4) => {
+                        if (err4) {
+                            console.error('Etkinlik silme hatası:', err4.message);
+                            if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+                                return res.status(500).json({ success: false, message: "Silinirken bir hata oluştu." });
+                            }
+                            return res.send("Silinirken bir hata oluştu.");
                         }
-                        return res.send("Silinirken bir hata oluştu.");
-                    }
 
-                    if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
-                        return res.json({ success: true });
-                    }
-                    res.redirect('/panel');
+                        if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json'))) {
+                            return res.json({ success: true });
+                        }
+                        res.redirect('/panel');
+                    });
                 });
             });
         });
@@ -1126,11 +1142,14 @@ app.post('/activity/delete/:id', (req, res) => {
 
 // Düzenleme Sayfasını Açma
 app.get('/activity/edit/:id', (req, res) => {
+    if (!req.session || !req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
     db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, row) => {
-        if (err) {
-            console.error(err.message);
-            return res.send("Bir hata oluştu.");
+        if (err || !row) {
+            return res.send("Etkinlik bulunamadı.");
+        }
+        if (String(row.creatorId) !== String(req.session.userId)) {
+            return res.status(403).send("Sadece etkinlik sahibi bu etkinliği düzenleyebilir.");
         }
         res.render('edit-activity', { activity: row });
     });
@@ -1150,20 +1169,30 @@ app.get('/edit-expense/:id', (req, res) => {
 
 // Etkinliği Güncelleme
 app.post('/activity/edit/:id', (req, res) => {
+    if (!req.session || !req.session.userId) return res.redirect('/login');
     const activityId = req.params.id;
     const { activityName, activityPassword } = req.body;
 
-    db.run(
-        `UPDATE activities SET activityName = ?, activityPassword = ? WHERE id = ?`,
-        [activityName, activityPassword, activityId],
-        (err) => {
-            if (err) {
-                console.error(err.message);
-                return res.send("Güncellenirken bir hata oluştu.");
-            }
-            res.redirect('/panel');
+    db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, row) => {
+        if (err || !row) {
+            return res.send("Etkinlik bulunamadı.");
         }
-    );
+        if (String(row.creatorId) !== String(req.session.userId)) {
+            return res.status(403).send("Sadece etkinlik sahibi bu etkinliği düzenleyebilir.");
+        }
+
+        db.run(
+            `UPDATE activities SET activityName = ?, activityPassword = ? WHERE id = ?`,
+            [activityName, activityPassword, activityId],
+            (err) => {
+                if (err) {
+                    console.error(err.message);
+                    return res.send("Güncellenirken bir hata oluştu.");
+                }
+                res.redirect('/panel');
+            }
+        );
+    });
 });
 
 // Katılımcı Yönetimi

@@ -791,6 +791,7 @@
                                                     </div>
                                                     <div class="card-actions" style="display: flex; gap: 10px;"
                                                         onclick="event.stopPropagation()">
+                                                        <% if (typeof user !== 'undefined' && user && String(activity.creatorId) === String(user.id)) { %>
                                                         <a href="/activity/edit/<%= activity.id %>" title="Düzenle"
                                                             class="action-btn">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="18"
@@ -819,6 +820,7 @@
                                                                 </svg>
                                                             </button>
                                                         </form>
+                                                        <% } %>
                                                     </div>
                                                 </div>
                                                 <% }) %>
@@ -861,6 +863,7 @@
                                                     </div>
                                                     <div class="card-actions" style="display: flex; gap: 10px;"
                                                         onclick="event.stopPropagation()">
+                                                        <% if (typeof user !== 'undefined' && user && String(activity.creatorId) === String(user.id)) { %>
                                                         <a href="/activity/edit/<%= activity.id %>" title="Düzenle"
                                                             class="action-btn">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="18"
@@ -889,6 +892,7 @@
                                                                 </svg>
                                                             </button>
                                                         </form>
+                                                        <% } %>
                                                     </div>
                                                 </div>
                                                 <% }) %>
