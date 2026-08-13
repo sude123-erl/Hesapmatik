@@ -201,18 +201,34 @@
             margin-bottom: 10px;
         }
 
-        /* Bottom Nav */
+        /* Üst Banner / Hero Header (Full Width Curved) */
+        .settlement-hero {
+            background: linear-gradient(135deg, #0f382c 0%, #175241 100%);
+            color: #ffffff;
+            padding: 12px 20px;
+            margin-bottom: 18px;
+            width: 100%;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 6px 20px rgba(15, 56, 44, 0.12);
+            position: relative;
+            overflow: visible !important;
+        }
+
+        /* Alt Navigasyon Barı (Dark Green Gradient Theme - Full Width Curved) */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: rgba(244, 243, 239, 0.94);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(15, 56, 44, 0.1);
+            background: linear-gradient(135deg, #0f382c 0%, #175241 100%) !important;
+            color: #ffffff !important;
             display: flex;
             justify-content: space-around;
-            padding: 12px 0;
+            align-items: center;
+            padding: 10px 0;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 -6px 20px rgba(15, 56, 44, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
             z-index: 1000;
         }
 
@@ -220,31 +236,68 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #537066;
+            color: rgba(255, 255, 255, 0.65) !important;
             text-decoration: none;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 500;
-            gap: 4px;
+            gap: 2px;
+            transition: all 0.2s ease;
         }
 
+        .nav-item i,
+        .nav-item svg {
+            font-size: 18px !important;
+            width: 18px !important;
+            height: 18px !important;
+            max-width: 18px !important;
+            max-height: 18px !important;
+        }
+
+        .nav-item:hover,
         .nav-item.active {
-            color: #0f382c;
+            color: #ffffff !important;
+            font-weight: 700;
+            transform: translateY(-1px);
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Header Section (Temiz Nötr Üst Satır) -->
-    <div class="header-section">
-        <div class="header-content">
-            <a href="/activity/<%= activity.id %>" class="back-btn">
-                <i class="fas fa-arrow-left" style="font-size: 11px;"></i> Etkinliğe Dön
-            </a>
-            <div style="text-align: right;">
-                <span class="closed-badge">
-                    <i class="fas fa-lock"></i> Mahsuplaşma Kapatıldı
-                </span>
+    <!-- Header Hero Banner (Settlement Style) -->
+    <div class="settlement-hero">
+        <div
+            style="max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <% if (typeof activity !=='undefined' && activity.coverImage) { %>
+                    <img src="<%= activity.coverImage %>" alt="Kapak"
+                        style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover; border: 1.5px solid rgba(255,255,255,0.25); box-shadow: 0 4px 10px rgba(0,0,0,0.12);">
+                    <% } else { %>
+                        <div
+                            style="width: 50px; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;">
+                            🔒
+                        </div>
+                        <% } %>
+                            <div>
+                                <div
+                                    style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.12); color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.18); margin-bottom: 4px;">
+                                    <i class="fas fa-lock" style="font-size: 10px; color: #10b981;"></i> Mahsuplaşma
+                                    Kapatıldı & Tamamlandı
+                                </div>
+                                <h1
+                                    style="font-size: 19px; font-weight: 600; margin: 0; color: #ffffff; letter-spacing: -0.2px;">
+                                    <%= activityName %>
+                                </h1>
+                            </div>
+            </div>
+
+            <div>
+                <a href="/panel"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); transition: all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.22)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+                    <i class="fas fa-arrow-left" style="font-size: 11px;"></i> Panele Dön
+                </a>
             </div>
         </div>
     </div>
@@ -257,134 +310,150 @@
                 <%= activityName %> - Mahsuplaşma Raporu
             </h1>
             <p style="font-size: 13.5px; color: rgba(255,255,255,0.9); line-height: 1.5; font-weight: 400;">
-                🎉 Bu etkinliğin mahsuplaşması tamamlandı ve hesaplar kapatıldı. Tüm katılımcılar borçlarını ödedi. 
+                🎉 Bu etkinliğin mahsuplaşması tamamlandı ve hesaplar kapatıldı. Tüm katılımcılar borçlarını ödedi.
                 Aşağıdan etkinlikte yapılan tüm harcamaları ve hesap detaylarını inceleyebilirsiniz.
             </p>
         </div>
 
-        <% 
-        let totalExpenses = (allExpenses || []).reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
-        let numParticipants = Array.isArray(participants) ? participants.length : 0;
-        let perPersonShare = numParticipants > 0 ? (totalExpenses / numParticipants) : 0;
-        %>
+        <% let totalExpenses=(allExpenses || []).reduce((sum, exp)=> sum + (Number(exp.amount) || 0), 0);
+            let numParticipants = Array.isArray(participants) ? participants.length : 0;
+            let perPersonShare = numParticipants > 0 ? (totalExpenses / numParticipants) : 0;
+            %>
 
-        <!-- Renkli Özet Kutuları -->
-        <div class="summary-cards-grid">
-            <div class="summary-card yellow">
-                <div class="summary-card-title">Toplam Etkinlik Harcaması</div>
-                <div class="summary-card-value">
-                    ₺<%= totalExpenses.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                </div>
-            </div>
-            <div class="summary-card blue">
-                <div class="summary-card-title">Kişi Başı Düşen Pay</div>
-                <div class="summary-card-value">
-                    ₺<%= perPersonShare.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                </div>
-            </div>
-            <div class="summary-card green">
-                <div class="summary-card-title">Hesap Durumu</div>
-                <div class="summary-card-value" style="font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 6px; color: #0f382c;">
-                    <i class="fas fa-check-circle" style="color: #10b981;"></i> Tamamen Kapandı
-                </div>
-            </div>
-        </div>
-
-        <!-- Katılımcı Harcama Dağılımı -->
-        <div class="section-card">
-            <div class="section-title">
-                👥 Katılımcı Harcama Özetleri
-            </div>
-            <% if (participants && participants.length > 0) { %>
-                <% participants.forEach(p => { 
-                    let userExpenses = (allExpenses || []).filter(exp => String(exp.userId) === String(p.id)).reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
-                %>
-                    <div class="participant-row">
-                        <div>
-                            <span style="font-weight: 500; font-size: 13.5px; color: #0f382c;"><%= p.fullname %></span>
-                            <span style="font-size: 11.5px; color: #537066; margin-left: 6px; font-weight: 400;">(@<%= p.username %>)</span>
-                        </div>
-                        <div style="text-align: right;">
-                            <span style="font-weight: 600; font-size: 14px; color: #0f382c;">
-                                ₺<%= userExpenses.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                            </span>
-                            <span style="font-size: 11px; display: block; color: #10b981; font-weight: 500;">
-                                ✓ Borcu Kalmadı
-                            </span>
-                        </div>
+            <!-- Renkli Özet Kutuları -->
+            <div class="summary-cards-grid">
+                <div class="summary-card yellow">
+                    <div class="summary-card-title">Toplam Etkinlik Harcaması</div>
+                    <div class="summary-card-value">
+                        ₺<%= totalExpenses.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2
+                            }) %>
                     </div>
-                <% }) %>
-            <% } %>
-        </div>
-
-        <!-- Yapılan Harcamaların Detay Listesi -->
-        <div class="section-card">
-            <div class="section-title">
-                🧾 Etkinlik Harcamaları Listesi (Nereye Ne Harcandı?)
+                </div>
+                <div class="summary-card blue">
+                    <div class="summary-card-title">Kişi Başı Düşen Pay</div>
+                    <div class="summary-card-value">
+                        ₺<%= perPersonShare.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2
+                            }) %>
+                    </div>
+                </div>
+                <div class="summary-card green">
+                    <div class="summary-card-title">Hesap Durumu</div>
+                    <div class="summary-card-value"
+                        style="font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 6px; color: #0f382c;">
+                        <i class="fas fa-check-circle" style="color: #10b981;"></i> Tamamen Kapandı
+                    </div>
+                </div>
             </div>
-            <% if (allExpenses && allExpenses.length > 0) { %>
-                <% allExpenses.forEach(exp => { 
-                    let spender = (participants || []).find(p => String(p.id) === String(exp.userId));
-                    let spenderName = spender ? spender.fullname : 'Katılımcı';
-                %>
-                    <div class="expense-item-row">
-                        <div>
-                            <div style="font-weight: 500; font-size: 14px; color: #0f382c;"><%= exp.expenseName %></div>
-                            <div style="font-size: 11.5px; color: #537066; margin-top: 2px; font-weight: 400;">
-                                Harcayan: <strong><%= spenderName %></strong>
+
+            <!-- Katılımcı Harcama Dağılımı -->
+            <div class="section-card">
+                <div class="section-title">
+                    👥 Katılımcı Harcama Özetleri
+                </div>
+                <% if (participants && participants.length> 0) { %>
+                    <% participants.forEach(p=> {
+                        let userExpenses = (allExpenses || []).filter(exp => String(exp.userId) ===
+                        String(p.id)).reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+                        %>
+                        <div class="participant-row">
+                            <div>
+                                <span style="font-weight: 500; font-size: 13.5px; color: #0f382c;">
+                                    <%= p.fullname %>
+                                </span>
+                                <span style="font-size: 11.5px; color: #537066; margin-left: 6px; font-weight: 400;">(@
+                                    <%= p.username %>)</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-weight: 600; font-size: 14px; color: #0f382c;">
+                                    ₺<%= userExpenses.toLocaleString('tr-TR', { minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2 }) %>
+                                </span>
+                                <span style="font-size: 11px; display: block; color: #10b981; font-weight: 500;">
+                                    ✓ Borcu Kalmadı
+                                </span>
                             </div>
                         </div>
-                        <div style="text-align: right; display: flex; align-items: center; gap: 12px;">
-                            <span style="font-weight: 600; font-size: 15px; color: #0f382c;">
-                                ₺<%= Number(exp.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                            </span>
-                            <% if (exp.receipt) { %>
-                                <a href="/uploads/<%= exp.receipt %>" target="_blank" title="Fiş / Makbuz Gör" style="color: #0f382c; font-size: 14px;">
-                                    <i class="fas fa-file-invoice"></i>
-                                </a>
+                        <% }) %>
                             <% } %>
-                        </div>
-                    </div>
-                <% }) %>
-            <% } else { %>
-                <div style="text-align: center; color: #537066; padding: 20px; font-weight: 400; font-size: 13.5px;">
-                    Etkinlikte kayıtlı harcama bulunmuyor.
-                </div>
-            <% } %>
-        </div>
-
-        <!-- Ödeme Hareketleri Geçmişi -->
-        <div class="section-card">
-            <div class="section-title">
-                💳 Tamamlanan Elden / Transfer Ödemeleri
             </div>
-            <% if (payments && payments.length > 0) { %>
-                <% payments.forEach(p => { %>
-                    <div class="payment-history-row">
-                        <div>
-                            <div style="font-weight: 500; font-size: 13.5px; color: #0f382c;">
-                                <%= p.senderName %> &rarr; <%= p.receiverName %>
-                            </div>
-                            <div style="font-size: 11.5px; color: #537066; margin-top: 2px; font-weight: 400;">
-                                <%= p.description || 'Grup mahsuplaşma ödemesi' %>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-weight: 600; font-size: 14.5px; color: #0f382c;">
-                                ₺<%= Number(p.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                            </div>
-                            <span style="font-size: 11px; color: #10b981; font-weight: 500;">
-                                ✓ Onaylandı
-                            </span>
-                        </div>
-                    </div>
-                <% }) %>
-            <% } else { %>
-                <div style="text-align: center; color: #537066; padding: 20px; font-weight: 400; font-size: 13.5px;">
-                    Elden yapılmış ödeme hareketi bulunmuyor.
+
+            <!-- Yapılan Harcamaların Detay Listesi -->
+            <div class="section-card">
+                <div class="section-title">
+                    🧾 Etkinlik Harcamaları Listesi (Nereye Ne Harcandı?)
                 </div>
-            <% } %>
-        </div>
+                <% if (allExpenses && allExpenses.length> 0) { %>
+                    <% allExpenses.forEach(exp=> {
+                        let spender = (participants || []).find(p => String(p.id) === String(exp.userId));
+                        let spenderName = spender ? spender.fullname : 'Katılımcı';
+                        %>
+                        <div class="expense-item-row">
+                            <div>
+                                <div style="font-weight: 500; font-size: 14px; color: #0f382c;">
+                                    <%= exp.expenseName %>
+                                </div>
+                                <div style="font-size: 11.5px; color: #537066; margin-top: 2px; font-weight: 400;">
+                                    Harcayan: <strong>
+                                        <%= spenderName %>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div style="text-align: right; display: flex; align-items: center; gap: 12px;">
+                                <span style="font-weight: 600; font-size: 15px; color: #0f382c;">
+                                    ₺<%= Number(exp.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2 }) %>
+                                </span>
+                                <% if (exp.receipt) { %>
+                                    <a href="/uploads/<%= exp.receipt %>" target="_blank" title="Fiş / Makbuz Gör"
+                                        style="color: #0f382c; font-size: 14px;">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </a>
+                                    <% } %>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div
+                                    style="text-align: center; color: #537066; padding: 20px; font-weight: 400; font-size: 13.5px;">
+                                    Etkinlikte kayıtlı harcama bulunmuyor.
+                                </div>
+                                <% } %>
+            </div>
+
+            <!-- Ödeme Hareketleri Geçmişi -->
+            <div class="section-card">
+                <div class="section-title">
+                    💳 Tamamlanan Elden / Transfer Ödemeleri
+                </div>
+                <% if (payments && payments.length> 0) { %>
+                    <% payments.forEach(p=> { %>
+                        <div class="payment-history-row">
+                            <div>
+                                <div style="font-weight: 500; font-size: 13.5px; color: #0f382c;">
+                                    <%= p.senderName %> &rarr; <%= p.receiverName %>
+                                </div>
+                                <div style="font-size: 11.5px; color: #537066; margin-top: 2px; font-weight: 400;">
+                                    <%= p.description || 'Grup mahsuplaşma ödemesi' %>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; font-size: 14.5px; color: #0f382c;">
+                                    ₺<%= Number(p.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2 }) %>
+                                </div>
+                                <span style="font-size: 11px; color: #10b981; font-weight: 500;">
+                                    ✓ Onaylandı
+                                </span>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div
+                                    style="text-align: center; color: #537066; padding: 20px; font-weight: 400; font-size: 13.5px;">
+                                    Elden yapılmış ödeme hareketi bulunmuyor.
+                                </div>
+                                <% } %>
+            </div>
 
     </div>
 

@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ödemeyi Düzenle - Hesapmatik</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js"></script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -17,10 +21,18 @@
             background-color: #e8e7e1 !important;
             color: #0f382c !important;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding-bottom: 50px;
+        }
+
+        .settlement-hero {
+            background: linear-gradient(135deg, #0f382c 0%, #175241 100%);
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 6px 20px rgba(15, 56, 44, 0.12);
+            margin-bottom: 18px;
+            position: relative;
+            overflow: visible !important;
         }
 
         .card {
@@ -202,33 +214,69 @@
 </head>
 
 <body>
-    <div class="card">
-        <h2>Ödemeyi Düzenle</h2>
 
-        <form action="/edit-payment/<%= payment.id %>" method="POST">
-            <div class="form-group">
-                <label for="amount">Tutar (TL)</label>
-                <input type="number" step="0.01" id="amount" name="amount" value="<%= payment.amount %>" required
-                    placeholder="0.00">
+    <!-- Header Hero Banner (Settlement Style) -->
+    <div class="settlement-hero">
+        <div
+            style="max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div
+                    style="width: 50px; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;">
+                    💳
+                </div>
+                <div>
+                    <div
+                        style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.12); color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.18); margin-bottom: 4px;">
+                        <span
+                            style="width: 7px; height: 7px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                        Ödeme Kaydı Düzenleme
+                    </div>
+                    <h1 style="font-size: 19px; font-weight: 600; margin: 0; color: #ffffff; letter-spacing: -0.2px;">
+                        Ödemeyi Düzenle
+                    </h1>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="receiverUsername">Kime Gönderildi? (Alıcı Kullanıcı Adı)</label>
-                <input type="text" id="receiverUsername" name="receiverUsername" value="<%= payment.receiverUsername %>"
-                    required placeholder="Kullanıcı adı girin">
+            <div>
+                <a href="/panel"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); transition: all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.22)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+                    <i class="fas fa-arrow-left" style="font-size: 11px;"></i> Panele Dön
+                </a>
             </div>
+        </div>
+    </div>
 
-            <div class="form-group">
-                <label for="description">Açıklama</label>
-                <input type="text" id="description" name="description" value="<%= payment.description %>" required
-                    placeholder="Ödeme açıklaması girin">
-            </div>
+    <div style="display: flex; justify-content: center; padding: 0 15px;">
+        <div class="card">
+            <h2>Ödemeyi Düzenle</h2>
 
-            <div style="display: flex; gap: 12px; margin-top: 24px;">
-                <a href="javascript:history.back()" class="btn-cancel">İptal</a>
-                <button type="submit" class="btn-submit">Güncelle</button>
-            </div>
-        </form>
+            <form action="/edit-payment/<%= payment.id %>" method="POST">
+                <div class="form-group">
+                    <label for="amount">Tutar (TL)</label>
+                    <input type="number" step="0.01" id="amount" name="amount" value="<%= payment.amount %>" required
+                        placeholder="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="receiverUsername">Kime Gönderildi? (Alıcı Kullanıcı Adı)</label>
+                    <input type="text" id="receiverUsername" name="receiverUsername"
+                        value="<%= payment.receiverUsername %>" required placeholder="Kullanıcı adı girin">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Açıklama</label>
+                    <input type="text" id="description" name="description" value="<%= payment.description %>" required
+                        placeholder="Ödeme açıklaması girin">
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <a href="javascript:history.back()" class="btn-cancel">İptal</a>
+                    <button type="submit" class="btn-submit">Güncelle</button>
+                </div>
+            </form>
+        </div>
     </div>
 </body>
 

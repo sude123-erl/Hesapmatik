@@ -27,16 +27,17 @@
             font-weight: 400;
         }
 
-        /* Üst Banner / Hero Header */
+        /* Üst Banner / Hero Header (Full Width Curved) */
         .settlement-hero {
             background: linear-gradient(135deg, #0f382c 0%, #175241 100%);
             color: #ffffff;
-            padding: 20px 24px;
-            border-radius: 0 0 20px 20px;
-            box-shadow: 0 8px 24px rgba(15, 56, 44, 0.12);
-            margin-bottom: 25px;
+            padding: 12px 20px;
+            margin-bottom: 18px;
+            width: 100%;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 6px 20px rgba(15, 56, 44, 0.12);
             position: relative;
-            overflow: hidden;
+            overflow: visible !important;
         }
 
         .settlement-hero::before {
@@ -46,7 +47,7 @@
             right: -10%;
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
             border-radius: 50%;
             pointer-events: none;
         }
@@ -73,7 +74,7 @@
             border-radius: 12px;
             object-fit: cover;
             border: 1.5px solid rgba(255, 255, 255, 0.25);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
         }
 
         .status-pill {
@@ -102,9 +103,20 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
         }
 
         .header-actions {
@@ -384,29 +396,22 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-            transition: all 0.2s ease;
         }
 
-        .btn-action-secondary:hover {
-            background: #f4f3ef;
-        }
-
-        /* Modal Stilleri */
+        /* Modallar (Popup Overlays - Gizli Açılır Pencereler) */
         .modal-overlay {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
             align-items: center;
-            overflow-y: auto;
-            padding: 20px;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
         }
 
         .modal-card {
@@ -415,27 +420,74 @@
             border-radius: 20px;
             width: 100%;
             max-width: 440px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
             border: 1px solid rgba(15, 56, 44, 0.08);
             animation: slideUp 0.2s ease-out;
         }
 
         @keyframes slideUp {
-            from { transform: translateY(15px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(15px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+
+
+        /* Alt Navigasyon Barı (Dark Green Gradient Theme - Full Width Curved) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #0f382c 0%, #175241 100%) !important;
+            color: #ffffff !important;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 -6px 20px rgba(15, 56, 44, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.65) !important;
+            text-decoration: none;
+            font-size: 10.5px;
+            font-weight: 500;
+            gap: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item i,
+        .nav-item svg {
+            font-size: 18px !important;
+            width: 18px !important;
+            height: 18px !important;
+            max-width: 18px !important;
+            max-height: 18px !important;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: #ffffff !important;
+            font-weight: 700;
+            transform: translateY(-1px);
         }
 
         /* Responsive */
         @media (max-width: 600px) {
-            .settlement-hero {
-                padding: 16px;
-                border-radius: 0 0 16px 16px;
-            }
             .summary-cards-grid {
                 grid-template-columns: repeat(2, 1fr);
-            }
-            .content-area {
-                padding: 0 12px;
             }
         }
     </style>
@@ -447,22 +499,23 @@
     <div class="settlement-hero">
         <div class="settlement-hero-content">
             <div class="activity-meta">
-                <% if (typeof activity !== 'undefined' && activity.coverImage) { %>
+                <% if (typeof activity !=='undefined' && activity.coverImage) { %>
                     <img src="<%= activity.coverImage %>" alt="Kapak" class="cover-thumb">
-                <% } else { %>
-                    <div class="cover-thumb" style="background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;">
-                        💳
-                    </div>
-                <% } %>
-                <div>
-                    <div class="status-pill" style="margin-bottom: 4px;">
-                        <span class="status-dot"></span>
-                        Mahsuplaşma & Ödeme Aşaması
-                    </div>
-                    <h1 style="font-size: 19px; font-weight: 600; margin: 0; letter-spacing: -0.2px;">
-                        <%= activityName %>
-                    </h1>
-                </div>
+                    <% } else { %>
+                        <div class="cover-thumb"
+                            style="background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;">
+                            💳
+                        </div>
+                        <% } %>
+                            <div>
+                                <div class="status-pill" style="margin-bottom: 4px;">
+                                    <span class="status-dot"></span>
+                                    Mahsuplaşma & Ödeme Aşaması
+                                </div>
+                                <h1 style="font-size: 19px; font-weight: 600; margin: 0; letter-spacing: -0.2px;">
+                                    <%= activityName %>
+                                </h1>
+                            </div>
             </div>
 
             <div class="header-actions">
@@ -472,8 +525,15 @@
                 <a href="/share-activity/<%= activity.id %>" class="icon-btn-hero" title="Katılımcılar">
                     <i class="fas fa-users"></i>
                 </a>
-                <a href="/activity/<%= activity._id || activity.id %>" style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
-                    <i class="fas fa-arrow-left" style="font-size: 11px;"></i> Etkinliğe Dön
+                <button data-notification-host type="button" title="Bildirimler" class="icon-btn-hero" style="position: relative;">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge"></span>
+                </button>
+                <a href="/panel"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); transition: all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.22)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+                    <i class="fas fa-arrow-left" style="font-size: 11px;"></i> Panele Dön
                 </a>
             </div>
         </div>
@@ -493,323 +553,385 @@
 
         <!-- Harcama Listesi (Gizlenebilir) -->
         <div id="expenseListContainer" style="display: none; margin-bottom: 25px;">
-            <% let displayExpenses = (allExpenses || []); %>
-            <% if (displayExpenses && displayExpenses.length > 0) { %>
-                <div class="glass-card" style="padding: 18px;">
-                    <h4 style="margin-bottom: 14px; font-size: 15px; color: #0f382c; font-weight: 600;">
-                        🧾 Tüm Etkinlik Harcamaları Listesi
-                    </h4>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <% displayExpenses.forEach(expense => { 
-                            let spender = (participants || []).find(p => String(p.id) === String(expense.userId));
-                            let spenderName = spender ? spender.fullname : 'Katılımcı';
-                        %>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #fdfbf7; border: 1px solid rgba(15, 56, 44, 0.08); border-radius: 12px;">
-                                <div>
-                                    <div style="font-weight: 500; color: #0f382c; font-size: 13.5px;">
-                                        <%= expense.expenseName %>
+            <% let displayExpenses=(allExpenses || []); %>
+                <% if (displayExpenses && displayExpenses.length> 0) { %>
+                    <div class="glass-card" style="padding: 18px;">
+                        <h4 style="margin-bottom: 14px; font-size: 15px; color: #0f382c; font-weight: 600;">
+                            🧾 Tüm Etkinlik Harcamaları Listesi
+                        </h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <% displayExpenses.forEach(expense=> {
+                                let spender = (participants || []).find(p => String(p.id) === String(expense.userId));
+                                let spenderName = spender ? spender.fullname : 'Katılımcı';
+                                %>
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #fdfbf7; border: 1px solid rgba(15, 56, 44, 0.08); border-radius: 12px;">
+                                    <div>
+                                        <div style="font-weight: 500; color: #0f382c; font-size: 13.5px;">
+                                            <%= expense.expenseName %>
+                                        </div>
+                                        <div
+                                            style="font-size: 11.5px; color: #537066; margin-top: 2px; font-weight: 400;">
+                                            Harcayan: <strong>
+                                                <%= spenderName %>
+                                            </strong>
+                                        </div>
                                     </div>
-                                    <div style="font-size: 11.5px; color: #537066; margin-top: 2px; font-weight: 400;">
-                                        Harcayan: <strong><%= spenderName %></strong>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-weight: 600; color: #0f382c; font-size: 14.5px;">
+                                            ₺<%= Number(expense.amount).toLocaleString('tr-TR', { minimumFractionDigits:
+                                                2, maximumFractionDigits: 2 }) %>
+                                        </span>
+                                        <% if (expense.receipt) { %>
+                                            <a href="/uploads/<%= expense.receipt %>" target="_blank" title="Fiş Gör"
+                                                style="color: #0f382c; font-size: 14px;">
+                                                <i class="fas fa-file-invoice"></i>
+                                            </a>
+                                            <% } %>
                                     </div>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span style="font-weight: 600; color: #0f382c; font-size: 14.5px;">
-                                        ₺<%= Number(expense.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                                    </span>
-                                    <% if (expense.receipt) { %>
-                                        <a href="/uploads/<%= expense.receipt %>" target="_blank" title="Fiş Gör" style="color: #0f382c; font-size: 14px;">
-                                            <i class="fas fa-file-invoice"></i>
-                                        </a>
-                                    <% } %>
-                                </div>
-                            </div>
-                        <% }) %>
+                                <% }) %>
+                        </div>
                     </div>
-                </div>
-            <% } else { %>
-                <div class="glass-card" style="text-align: center; color: #537066; padding: 18px; font-weight: 400; font-size: 13.5px;">
-                    Henüz kayıtlı harcama bulunmuyor.
-                </div>
-            <% } %>
+                    <% } else { %>
+                        <div class="glass-card"
+                            style="text-align: center; color: #537066; padding: 18px; font-weight: 400; font-size: 13.5px;">
+                            Henüz kayıtlı harcama bulunmuyor.
+                        </div>
+                        <% } %>
         </div>
 
         <% 
-        let totalExpenses = (allExpenses || []).reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
-        let numParticipants = Array.isArray(participants) ? participants.length : 0;
-        let perPersonShare = numParticipants > 0 ? (totalExpenses / numParticipants) : 0;
+            let totalExpenses = (allExpenses || []).reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+            let numParticipants = Array.isArray(participants) ? participants.length : 0;
+            let perPersonShare = numParticipants > 0 ? (totalExpenses / numParticipants) : 0;
 
-        let myPaidExpenses = (allExpenses || [])
-            .filter(exp => String(exp.userId) === String(currentUserId))
-            .reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+            let myPaidExpenses = (allExpenses || [])
+                .filter(exp => String(exp.userId) === String(currentUserId))
+                .reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
 
-        let myPaidPayments = payments ? payments
-            .filter(p => String(p.senderId) === String(currentUserId) && p.status === 'approved')
-            .reduce((sum, p) => sum + (Number(p.amount) || 0), 0) : 0;
+            let myPaidPayments = payments ? payments
+                .filter(p => String(p.senderId) === String(currentUserId) && p.status === 'approved')
+                .reduce((sum, p) => sum + (Number(p.amount) || 0), 0) : 0;
 
-        let myReceivedPayments = payments ? payments
-            .filter(p => String(p.receiverId) === String(currentUserId) && p.status === 'approved')
-            .reduce((sum, p) => sum + (Number(p.amount) || 0), 0) : 0;
+            let myReceivedPayments = payments ? payments
+                .filter(p => String(p.receiverId) === String(currentUserId) && p.status === 'approved')
+                .reduce((sum, p) => sum + (Number(p.amount) || 0), 0) : 0;
 
-        let myTotalPaid = myPaidExpenses + myPaidPayments;
-        let myBalance = myTotalPaid - perPersonShare - myReceivedPayments;
-        let myDebt = myBalance < 0 ? Math.abs(myBalance) : 0;
+            let myTotalPaid = myPaidExpenses + myPaidPayments;
+            let myBalance = myTotalPaid - perPersonShare - myReceivedPayments;
+            let myDebt = myBalance < 0 ? Math.abs(myBalance) : 0; 
 
-        /* Borç / Alacak Transfer Hesabı */
-        let debtors = [];
-        let creditors = [];
-        (participants || []).forEach(p => {
-            let paidExp = (allExpenses || []).filter(exp => String(exp.userId) === String(p.id)).reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
-            let sent = payments ? payments.filter(pm => String(pm.senderId) === String(p.id) && pm.status === 'approved').reduce((sum, pm) => sum + (Number(pm.amount) || 0), 0) : 0;
-            let received = payments ? payments.filter(pm => String(pm.receiverId) === String(p.id) && pm.status === 'approved').reduce((sum, pm) => sum + (Number(pm.amount) || 0), 0) : 0;
-            let bal = (paidExp + sent) - perPersonShare - received;
-            bal = Math.round(bal * 100) / 100;
+            /* Borç / Alacak Transfer Hesabı */ 
+            let debtors = [];
+            let creditors = []; 
+            (participants || []).forEach(p => {
+                let paidExp = (allExpenses || []).filter(exp => String(exp.userId) === String(p.id)).reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+                let sent = payments ? payments.filter(pm => String(pm.senderId) === String(p.id) && pm.status === 'approved').reduce((sum, pm) => sum + (Number(pm.amount) || 0), 0) : 0;
+                let received = payments ? payments.filter(pm => String(pm.receiverId) === String(p.id) && pm.status === 'approved').reduce((sum, pm) => sum + (Number(pm.amount) || 0), 0) : 0;
+                let bal = (paidExp + sent) - perPersonShare - received;
+                bal = Math.round(bal * 100) / 100;
 
-            if (bal < 0) { debtors.push({ id: p.id, fullname: p.fullname, username: p.username, amount: -bal }); }
-            else if (bal > 0) { creditors.push({ id: p.id, fullname: p.fullname, username: p.username, amount: bal }); }
-        });
+                if (bal < 0) { 
+                    debtors.push({ id: p.id, fullname: p.fullname, username: p.username, amount: -bal }); 
+                } else if (bal > 0) { 
+                    creditors.push({ id: p.id, fullname: p.fullname, username: p.username, amount: bal }); 
+                }
+            });
 
-        let transactions = [];
-        let dIdx = 0;
-        let cIdx = 0;
-        let tempDebtors = JSON.parse(JSON.stringify(debtors));
-        let tempCreditors = JSON.parse(JSON.stringify(creditors));
+            let transactions = [];
+            let dIdx = 0;
+            let cIdx = 0;
+            let tempDebtors = JSON.parse(JSON.stringify(debtors));
+            let tempCreditors = JSON.parse(JSON.stringify(creditors));
 
-        while (dIdx < tempDebtors.length && cIdx < tempCreditors.length) {
-            let debtor = tempDebtors[dIdx];
-            let creditor = tempCreditors[cIdx];
-            let amount = Math.min(debtor.amount, creditor.amount);
-            if (amount > 0.01) {
-                transactions.push({
-                    fromId: debtor.id,
-                    fromName: debtor.fullname,
-                    fromUsername: debtor.username,
-                    toId: creditor.id,
-                    toName: creditor.fullname,
-                    toUsername: creditor.username,
-                    amount: amount
-                });
-            }
-            debtor.amount -= amount;
-            creditor.amount -= amount;
-            if (debtor.amount < 0.01) dIdx++;
-            if (creditor.amount < 0.01) cIdx++;
-        }
-
-        let isAllSettled = (transactions.length === 0);
-        let isOwner = typeof currentUserId !== 'undefined' && currentUserId && activity && (String(activity.creatorId) === String(currentUserId));
+            while (dIdx < tempDebtors.length && cIdx < tempCreditors.length) { 
+                let debtor = tempDebtors[dIdx]; 
+                let creditor = tempCreditors[cIdx]; 
+                let amount = Math.min(debtor.amount, creditor.amount); 
+                if (amount > 0.01) {
+                    transactions.push({
+                        fromId: debtor.id,
+                        fromName: debtor.fullname,
+                        fromUsername: debtor.username,
+                        toId: creditor.id,
+                        toName: creditor.fullname,
+                        toUsername: creditor.username,
+                        amount: amount
+                    });
+                }
+                debtor.amount -= amount;
+                creditor.amount -= amount;
+                if (debtor.amount < 0.01) dIdx++; 
+                if (creditor.amount < 0.01) cIdx++; 
+            } 
+            let isAllSettled = (transactions.length === 0); 
+            let isOwner = typeof currentUserId !== 'undefined' && currentUserId && activity && (String(activity.creatorId) === String(currentUserId)); 
         %>
 
-        <!-- Özet İstatistik Kartları Grid (Orijinal Canlı Renklerle) -->
-        <div class="summary-cards-grid">
-            <div class="stat-card yellow">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">Toplam Harcama</span>
-                    <div class="stat-card-icon"><i class="fas fa-coins"></i></div>
-                </div>
-                <div class="stat-card-value">
-                    ₺<%= totalExpenses.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                </div>
-                <div class="stat-card-sub">Grubun toplamı</div>
-            </div>
-
-            <div class="stat-card orange">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">Kişi Başı Pay</span>
-                    <div class="stat-card-icon"><i class="fas fa-calculator"></i></div>
-                </div>
-                <div class="stat-card-value">
-                    ₺<%= perPersonShare.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                </div>
-                <div class="stat-card-sub"><%= numParticipants %> kişi arasında</div>
-            </div>
-
-            <div class="stat-card blue">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">Harcamam</span>
-                    <div class="stat-card-icon"><i class="fas fa-wallet"></i></div>
-                </div>
-                <div class="stat-card-value">
-                    ₺<%= myPaidExpenses.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                </div>
-                <div class="stat-card-sub">Ödediğim harcamalar</div>
-            </div>
-
-            <div class="stat-card green">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">Transferlerim</span>
-                    <div class="stat-card-icon"><i class="fas fa-hand-holding-usd"></i></div>
-                </div>
-                <div class="stat-card-value">
-                    ₺<%= myTotalPaid.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                </div>
-                <div class="stat-card-sub">Katılımcılara ödediğim</div>
-            </div>
-
-            <div class="stat-card <%= myDebt > 0 ? 'red' : 'green' %>">
-                <div class="stat-card-header">
-                    <span class="stat-card-title">Kalan Borcum</span>
-                    <div class="stat-card-icon"><i class="fas <%= myDebt > 0 ? 'fa-exclamation-circle' : 'fa-check-circle' %>"></i></div>
-                </div>
-                <div class="stat-card-value">
-                    ₺<%= myDebt.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                </div>
-                <div class="stat-card-sub"><%= myDebt > 0 ? 'Ödenmesi gereken' : '✓ Borçsuz' %></div>
-            </div>
-        </div>
-
-        <!-- Transfer Haritası (Kim Kimden Alacaklı?) -->
-        <div class="glass-card">
-            <div class="card-header-title">
-                <i class="fas fa-arrows-alt-h" style="color: #10b981;"></i>
-                🔄 Mahsuplaşma & Borç Dağılımı
-            </div>
-
-            <% if (transactions && transactions.length > 0) { %>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <% transactions.forEach(t => { 
-                        let isMeSender = String(t.fromId) === String(currentUserId);
-                        let isMeReceiver = String(t.toId) === String(currentUserId);
-                    %>
-                        <div class="transfer-card" style="<%= isMeSender ? 'border-color: #fca5a5; background: #fff5f5;' : (isMeReceiver ? 'border-color: #6ee7b7; background: #ecfdf5;' : '') %>">
-                            <div class="transfer-users">
-                                <span><%= t.fromName %></span>
-                                <span class="transfer-arrow">&rarr;</span>
-                                <span><%= t.toName %></span>
-                            </div>
-                            <div class="transfer-amount">
-                                ₺<%= Number(t.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                            </div>
-                        </div>
-                    <% }) %>
-                </div>
-            <% } else { %>
-                <div style="text-align: center; color: #10b981; padding: 16px; font-weight: 500; background: #ecfdf5; border-radius: 14px; border: 1px solid #6ee7b7; font-size: 13.5px;">
-                    🎉 Harika! Tüm katılımcıların borçları sıfırlandı. Mahsuplaşma tamamlanmaya hazır.
-                </div>
-            <% } %>
-        </div>
-
-        <!-- Ödeme Hareketleri Akışı -->
-        <div class="glass-card">
-            <div class="card-header-title">
-                <i class="fas fa-exchange-alt" style="color: #3b82f6;"></i>
-                💳 Ödeme Hareketleri Geçmişi
-            </div>
-
-            <% if (typeof payments !== 'undefined' && payments && payments.length > 0) { %>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <% payments.forEach(function(payment) { 
-                        let isSender = String(payment.senderId) === String(currentUserId);
-                        let isReceiver = String(payment.receiverId) === String(currentUserId);
-                        let rowClass = isSender ? 'me-sent' : (isReceiver ? 'me-received' : 'other');
-                    %>
-                        <div class="payment-item-row <%= rowClass %>">
-                            <div>
-                                <div style="font-weight: 500; color: #0f382c; font-size: 13.5px;">
-                                    <%= payment.senderName %> &rarr; <%= payment.receiverName %>
+                            <!-- Özet İstatistik Kartları Grid (Orijinal Canlı Renklerle) -->
+                            <div class="summary-cards-grid">
+                                <div class="stat-card yellow">
+                                    <div class="stat-card-header">
+                                        <span class="stat-card-title">Toplam Harcama</span>
+                                        <div class="stat-card-icon"><i class="fas fa-coins"></i></div>
+                                    </div>
+                                    <div class="stat-card-value">
+                                        ₺<%= totalExpenses.toLocaleString('tr-TR', { minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2 }) %>
+                                    </div>
+                                    <div class="stat-card-sub">Grubun toplamı</div>
                                 </div>
-                                <div style="color: #537066; font-size: 11.5px; margin-top: 2px; font-weight: 400;">
-                                    <%= payment.description || 'Grup ödemesi' %>
+
+                                <div class="stat-card orange">
+                                    <div class="stat-card-header">
+                                        <span class="stat-card-title">Kişi Başı Pay</span>
+                                        <div class="stat-card-icon"><i class="fas fa-calculator"></i></div>
+                                    </div>
+                                    <div class="stat-card-value">
+                                        ₺<%= perPersonShare.toLocaleString('tr-TR', { minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2 }) %>
+                                    </div>
+                                    <div class="stat-card-sub">
+                                        <%= numParticipants %> kişi arasında
+                                    </div>
+                                </div>
+
+                                <div class="stat-card blue">
+                                    <div class="stat-card-header">
+                                        <span class="stat-card-title">Harcamam</span>
+                                        <div class="stat-card-icon"><i class="fas fa-wallet"></i></div>
+                                    </div>
+                                    <div class="stat-card-value">
+                                        ₺<%= myPaidExpenses.toLocaleString('tr-TR', { minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2 }) %>
+                                    </div>
+                                    <div class="stat-card-sub">Ödediğim harcamalar</div>
+                                </div>
+
+                                <div class="stat-card green">
+                                    <div class="stat-card-header">
+                                        <span class="stat-card-title">Transferlerim</span>
+                                        <div class="stat-card-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                                    </div>
+                                    <div class="stat-card-value">
+                                        ₺<%= myTotalPaid.toLocaleString('tr-TR', { minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2 }) %>
+                                    </div>
+                                    <div class="stat-card-sub">Katılımcılara ödediğim</div>
+                                </div>
+
+                                <div class="stat-card <%= myDebt > 0 ? 'red' : 'green' %>">
+                                    <div class="stat-card-header">
+                                        <span class="stat-card-title">Kalan Borcum</span>
+                                        <div class="stat-card-icon"><i
+                                                class="fas <%= myDebt > 0 ? 'fa-exclamation-circle' : 'fa-check-circle' %>"></i>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card-value">
+                                        ₺<%= myDebt.toLocaleString('tr-TR', { minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2 }) %>
+                                    </div>
+                                    <div class="stat-card-sub">
+                                        <%= myDebt> 0 ? 'Ödenmesi gereken' : '✓ Borçsuz' %>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <span style="font-weight: 600; font-size: 15px; color: #0f382c;">
-                                    ₺<%= Number(payment.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                                </span>
+                            <!-- Transfer Haritası (Kim Kimden Alacaklı?) -->
+                            <div class="glass-card">
+                                <div class="card-header-title">
+                                    <i class="fas fa-arrows-alt-h" style="color: #10b981;"></i>
+                                    🔄 Mahsuplaşma & Borç Dağılımı
+                                </div>
 
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <% if (payment.status === 'approved') { %>
-                                        <span style="background-color: #d1f4e0; color: #0f382c; padding: 4px 10px; border-radius: 8px; font-weight: 500; font-size: 11.5px; border: 1px solid #7ce3b1;">
-                                            ✓ Onaylandı
-                                        </span>
+                                <% if (transactions && transactions.length> 0) { %>
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                                        <% transactions.forEach(t=> {
+                                            let isMeSender = String(t.fromId) === String(currentUserId);
+                                            let isMeReceiver = String(t.toId) === String(currentUserId);
+                                            %>
+                                            <div class="transfer-card"
+                                                style="<%= isMeSender ? 'border-color: #fca5a5; background: #fff5f5;' : (isMeReceiver ? 'border-color: #6ee7b7; background: #ecfdf5;' : '') %>">
+                                                <div class="transfer-users">
+                                                    <span>
+                                                        <%= t.fromName %>
+                                                    </span>
+                                                    <span class="transfer-arrow">&rarr;</span>
+                                                    <span>
+                                                        <%= t.toName %>
+                                                    </span>
+                                                </div>
+                                                <div class="transfer-amount">
+                                                    ₺<%= Number(t.amount).toLocaleString('tr-TR', {
+                                                        minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                    </div>
                                     <% } else { %>
-                                        <span style="background-color: #ffe3ca; color: #9a3412; padding: 4px 10px; border-radius: 8px; font-weight: 500; font-size: 11.5px; border: 1px solid #ffbd80;">
-                                            ⌛ Onay Bekliyor
-                                        </span>
-                                        <% if (activity.isClosed <= 1 && typeof currentUserId !== 'undefined' && currentUserId && String(payment.receiverId) === String(currentUserId)) { %>
-                                            <form action="/approve-payment/<%= payment.id %>" method="POST" style="margin: 0;">
-                                                <button type="submit" style="background: #0f382c; color: #ffffff; border: none; padding: 5px 12px; border-radius: 8px; font-weight: 500; font-size: 11.5px; cursor: pointer; transition: all 0.2s;">
-                                                    Ödemeyi Onayla
-                                                </button>
-                                            </form>
+                                        <div
+                                            style="text-align: center; color: #10b981; padding: 16px; font-weight: 500; background: #ecfdf5; border-radius: 14px; border: 1px solid #6ee7b7; font-size: 13.5px;">
+                                            🎉 Harika! Tüm katılımcıların borçları sıfırlandı. Mahsuplaşma tamamlanmaya
+                                            hazır.
+                                        </div>
                                         <% } %>
-                                    <% } %>
+                            </div>
 
-                                    <% if (activity.isClosed <= 1 && typeof currentUserId !== 'undefined' && currentUserId && String(payment.senderId) === String(currentUserId) && payment.status !== 'approved') { %>
-                                        <a href="/edit-payment/<%= payment.id %>" title="Düzenle" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(15, 56, 44, 0.08); color: #0f382c; border-radius: 8px; text-decoration: none;">
-                                            <i class="fas fa-pen" style="font-size: 11px;"></i>
-                                        </a>
-                                        <form action="/delete-payment/<%= payment.id %>" method="POST" style="margin: 0;" onsubmit="customConfirm(event, this, 'Bu ödemeyi silmek istediğinden emin misin?');">
-                                            <button type="submit" title="Sil" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: #fee2e2; color: #ef4444; border: none; border-radius: 8px; cursor: pointer;">
-                                                <i class="fas fa-trash-alt" style="font-size: 11px;"></i>
+                            <!-- Ödeme Hareketleri Akışı -->
+                            <div class="glass-card">
+                                <div class="card-header-title">
+                                    <i class="fas fa-exchange-alt" style="color: #3b82f6;"></i>
+                                    💳 Ödeme Hareketleri Geçmişi
+                                </div>
+
+                                <% if (typeof payments !=='undefined' && payments && payments.length> 0) { %>
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                                        <% payments.forEach(function(payment) { let
+                                            isSender=String(payment.senderId)===String(currentUserId); let
+                                            isReceiver=String(payment.receiverId)===String(currentUserId); let
+                                            rowClass=isSender ? 'me-sent' : (isReceiver ? 'me-received' : 'other' ); %>
+                                            <div class="payment-item-row <%= rowClass %>">
+                                                <div>
+                                                    <div style="font-weight: 500; color: #0f382c; font-size: 13.5px;">
+                                                        <%= payment.senderName %> &rarr; <%= payment.receiverName %>
+                                                    </div>
+                                                    <div
+                                                        style="color: #537066; font-size: 11.5px; margin-top: 2px; font-weight: 400;">
+                                                        <%= payment.description || 'Grup ödemesi' %>
+                                                    </div>
+                                                </div>
+
+                                                <div style="display: flex; align-items: center; gap: 12px;">
+                                                    <span style="font-weight: 600; font-size: 15px; color: #0f382c;">
+                                                        ₺<%= Number(payment.amount).toLocaleString('tr-TR', {
+                                                            minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                                    </span>
+
+                                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                                        <% if (payment.status==='approved' ) { %>
+                                                            <span
+                                                                style="background-color: #d1f4e0; color: #0f382c; padding: 4px 10px; border-radius: 8px; font-weight: 500; font-size: 11.5px; border: 1px solid #7ce3b1;">
+                                                                ✓ Onaylandı
+                                                            </span>
+                                                            <% } else { %>
+                                                                <span
+                                                                    style="background-color: #ffe3ca; color: #9a3412; padding: 4px 10px; border-radius: 8px; font-weight: 500; font-size: 11.5px; border: 1px solid #ffbd80;">
+                                                                    ⌛ Onay Bekliyor
+                                                                </span>
+                                                                <% if (activity.isClosed <=1 && typeof currentUserId
+                                                                    !=='undefined' && currentUserId &&
+                                                                    String(payment.receiverId)===String(currentUserId))
+                                                                    { %>
+                                                                    <form action="/approve-payment/<%= payment.id %>"
+                                                                        method="POST" style="margin: 0;">
+                                                                        <button type="submit"
+                                                                            style="background: #0f382c; color: #ffffff; border: none; padding: 5px 12px; border-radius: 8px; font-weight: 500; font-size: 11.5px; cursor: pointer; transition: all 0.2s;">
+                                                                            Ödemeyi Onayla
+                                                                        </button>
+                                                                    </form>
+                                                                    <% } %>
+                                                                        <% } %>
+
+                                                                            <% if (activity.isClosed <=1 && typeof
+                                                                                currentUserId !=='undefined' &&
+                                                                                currentUserId &&
+                                                                                String(payment.senderId)===String(currentUserId)
+                                                                                && payment.status !=='approved' ) { %>
+                                                                                <a href="/edit-payment/<%= payment.id %>"
+                                                                                    title="Düzenle"
+                                                                                    style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: rgba(15, 56, 44, 0.08); color: #0f382c; border-radius: 8px; text-decoration: none;">
+                                                                                    <i class="fas fa-pen"
+                                                                                        style="font-size: 11px;"></i>
+                                                                                </a>
+                                                                                <form
+                                                                                    action="/delete-payment/<%= payment.id %>"
+                                                                                    method="POST" style="margin: 0;"
+                                                                                    onsubmit="customConfirm(event, this, 'Bu ödemeyi silmek istediğinden emin misin?');">
+                                                                                    <button type="submit" title="Sil"
+                                                                                        style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: #fee2e2; color: #ef4444; border: none; border-radius: 8px; cursor: pointer;">
+                                                                                        <i class="fas fa-trash-alt"
+                                                                                            style="font-size: 11px;"></i>
+                                                                                    </button>
+                                                                                </form>
+                                                                                <% } %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }); %>
+                                    </div>
+                                    <% } else { %>
+                                        <div
+                                            style="text-align: center; color: #7b948a; padding: 20px 0; font-size: 13.5px; font-weight: 400;">
+                                            Henüz yapılmış bir ödeme hareketi bulunmuyor.
+                                        </div>
+                                        <% } %>
+                            </div>
+
+                            <!-- Ödeme Ekle ve Borç / Alacak Detay Eylem Butonları (Ayrı Bağımsız Kutu) -->
+                            <div style="background: #ffffff; border: 1px solid rgba(15, 56, 44, 0.08); border-radius: 18px; padding: 20px 22px; margin-bottom: 25px; box-shadow: 0 4px 14px rgba(15, 56, 44, 0.04);">
+                                <div style="font-size: 15px; font-weight: 600; color: #0f382c; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-wallet" style="color: #0f382c;"></i> Hızlı Ödeme & İşlemler
+                                </div>
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                    <button type="button" onclick="openPaymentModal()" <%= myDebt > 0 ? '' : 'disabled' %>
+                                        style="flex: 1; min-width: 180px; padding: 13px 18px; background: #0f382c; color: #ffffff; border: none; border-radius: 14px; font-weight: 600; font-size: 13.5px; cursor: <%= myDebt > 0 ? 'pointer' : 'not-allowed' %>; opacity: <%= myDebt > 0 ? '1' : '0.6' %>; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(15, 56, 44, 0.15); transition: all 0.2s ease;">
+                                        <i class="fas fa-paper-plane"></i> 💸 Ödeme Ekle
+                                    </button>
+                                    <button type="button" onclick="openBalancesModal()"
+                                        style="flex: 1; min-width: 180px; padding: 13px 18px; background: #ffffff; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.18); border-radius: 14px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03); transition: all 0.2s ease;">
+                                        <i class="fas fa-chart-pie"></i> 📊 Borç / Alacak Detay
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Mahsuplaşmayı Kapat Durum Bannerı (Ayrı Bağımsız Kutu) -->
+                            <% if (isAllSettled) { %>
+                                <div
+                                    style="background: #ecfdf5; border: 1px solid #6ee7b7; border-radius: 18px; padding: 20px 22px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.06);">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div
+                                            style="width: 38px; height: 38px; border-radius: 12px; background: #d1fae5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 700; font-size: 14.5px; color: #065f46;">
+                                                Tüm Borçlar Sıfırlandı!
+                                            </div>
+                                            <div
+                                                style="font-size: 12.5px; color: #047857; font-weight: 400; margin-top: 2px;">
+                                                Etkinlik sahibi mahsuplaşmayı resmi olarak kapatıp rapora dönüştürebilir.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <% if (isOwner) { %>
+                                        <form action="/finish-settlement/<%= activity.id %>" method="POST"
+                                            style="margin: 0;">
+                                            <button type="submit"
+                                                onclick="customConfirm(event, this.form, 'Mahsuplaşmayı kapatmak ve rapor aşamasına geçmek istediğinize emin misiniz?')"
+                                                style="padding: 10px 20px; background: #10b981; color: #ffffff; border: none; border-radius: 12px; font-weight: 600; font-size: 13.5px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);">
+                                                <i class="fas fa-lock" style="font-size: 13px;"></i> Mahsuplaşmayı Kapat
                                             </button>
                                         </form>
-                                    <% } %>
+                                        <% } else { %>
+                                            <span
+                                                style="font-size: 12px; color: #047857; background: rgba(16, 185, 129, 0.12); padding: 7px 14px; border-radius: 10px; font-weight: 600;">
+                                                Sadece Etkinlik Sahibi Kapatabilir
+                                            </span>
+                                            <% } %>
                                 </div>
-                            </div>
-                        </div>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <div style="text-align: center; color: #7b948a; padding: 20px 0; font-size: 13.5px; font-weight: 400;">
-                    Henüz yapılmış bir ödeme hareketi bulunmuyor.
-                </div>
-            <% } %>
-        </div>
-
-        <!-- Mahsuplaşmayı Kapat Durum Bannerı -->
-        <% if (isAllSettled) { %>
-            <div style="background: #ecfdf5; border: 1px solid #6ee7b7; border-radius: 16px; padding: 18px 22px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 36px; height: 36px; border-radius: 10px; background: #d1fae5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 16px;">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <div style="font-weight: 600; font-size: 14px; color: #065f46;">
-                            Tüm Borçlar Sıfırlandı!
-                        </div>
-                        <div style="font-size: 12.5px; color: #047857; font-weight: 400; margin-top: 2px;">
-                            Etkinlik sahibi mahsuplaşmayı resmi olarak kapatıp rapora dönüştürebilir.
-                        </div>
-                    </div>
-                </div>
-
-                <% if (isOwner) { %>
-                    <form action="/finish-settlement/<%= activity.id %>" method="POST" style="margin: 0;">
-                        <button type="submit" 
-                            onclick="customConfirm(event, this.form, 'Mahsuplaşmayı kapatmak ve rapor aşamasına geçmek istediğinize emin misiniz?')"
-                            style="padding: 9px 18px; background: #10b981; color: #ffffff; border: none; border-radius: 10px; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 10px rgba(16, 185, 129, 0.2);">
-                            <i class="fas fa-lock" style="font-size: 12px;"></i> Mahsuplaşmayı Kapat
-                        </button>
-                    </form>
-                <% } else { %>
-                    <span style="font-size: 11.5px; color: #047857; background: rgba(16, 185, 129, 0.12); padding: 6px 12px; border-radius: 8px; font-weight: 500;">
-                        Sadece Etkinlik Sahibi Kapatabilir
-                    </span>
-                <% } %>
-            </div>
-        <% } else { %>
-            <div style="background: #fffbe6; border: 1px solid #ffe58f; border-radius: 14px; padding: 14px 18px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; color: #856404; font-size: 12.5px; font-weight: 400;">
-                <i class="fas fa-info-circle" style="color: #d97706; font-size: 15px;"></i>
-                <span>Mahsuplaşmayı kapatabilmek için tüm katılımcıların borçlarını ödeyip onaylatması gerekmektedir.</span>
-            </div>
-        <% } %>
+                                <% } else { %>
+                                    <div
+                                        style="background: #fffbe6; border: 1px solid #ffe58f; border-radius: 18px; padding: 16px 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; color: #856404; font-size: 13px; font-weight: 500; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.04);">
+                                        <i class="fas fa-info-circle" style="color: #d97706; font-size: 16px;"></i>
+                                        <span>Mahsuplaşmayı kapatabilmek için tüm katılımcıların borçlarını ödeyip onaylatması gerekmektedir.</span>
+                                    </div>
+                                    <% } %>
 
     </div>
 
-    <!-- Alt Sabit Eylem Çubuğu -->
-    <div class="action-bar-fixed">
-        <div class="action-bar-inner">
-            <button <%= myDebt > 0 ? '' : 'disabled' %> onclick="<%= myDebt > 0 ? 'openPaymentModal()' : 'return false;' %>" type="button" class="btn-action-primary" style="opacity: <%= myDebt > 0 ? '1' : '0.6' %>; cursor: <%= myDebt > 0 ? 'pointer' : 'not-allowed' %>;">
-                <i class="fas fa-paper-plane"></i> 💸 Ödeme Ekle / Kaydet
-            </button>
-            <button onclick="openBalancesModal()" type="button" class="btn-action-secondary">
-                <i class="fas fa-chart-pie"></i> 📊 Borç / Alacak Detay
-            </button>
-        </div>
-    </div>
+
 
     <!-- Ödeme Ekle Modali -->
     <div id="paymentModal" class="modal-overlay">
@@ -821,22 +943,28 @@
                 </div>
             </div>
 
-            <form action="/add-payment" method="POST" onsubmit="const btn = this.querySelector('button[type=submit]'); setTimeout(() => { btn.disabled = true; btn.innerText = 'Kaydediliyor...'; }, 10);">
+            <form action="/add-payment" method="POST"
+                onsubmit="const btn = this.querySelector('button[type=submit]'); setTimeout(() => { btn.disabled = true; btn.innerText = 'Kaydediliyor...'; }, 10);">
                 <input type="hidden" name="activityId" value="<%= activity.id %>">
                 <input type="hidden" name="senderUsername" value="<%= currentUser ? currentUser.username : '' %>">
 
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 11.5px; font-weight: 500; color: #537066; margin-bottom: 5px; text-transform: uppercase;">Ödenecek Tutar (TL)</label>
-                    <input type="number" step="0.01" min="0.01" name="amount" required value="<%= myDebt > 0 ? myDebt.toFixed(2) : '' %>" placeholder="Örnek: 150.00"
+                    <label
+                        style="display: block; font-size: 11.5px; font-weight: 500; color: #537066; margin-bottom: 5px; text-transform: uppercase;">Ödenecek
+                        Tutar (TL)</label>
+                    <input type="number" step="0.01" min="0.01" name="amount" required
+                        value="<%= myDebt > 0 ? myDebt.toFixed(2) : '' %>" placeholder="Örnek: 150.00"
                         style="width: 100%; padding: 11px 13px; border: 1px solid rgba(15, 56, 44, 0.18); border-radius: 12px; font-size: 15px; font-weight: 500; outline: none; color: #0f382c; background: #ffffff;">
                 </div>
 
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-size: 11.5px; font-weight: 500; color: #537066; margin-bottom: 5px; text-transform: uppercase;">Alıcı Kişi</label>
+                    <label
+                        style="display: block; font-size: 11.5px; font-weight: 500; color: #537066; margin-bottom: 5px; text-transform: uppercase;">Alıcı
+                        Kişi</label>
                     <select name="receiverUsername" required
                         style="width: 100%; padding: 11px 13px; border: 1px solid rgba(15, 56, 44, 0.18); border-radius: 12px; font-size: 13.5px; font-weight: 500; outline: none; color: #0f382c; background: #ffffff; cursor: pointer;">
                         <option value="" disabled selected>Kime gönderdin? (Kişi seçin)</option>
-                        <% (participants || []).forEach(participant => {
+                        <% (participants || []).forEach(participant=> {
                             if (participant.username !== (currentUser ? currentUser.username : '')) {
                             %>
                             <option value="<%= participant.username %>">
@@ -847,14 +975,20 @@
                 </div>
 
                 <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-size: 11.5px; font-weight: 500; color: #537066; margin-bottom: 5px; text-transform: uppercase;">Ödeme Açıklaması</label>
-                    <input type="text" id="paymentDescriptionInput" name="description" required placeholder="Açıklama girin (Örn: Banka havalesi)"
+                    <label
+                        style="display: block; font-size: 11.5px; font-weight: 500; color: #537066; margin-bottom: 5px; text-transform: uppercase;">Ödeme
+                        Açıklaması</label>
+                    <input type="text" id="paymentDescriptionInput" name="description" required
+                        placeholder="Açıklama girin (Örn: Banka havalesi)"
                         style="width: 100%; padding: 11px 13px; border: 1px solid rgba(15, 56, 44, 0.18); border-radius: 12px; font-size: 13.5px; font-weight: 500; outline: none; color: #0f382c; background: #ffffff;">
                 </div>
 
                 <div style="display: flex; gap: 12px;">
-                    <button type="button" onclick="closePaymentModal()" style="flex: 1; background: #f4f3ef; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.15); padding: 12px; border-radius: 12px; font-weight: 500; cursor: pointer; font-size: 13.5px;">İptal</button>
-                    <button type="submit" style="flex: 2; background: #0f382c; color: #ffffff; border: none; padding: 12px; border-radius: 12px; font-weight: 500; cursor: pointer; font-size: 13.5px;">Ödeme Kaydet</button>
+                    <button type="button" onclick="closePaymentModal()"
+                        style="flex: 1; background: #f4f3ef; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.15); padding: 12px; border-radius: 12px; font-weight: 500; cursor: pointer; font-size: 13.5px;">İptal</button>
+                    <button type="submit"
+                        style="flex: 2; background: #0f382c; color: #ffffff; border: none; padding: 12px; border-radius: 12px; font-weight: 500; cursor: pointer; font-size: 13.5px;">Ödeme
+                        Kaydet</button>
                 </div>
             </form>
         </div>
@@ -866,26 +1000,36 @@
             <div style="margin-bottom: 18px;">
                 <h2 style="margin: 0; font-size: 19px; color: #0f382c; font-weight: 600;">Kapak Görseli Değiştir</h2>
             </div>
-            <form id="activityImageForm" action="/activity/<%= activity.id %>/upload-image" method="POST" enctype="multipart/form-data">
+            <form id="activityImageForm" action="/activity/<%= activity.id %>/upload-image" method="POST"
+                enctype="multipart/form-data">
                 <input type="hidden" id="removeImageFlag" name="removeImage" value="false">
 
                 <label id="uploadLabel" for="coverImage"
                     style="width: 100%; height: 150px; border: 2px dashed #0f382c; border-radius: 14px; display: <%= activity.coverImage ? 'none' : 'flex' %>; align-items: center; justify-content: center; color: #0f382c; font-weight: 500; font-size: 14px; background: #fdfbf7; cursor: pointer; margin-bottom: 18px;">
                     <i class="fas fa-image" style="margin-right: 8px; font-size: 18px;"></i> Görsel Seç
-                    <input type="file" id="coverImage" name="coverImage" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                    <input type="file" id="coverImage" name="coverImage" accept="image/*" style="display: none;"
+                        onchange="previewImage(this)">
                 </label>
 
-                <div id="imagePreviewContainer" style="display: <%= activity.coverImage ? 'block' : 'none' %>; text-align: center; margin-bottom: 18px;">
-                    <div style="max-height: 170px; overflow: hidden; border-radius: 14px; margin-bottom: 10px; border: 1px solid rgba(15, 56, 44, 0.15);">
-                        <img id="imagePreview" src="<%= activity.coverImage || '' %>" style="width: 100%; height: 100%; object-fit: cover;">
+                <div id="imagePreviewContainer"
+                    style="display: <%= activity.coverImage ? 'block' : 'none' %>; text-align: center; margin-bottom: 18px;">
+                    <div
+                        style="max-height: 170px; overflow: hidden; border-radius: 14px; margin-bottom: 10px; border: 1px solid rgba(15, 56, 44, 0.15);">
+                        <img id="imagePreview" src="<%= activity.coverImage || '' %>"
+                            style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                    <button type="button" onclick="triggerFileSelect()" style="background: rgba(15, 56, 44, 0.08); color: #0f382c; border: none; padding: 7px 13px; border-radius: 10px; font-weight: 500; font-size: 12px; cursor: pointer; margin-right: 6px;">Görseli Değiştir</button>
-                    <button type="button" onclick="removeImage()" style="background: #fee2e2; color: #ef4444; border: none; padding: 7px 13px; border-radius: 10px; font-weight: 500; font-size: 12px; cursor: pointer;">Kaldır</button>
+                    <button type="button" onclick="triggerFileSelect()"
+                        style="background: rgba(15, 56, 44, 0.08); color: #0f382c; border: none; padding: 7px 13px; border-radius: 10px; font-weight: 500; font-size: 12px; cursor: pointer; margin-right: 6px;">Görseli
+                        Değiştir</button>
+                    <button type="button" onclick="removeImage()"
+                        style="background: #fee2e2; color: #ef4444; border: none; padding: 7px 13px; border-radius: 10px; font-weight: 500; font-size: 12px; cursor: pointer;">Kaldır</button>
                 </div>
 
                 <div style="display: flex; gap: 12px;">
-                    <button type="button" onclick="closeImageModal()" style="flex: 1; background: #f4f3ef; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.15); padding: 11px; border-radius: 12px; font-weight: 500; cursor: pointer;">İptal</button>
-                    <button type="submit" style="flex: 2; background: #0f382c; color: #ffffff; border: none; padding: 11px; border-radius: 12px; font-weight: 500; cursor: pointer;">Kaydet</button>
+                    <button type="button" onclick="closeImageModal()"
+                        style="flex: 1; background: #f4f3ef; color: #0f382c; border: 1px solid rgba(15, 56, 44, 0.15); padding: 11px; border-radius: 12px; font-weight: 500; cursor: pointer;">İptal</button>
+                    <button type="submit"
+                        style="flex: 2; background: #0f382c; color: #ffffff; border: none; padding: 11px; border-radius: 12px; font-weight: 500; cursor: pointer;">Kaydet</button>
                 </div>
             </form>
         </div>
@@ -898,30 +1042,34 @@
                 📊 Kişisel Borç / Alacak Dökümü
             </h3>
 
-            <% let myTransactions = transactions.filter(t => t.fromId === currentUserId || t.toId === currentUserId); %>
+            <% let myTransactions=transactions.filter(t=> t.fromId === currentUserId || t.toId === currentUserId); %>
 
-            <div style="margin-top: 14px; margin-bottom: 18px;">
-                <% if (transactions.length > 0) { %>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <% transactions.forEach(t => { %>
-                            <div style="display: flex; justify-content: space-between; align-items: center; background: #fdfbf7; padding: 11px 13px; border-radius: 12px; border: 1px solid rgba(15, 56, 44, 0.08);">
-                                <div style="font-weight: 500; font-size: 13px; color: #0f382c;">
-                                    <%= t.fromName %> &rarr; <%= t.toName %>
+                <div style="margin-top: 14px; margin-bottom: 18px;">
+                    <% if (transactions.length> 0) { %>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <% transactions.forEach(t=> { %>
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; background: #fdfbf7; padding: 11px 13px; border-radius: 12px; border: 1px solid rgba(15, 56, 44, 0.08);">
+                                    <div style="font-weight: 500; font-size: 13px; color: #0f382c;">
+                                        <%= t.fromName %> &rarr; <%= t.toName %>
+                                    </div>
+                                    <div style="font-weight: 600; font-size: 14px; color: #0f382c;">
+                                        ₺<%= Number(t.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2 }) %>
+                                    </div>
                                 </div>
-                                <div style="font-weight: 600; font-size: 14px; color: #0f382c;">
-                                    ₺<%= Number(t.amount).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
-                                </div>
+                                <% }) %>
+                        </div>
+                        <% } else { %>
+                            <div
+                                style="text-align: center; color: #10b981; padding: 15px; font-weight: 500; background: #ecfdf5; border-radius: 12px; font-size: 13.5px;">
+                                ✓ Tüm borçlar ve alacaklar kapandı!
                             </div>
-                        <% }) %>
-                    </div>
-                <% } else { %>
-                    <div style="text-align: center; color: #10b981; padding: 15px; font-weight: 500; background: #ecfdf5; border-radius: 12px; font-size: 13.5px;">
-                        ✓ Tüm borçlar ve alacaklar kapandı!
-                    </div>
-                <% } %>
-            </div>
+                            <% } %>
+                </div>
 
-            <button type="button" onclick="closeBalancesModal()" style="width: 100%; background: #0f382c; color: #ffffff; border: none; padding: 11px; border-radius: 12px; font-weight: 500; cursor: pointer;">Kapat</button>
+                <button type="button" onclick="closeBalancesModal()"
+                    style="width: 100%; background: #0f382c; color: #ffffff; border: none; padding: 11px; border-radius: 12px; font-weight: 500; cursor: pointer;">Kapat</button>
         </div>
     </div>
 
@@ -963,7 +1111,7 @@
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     document.getElementById('imagePreview').src = e.target.result;
                     document.getElementById('imagePreviewContainer').style.display = 'block';
                     document.getElementById('uploadLabel').style.display = 'none';
@@ -984,6 +1132,18 @@
             document.getElementById('coverImage').value = '';
         }
     </script>
+    <!-- Alt Navigasyon Menüsü -->
+    <nav class="bottom-nav">
+        <a href="/panel" class="nav-item active">
+            <i class="fas fa-folder-open"></i>
+            <span>Etkinlikler</span>
+        </a>
+        <a href="/profile" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+        </a>
+    </nav>
+    <script src="/notifications.js"></script>
 </body>
 
 </html>

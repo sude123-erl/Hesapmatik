@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="/theme.css">
     <script src="/theme.js"></script>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         * {
             box-sizing: border-box;
@@ -20,10 +22,18 @@
             background-color: #e8e7e1 !important;
             color: #0f382c !important;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding-bottom: 50px;
+        }
+
+        .settlement-hero {
+            background: linear-gradient(135deg, #0f382c 0%, #175241 100%);
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 6px 20px rgba(15, 56, 44, 0.12);
+            margin-bottom: 18px;
+            position: relative;
+            overflow: visible !important;
         }
 
         .card {
@@ -205,79 +215,116 @@
 </head>
 
 <body>
-    <div class="card">
-        <h2>Harcamayı Düzenle</h2>
 
-        <form action="/edit-expense/<%= expense.id %>" method="POST">
-            <div class="form-group">
-                <label for="expenseName">Harcama Adı</label>
-                <input type="text" id="expenseName" name="expenseName" value="<%= expense.expenseName %>" required>
+    <!-- Header Hero Banner (Settlement Style) -->
+    <div class="settlement-hero">
+        <div
+            style="max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div
+                    style="width: 50px; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;">
+                    ✏️
+                </div>
+                <div>
+                    <div
+                        style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.12); color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.18); margin-bottom: 4px;">
+                        <span
+                            style="width: 7px; height: 7px; background: #10b981; border-radius: 50%; display: inline-block;"></span>
+                        Harcama Düzenleme
+                    </div>
+                    <h1 style="font-size: 19px; font-weight: 600; margin: 0; color: #ffffff; letter-spacing: -0.2px;">
+                        Harcamayı Düzenle
+                    </h1>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="amount">Tutar (TL)</label>
-                <input type="number" id="amount" name="amount" value="<%= expense.amount %>" required>
+            <div>
+                <a href="/panel"
+                    style="color: rgba(255,255,255,0.9); text-decoration: none; font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); transition: all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.22)'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+                    <i class="fas fa-arrow-left" style="font-size: 11px;"></i> Panele Dön
+                </a>
             </div>
+        </div>
+    </div>
 
-            <% if (expense.receipt) { %>
+    <div style="display: flex; justify-content: center; padding: 0 15px;">
+        <div class="card">
+            <h2>Harcamayı Düzenle</h2>
+
+            <form action="/edit-expense/<%= expense.id %>" method="POST">
                 <div class="form-group">
-                    <label>Mevcut Fiş / Dekont</label>
-
-                    <!-- Küçük Resim -->
-                    <img src="<%= expense.receipt.startsWith('http') ? expense.receipt : '/uploads/' + expense.receipt %>" alt="Fiş Görseli" onclick="openModal()"
-                        style="max-width: 100%; max-height: 150px; object-fit: contain; border-radius: 12px; border: 1.5px solid rgba(15, 56, 44, 0.2); cursor: pointer; transition: 0.2s;"
-                        title="Büyütmek için tıkla">
-                    <div style="font-size: 0.8rem; color: #537066; margin-top: 5px;">(Büyütmek için resme tıklayın)
-                    </div>
-
-                    <!-- Modal (Büyük Resim Penceresi) -->
-                    <div id="receiptModal"
-                        style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
-
-                        <!-- Kapatma Çarpı Butonu -->
-                        <span onclick="closeModal()"
-                            style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
-
-                        <!-- Büyük Resim -->
-                        <img id="modalImg"
-                            style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
-                    </div>
+                    <label for="expenseName">Harcama Adı</label>
+                    <input type="text" id="expenseName" name="expenseName" value="<%= expense.expenseName %>" required>
                 </div>
 
-                <!-- Modal Kontrolü İçin JavaScript -->
-                <script>
-                    function openModal() {
-                        var modal = document.getElementById("receiptModal");
-                        var modalImg = document.getElementById("modalImg");
-                        var thumbImg = document.querySelector("img[alt='Fiş Görseli']");
+                <div class="form-group">
+                    <label for="amount">Tutar (TL)</label>
+                    <input type="number" id="amount" name="amount" value="<%= expense.amount %>" required>
+                </div>
 
-                        modal.style.display = "flex";
-                        modalImg.src = thumbImg.src;
-                    }
+                <% if (expense.receipt) { %>
+                    <div class="form-group">
+                        <label>Mevcut Fiş / Dekont</label>
 
-                    function closeModal() {
-                        var modal = document.getElementById("receiptModal");
-                        modal.style.display = "none";
-                    }
+                        <!-- Küçük Resim -->
+                        <img src="<%= expense.receipt.startsWith('http') ? expense.receipt : '/uploads/' + expense.receipt %>"
+                            alt="Fiş Görseli" onclick="openModal()"
+                            style="max-width: 100%; max-height: 150px; object-fit: contain; border-radius: 12px; border: 1.5px solid rgba(15, 56, 44, 0.2); cursor: pointer; transition: 0.2s;"
+                            title="Büyütmek için tıkla">
+                        <div style="font-size: 0.8rem; color: #537066; margin-top: 5px;">(Büyütmek için resme tıklayın)
+                        </div>
 
-                    window.onclick = function (event) {
-                        var modal = document.getElementById("receiptModal");
-                        if (event.target == modal) {
+                        <!-- Modal (Büyük Resim Penceresi) -->
+                        <div id="receiptModal"
+                            style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
+
+                            <!-- Kapatma Çarpı Butonu -->
+                            <span onclick="closeModal()"
+                                style="position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
+
+                            <!-- Büyük Resim -->
+                            <img id="modalImg"
+                                style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+                        </div>
+                    </div>
+
+                    <!-- Modal Kontrolü İçin JavaScript -->
+                    <script>
+                        function openModal() {
+                            var modal = document.getElementById("receiptModal");
+                            var modalImg = document.getElementById("modalImg");
+                            var thumbImg = document.querySelector("img[alt='Fiş Görseli']");
+
+                            modal.style.display = "flex";
+                            modalImg.src = thumbImg.src;
+                        }
+
+                        function closeModal() {
+                            var modal = document.getElementById("receiptModal");
                             modal.style.display = "none";
                         }
-                    }
-                </script>
-                <% } %>
 
-                    <div style="display: flex; gap: 12px; margin-top: 24px;">
-                        <a href="javascript:history.back()" class="btn-cancel">
-                            İptal
-                        </a>
-                        <button type="submit" class="btn-submit">
-                            Kaydet
-                        </button>
-                    </div>
-        </form>
+                        window.onclick = function (event) {
+                            var modal = document.getElementById("receiptModal");
+                            if (event.target == modal) {
+                                modal.style.display = "none";
+                            }
+                        }
+                    </script>
+                    <% } %>
+
+                        <div style="display: flex; gap: 12px; margin-top: 24px;">
+                            <a href="javascript:history.back()" class="btn-cancel">
+                                İptal
+                            </a>
+                            <button type="submit" class="btn-submit">
+                                Kaydet
+                            </button>
+                        </div>
+            </form>
+        </div>
     </div>
 </body>
 

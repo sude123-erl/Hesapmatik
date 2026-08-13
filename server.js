@@ -416,8 +416,8 @@ app.get('/dashboard', (req, res) => {
             }
 
             // Split activities into active and closed
-            const activeActivities = (activities || []).filter(a => !a.isClosed);
-            const pastActivities = (activities || []).filter(a => a.isClosed);
+            const activeActivities = (activities || []).filter(a => a.isClosed === null || a.isClosed === undefined || Number(a.isClosed) < 2);
+            const pastActivities = (activities || []).filter(a => Number(a.isClosed) === 2);
 
             const paymentQuery = `
                 SELECT payments.*, 
@@ -536,6 +536,11 @@ app.get('/activity/:id', (req, res) => {
     db.get(`SELECT * FROM activities WHERE id = ?`, [activityId], (err, activity) => {
         if (err || !activity) {
             return res.status(404).send("Etkinlik bulunamadı.");
+        }
+
+        // Etkinlik harcamalara kapatılmışsa (mahsuplaşma aşamasındaysa veya tamamen kapalıysa) direkt mahsuplaşma sayfasına yönlendir
+        if (activity && Number(activity.isClosed) >= 1) {
+            return res.redirect(`/settlement/${activityId}`);
         }
 
         db.all(`SELECT * FROM expenses WHERE activityId = ? AND userId = ?`, [activityId, currentUserId], (err, expenses) => {
