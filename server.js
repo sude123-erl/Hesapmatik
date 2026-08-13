@@ -199,6 +199,14 @@ const db = new sqlite3.Database(dbPath, (err) => {
                 isRead INTEGER DEFAULT 0,
                 createdAt TEXT,
                 FOREIGN KEY(userId) REFERENCES users(id)
+            )`);
+            db.run(`CREATE TABLE IF NOT EXISTS feedbacks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                userId INTEGER,
+                feedbackType TEXT,
+                message TEXT,
+                contactInfo TEXT,
+                createdAt TEXT
             )`, () => {
                 const alterQueries = [
                     `ALTER TABLE activities ADD COLUMN creatorId INTEGER`,
@@ -1425,6 +1433,47 @@ app.post('/edit-payment/:id', (req, res) => {
 });
 
 // Security
+// Geri Bildirim Gönderme Rotası
+app.post('/send-feedback', (req, res) => {
+    const { feedbackType, message, contactInfo } = req.body;
+    const user = req.session && req.session.user;
+    const userId = (req.session && req.session.userId) || (user && user.id) || null;
+    const senderInfo = user ? `${user.fullname || user.username} (${user.email || 'E-posta yok'})` : (contactInfo || 'Anonim Kullanıcı');
+    const createdAt = new Date().toISOString();
+
+    db.run(
+        `INSERT INTO feedbacks (userId, feedbackType, message, contactInfo, createdAt) VALUES (?, ?, ?, ?, ?)`,
+        [userId, feedbackType, message, contactInfo || (user ? user.email : ''), createdAt],
+        function (dbErr) {
+            if (dbErr) {
+                console.error("Geri bildirim DB kaydetme hatası:", dbErr.message);
+            }
+
+            // Arka planda e-posta gönder
+            const mailOptions = {
+                from: 'saadetsudegunes31@gmail.com',
+                to: 'saadetsudegunes31@gmail.com',
+                subject: `[Hesapmatik Geri Bildirim] ${feedbackType || 'Genel Şikayet / Öneri'}`,
+                text: `Gönderen: ${senderInfo}\nİletişim Bilgisi: ${contactInfo || 'Belirtilmedi'}\nKonu: ${feedbackType || 'Geri Bildirim'}\n\nMesaj:\n${message}`
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.warn('Geri bildirim e-posta gönderilemedi (DB kaydı alındı):', error.message);
+                } else {
+                    console.log('Geri bildirim e-postası başarıyla gönderildi:', info && info.response);
+                }
+            });
+
+            // Kullanıcıya anında başarılı yanıt dön
+            if (req.xhr || (req.headers.accept && req.headers.accept.includes('application/json')) || req.headers['content-type'] === 'application/x-www-form-urlencoded') {
+                return res.json({ success: true, message: "Geri bildiriminiz başarıyla iletildi! Teşekkür ederiz." });
+            }
+            res.redirect(req.get('Referrer') || '/panel');
+        }
+    );
+});
+
 app.get('/profile/security', (req, res) => {
     const currentUser = req.user || (req.session && req.session.user);
     if (!currentUser) return res.redirect('/login');
