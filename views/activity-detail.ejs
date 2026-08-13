@@ -347,6 +347,45 @@
             margin: 0 auto;
         }
 
+        .settlement-hero,
+        .settlement-hero *,
+        .settlement-hero i,
+        .settlement-hero a,
+        .settlement-hero button,
+        .settlement-hero h1,
+        .settlement-hero span {
+            color: #ffffff !important;
+            fill: #ffffff !important;
+        }
+
+        .icon-btn-hero,
+        .icon-btn-hero i,
+        .icon-btn-hero svg {
+            background: rgba(255, 255, 255, 0.14) !important;
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+            color: #ffffff !important;
+            fill: #ffffff !important;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .icon-btn-hero:hover,
+        .icon-btn-hero:hover i,
+        .icon-btn-hero:hover svg {
+            background: rgba(255, 255, 255, 0.24) !important;
+            color: #ffffff !important;
+            fill: #ffffff !important;
+            transform: translateY(-1px);
+        }
+
         /* Alt Navigasyon Menüsü (Dark Green Gradient Theme - Full Width Curved) */
         .bottom-nav {
             display: flex;
@@ -365,28 +404,33 @@
             box-shadow: 0 -6px 20px rgba(15, 56, 44, 0.2);
         }
 
-        .nav-item {
+        .bottom-nav button.nav-item,
+        .bottom-nav a.nav-item,
+        .bottom-nav .nav-item {
+            background: none !important;
+            border: none !important;
+            cursor: pointer !important;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-decoration: none;
-            color: rgba(255, 255, 255, 0.65) !important;
+            color: rgba(255, 255, 255, 0.75) !important;
             font-size: 10.5px;
             font-weight: 500;
             gap: 2px;
             transition: all 0.2s ease;
         }
 
-        .nav-item:hover,
-        .nav-item.active {
+        .bottom-nav .nav-item:hover,
+        .bottom-nav .nav-item.active {
             color: #ffffff !important;
             font-weight: 700;
             opacity: 1 !important;
             transform: translateY(-1px);
         }
 
-        .nav-item i,
-        .nav-item svg {
+        .bottom-nav .nav-item i,
+        .bottom-nav .nav-item svg {
             font-size: 18px !important;
             width: 18px !important;
             height: 18px !important;
